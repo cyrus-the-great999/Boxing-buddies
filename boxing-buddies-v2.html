@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Boxing Buddies</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--bg:#F2F2F2;--card:#FCFCFC;--surf:#EBEBEB;--surf2:#E2E2E2;--ink:#0F0F0F;--mute:#4D4D4D;--line:#D4D4D4;--field:#757575;--on:#FAFAFA;--acc:#FF6A3D;--grad:linear-gradient(135deg,#FF9A1F 0%,#FF3D81 100%);--on-acc:#0A0A0A;--err:#B3261E;--sh:0 8px 24px rgba(0,0,0,.18);--sh2:0 8px 8px rgba(0,0,0,.12);--ease:cubic-bezier(.16,1,.3,1);--r-ctl:9999px;--r-box:10px;--r-hero:16px;--disp:"Raleway",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;--body:"Raleway",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;--r-btn:12px;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--card:#181818;--surf:#1F1F1F;--surf2:#252525;--ink:#FAFAFA;--mute:#B3B3B3;--line:#4D4D4D;--field:#7C7C7C;--on:#0A0A0A;--acc:#FF6A3D;--grad:linear-gradient(135deg,#FF9A1F 0%,#FF3D81 100%);--on-acc:#0A0A0A;--err:#F3727F;--sh:0 8px 24px rgba(0,0,0,.5);--sh2:0 8px 8px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{--bg:#121212;--card:#181818;--surf:#1F1F1F;--surf2:#252525;--ink:#FAFAFA;--mute:#B3B3B3;--line:#4D4D4D;--field:#7C7C7C;--on:#0A0A0A;--acc:#FF6A3D;--grad:linear-gradient(135deg,#FF9A1F 0%,#FF3D81 100%);--on-acc:#0A0A0A;--err:#F3727F;--sh:0 8px 24px rgba(0,0,0,.5);--sh2:0 8px 8px rgba(0,0,0,.3)}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.4 var(--body);-webkit-font-smoothing:antialiased}
+#app{max-width:430px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+h1,h2,h3,.btn,nav button,.fit,.ver,.stamp,.dot,.ini,.sh,.seg button,.send button,.act,.nw,.pav{font-family:var(--disp);font-weight:800;letter-spacing:-.01em}
+h1,h2,h3{margin:0}
+header{flex:none;display:flex;align-items:center;gap:10px;padding:14px 20px 10px}header{justify-content:flex-end}.gear[hidden]{display:none}.gear.on{background:var(--grad);color:var(--on-acc)}
+header h1{font-size:27px}
+.gear{width:42px;height:42px;border-radius:50%;border:0;background:var(--surf);color:var(--ink);display:flex;align-items:center;justify-content:center}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+main{flex:1;min-height:0;overflow-y:auto;padding:4px 20px calc(92px + env(safe-area-inset-bottom,0px))}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px;box-shadow:0 0 0 5px var(--on-acc)}
+button:active{transform:scale(.97)}
+.btn,.back-btn,.seg button,.send button{white-space:nowrap}
+::placeholder{color:var(--mute);opacity:1}
+.disc{height:100%;display:flex;flex-direction:column}
+.filters{display:flex;gap:10px;margin-bottom:16px;flex:none}
+.filters select{flex:1;min-width:0;padding:11px 36px 11px 14px;border:0;border-radius:var(--r-btn);color:var(--ink);font:600 14px var(--body);box-shadow:inset 0 0 0 1px var(--field);appearance:none;-webkit-appearance:none;background:var(--surf) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center}
+.stack{position:relative;flex:none;aspect-ratio:4/7;width:min(100%,calc((100dvh - 250px)*.571));min-width:220px;margin:0 auto 20px}
+.card{position:absolute;inset:0;background:var(--card);border-radius:var(--r-hero);overflow:hidden;display:flex;flex-direction:column;user-select:none;box-shadow:var(--sh);transition:transform .22s var(--ease),opacity .22s ease}
+.card.back{transform:scale(.95) translateY(12px);opacity:.85}
+.card.drag{transition:none;cursor:grabbing}
+.photo{flex:1;min-height:140px;position:relative;display:flex;align-items:center;justify-content:center;color:#fff}
+.ini{font-size:clamp(56px,13vh,96px);color:#fff;opacity:.92}
+.fit{position:absolute;top:16px;left:16px;background:var(--grad);color:var(--on-acc);border-radius:var(--r-ctl);padding:6px 13px;font-size:13px}
+.ver{position:absolute;top:16px;right:16px;background:rgba(18,18,18,.85);color:#fff;border-radius:var(--r-ctl);padding:6px 13px;font-size:12px;box-shadow:inset 0 0 0 1px #7C7C7C}
+.who{position:absolute;left:0;right:0;bottom:0;padding:56px 20px 14px;background:linear-gradient(transparent,rgba(10,10,10,.92));color:#fff}
+.who h2{font-size:28px}
+.who h2 small{font:400 18px var(--body);color:#E6E6E6}
+.who p{margin:2px 0 0;color:#F0F0F0;font-size:14px}
+.stamp{position:absolute;top:64px;left:18px;font-size:26px;padding:0 10px;border:3px solid var(--acc);color:var(--acc);border-radius:6px;opacity:0;transform:rotate(-12deg);background:rgba(10,10,10,.55)}
+.stamp.p{right:18px;left:auto;transform:rotate(12deg);border-color:#fff;color:#fff}
+.info{flex:none;padding:16px 20px 18px;display:flex;flex-direction:column;gap:7px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.tag{background:var(--surf);color:var(--ink);border:0;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:600}
+.meta{color:var(--mute);font-size:14px;margin:0}
+.meta b{color:var(--ink);font-weight:700}
+.actions{flex:none;display:flex;justify-content:center;gap:32px;padding-bottom:18px}
+.act{width:68px;height:68px;border-radius:50%;border:0;background:var(--surf);color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:var(--sh2)}
+.act svg{width:28px;height:28px}
+.act.go{background:var(--grad);color:var(--on-acc)}
+.note{text-align:center;color:var(--mute);font-size:12px;margin:14px 0 0}
+.empty{text-align:center;padding:60px 20px;color:var(--mute)}
+.empty h2{color:var(--ink);font-size:26px;margin-bottom:8px}
+.btn{background:var(--grad);color:var(--on-acc);border:0;border-radius:var(--r-btn);padding:13px 22px;margin-top:12px;font-size:14px;font-weight:700;letter-spacing:.01em;box-shadow:0 1px 2px rgba(0,0,0,.2);display:inline-block;cursor:pointer}
+.evh{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px}
+.row{display:flex;align-items:center;gap:12px;background:var(--card);border:0;border-radius:var(--r-box);padding:12px 14px;margin-bottom:10px;width:100%;text-align:left;box-shadow:var(--sh2)}
+.row:hover{background:var(--surf)}
+.av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font:400 20px var(--disp);flex:none}
+.row b{display:block;font-weight:700}
+.row span.sub{color:var(--mute);font-size:13px}
+.nw{background:var(--grad);color:var(--on-acc);border-radius:var(--r-ctl);font-style:normal;font-size:10px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.gym{background:var(--card);border-radius:var(--r-box);padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh2)}
+.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}.mt{position:relative;aspect-ratio:1/1;border-radius:var(--r-hero);overflow:hidden;background:#111 center/cover;box-shadow:var(--sh2);display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;isolation:isolate}.mt:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.82));z-index:-1}.mt .ini{position:absolute;top:10px;left:12px;font-size:34px;opacity:.9}.mt h3{font-size:14px;line-height:1.15;margin-bottom:3px;color:#fff}.mt p{font-size:12px;color:#E6E6E6;line-height:1.3}.mt .btn{margin:8px 0 0;padding:8px 10px;font-size:12px;min-height:36px}.mt .del{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;border:0;border-radius:9999px;padding:6px 10px;font-size:12px;min-height:32px}.cov{width:100%;max-width:160px;aspect-ratio:1/1;border-radius:var(--r-box);background:var(--surf) center/cover;margin-top:6px;display:block}
+.gym h3{font-size:18px;margin-bottom:4px}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);box-shadow:0 -1px 0 var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav div{max-width:430px;margin:0 auto;display:flex}
+nav button{flex:1;background:none;border:0;padding:10px 0 9px;font-size:11px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+nav button svg{width:44px;height:28px;padding:3px 11px;border-radius:var(--r-ctl);transition:background .2s var(--ease)}
+nav button[aria-current="true"]{color:var(--ink)}
+nav button[aria-current="true"] svg{background:var(--grad);color:var(--on-acc)}
+.dot{position:absolute;top:5px;left:calc(50% + 10px);background:var(--ink);color:var(--on);border-radius:var(--r-ctl);font-style:normal;font-size:10px;padding:1px 6px}
+.chat{display:flex;flex-direction:column;height:calc(100dvh - 330px);min-height:320px}
+.msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:8px 0}
+.m{max-width:80%;padding:9px 14px;border-radius:var(--r-box);background:var(--surf);}
+.m.me{align-self:flex-end;background:var(--grad);color:var(--on-acc)}
+.send{display:flex;gap:8px}
+.send input{flex:1;min-width:0;padding:12px 18px;border:0;border-radius:var(--r-ctl);background:var(--surf);box-shadow:inset 0 0 0 1.5px var(--field)}
+.send button{background:var(--grad);color:var(--on-acc);border:0;border-radius:var(--r-ctl);padding:0 20px;letter-spacing:.08em;text-transform:uppercase;font-size:13px}
+.back-btn{background:none;border:0;color:var(--ink);padding:4px 0;font-weight:700}
+.big{font-size:32px;margin:4px 0 0}
+.sh{font-size:13px;color:var(--mute);margin:22px 6px 7px}
+.group{background:var(--card);border-radius:var(--r-box);overflow:hidden;box-shadow:var(--sh2)}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:0;border-bottom:1px solid var(--surf2);width:100%;background:none;text-align:left;color:var(--ink);font-size:15px}
+.srow:last-child{border-bottom:0}
+.srow.col{flex-direction:column;align-items:stretch}
+.srow b{font-weight:700;display:block}
+.srow em{font-style:normal}
+.srow span{color:var(--mute);font-size:13px;display:block}
+.srow.link{font-weight:700}
+.srow.link::after{content:"\203A";color:var(--mute);font-size:22px}
+.seg{display:flex;background:var(--surf);border-radius:var(--r-btn);padding:3px;gap:2px;margin-top:4px}
+.seg button{flex:1;border:0;background:none;padding:9px 4px;border-radius:9px;font-weight:700;color:var(--ink);font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--grad);color:var(--on-acc)}
+.sw{width:51px;height:31px;border-radius:var(--r-ctl);border:0;background:#8E8E93;position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:transform .2s var(--ease)}
+.sw[aria-checked="true"]{background:var(--grad)}
+.sw[aria-checked="true"]::after{transform:translateX(20px);background:var(--on-acc)}
+input[type=range]{width:100%;accent-color:var(--acc);margin-top:8px}
+.pp{display:flex;align-items:center;gap:14px;margin:6px 0 10px}
+.pav{width:84px;height:84px;border-radius:50%;background:var(--surf2);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:34px;font-style:normal;overflow:hidden;flex:none}
+.pav img{width:100%;height:100%;object-fit:cover}
+.pav.sm{width:44px;height:44px;font-size:20px}
+.fld{display:block;width:100%;margin-top:4px;padding:12px 14px;border:0;border-radius:var(--r-btn);background:var(--surf);color:var(--ink);font:500 15px var(--body);box-shadow:inset 0 0 0 1px var(--field)}select.fld{appearance:none;-webkit-appearance:none;padding-right:36px;background:var(--surf) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center}.fld:focus,.filters select:focus{outline:0;box-shadow:inset 0 0 0 2px var(--acc)}
+.err{color:var(--err);font-size:13px;font-weight:700;margin:8px 4px 0}
+#sheet{position:fixed;inset:0;z-index:30}
+#sheet[hidden]{display:none}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.panel{position:absolute;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;max-height:90dvh;overflow-y:auto;background:var(--bg);border-radius:var(--r-hero) var(--r-hero) 0 0;padding:18px 20px calc(28px + env(safe-area-inset-bottom,0px));box-shadow:var(--sh)}
+.panel.in{animation:up .34s var(--ease)}
+@keyframes up{from{transform:translateY(100%)}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:20px;z-index:40}
+.modal[hidden]{display:none}
+.modal>div{background:var(--card);border-radius:var(--r-hero);padding:28px;text-align:center;max-width:340px;box-shadow:var(--sh)}
+.modal h2{font-size:34px;color:var(--ink);margin-bottom:8px}
+.av.sm{width:40px;height:40px;font-size:16px}
+.av.xs{width:28px;height:28px;font-size:11px}
+.av.lg{width:60px;height:60px;font-size:22px}
+.sq{display:flex;align-items:center;gap:10px;background:var(--surf);border-radius:var(--r-ctl);padding:0 16px;margin-bottom:14px;box-shadow:inset 0 0 0 1.5px var(--field);color:var(--mute)}
+.sq:focus-within{box-shadow:inset 0 0 0 2px var(--ink)}
+.sq input{flex:1;background:none;border:0;padding:12px 0;outline:none;color:var(--ink);min-width:0}
+.story{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 14px}
+.st{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink);font-size:12px;flex:none}
+.ring{padding:3px;border-radius:50%;background:var(--line);display:block}
+.ring.on{background:var(--grad)}
+.ring .av{border:3px solid var(--bg)}
+.dm{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:10px 0;text-align:left;color:var(--ink)}
+.dm .av{width:56px;height:56px;font-size:22px}
+.dmt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dmt b{font-size:15px;font-weight:600}
+.dm.un .dmt b{font-weight:800}
+.dmt .sub{display:flex;gap:8px;color:var(--mute);font-size:14px}
+.dm.un .sub{color:var(--ink);font-weight:700}
+.pv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tm{flex:none}
+.ud{width:10px;height:10px;border-radius:50%;background:var(--grad);flex:none}
+.ch{display:flex;align-items:center;gap:10px;padding:2px 0 10px}
+.ch .cht{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.ch .cht b{font-size:15px;font-weight:700}
+.ch .cht span{font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ic{width:40px;height:40px;border-radius:50%;border:0;background:var(--surf);color:var(--ink);display:flex;align-items:center;justify-content:center;flex:none}
+.mr{display:flex;align-items:flex-end;gap:8px}
+.mr.me{justify-content:flex-end}
+.avs{width:28px;flex:none}
+.mr .m{max-width:75%;border-radius:20px;overflow-wrap:anywhere}
+.seen{align-self:flex-end;font-size:12px;color:var(--mute);margin:0 4px}
+.tsl{align-self:center;font-size:12px;color:var(--mute);margin:10px 0 2px}
+.td{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mute);margin:0 2px;animation:blink 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}
+.td:nth-child(3){animation-delay:.4s}
+@keyframes blink{50%{opacity:.25}}
+.chat{height:calc(100dvh - 250px)}
+@media (prefers-reduced-motion:reduce){.td{animation:none}}
+@media (prefers-reduced-motion:reduce){button:active{transform:none}.card,.sw::after,.panel.in,nav button svg{transition:none;animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header><button class="gear" id="fbtn" data-s="filters" aria-label="Filters"><svg viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg></button><button class="gear" data-s="open" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></header>
+  <main id="main"></main>
+</div>
+<nav><div id="nav"></div></nav>
+<div id="sheet" hidden></div>
+<div id="modal" class="modal" hidden></div>
+<script>
+var D=[
+{id:1,n:"Marcus T.",a:27,w:"Welterweight",exp:"Intermediate",h:"5ft 10",st:"Orthodox",gym:"TITLE Boxing Club Marlborough",d:2,goal:"Technical sparring, light to medium",av:"Tue and Thu evenings",v:1,likes:1,hue:37},
+{id:2,n:"Dana R.",a:31,w:"Lightweight",exp:"Advanced",h:"5ft 7",st:"Southpaw",gym:"Upperkuts Boxing",d:8,goal:"Fight camp rounds, amateur bout in spring",av:"Weekday mornings",v:1,likes:0,hue:74},
+{id:3,n:"Priya S.",a:24,w:"Featherweight",exp:"Beginner",h:"5ft 4",st:"Orthodox",gym:"Bancroft Boxing Gym",d:11,goal:"Learn fundamentals, pad work, first sparring",av:"Weekends",v:0,likes:1,hue:111},
+{id:4,n:"Luis M.",a:35,w:"Middleweight",exp:"Intermediate",h:"6ft 0",st:"Orthodox",gym:"Camp Get Right Boxing Gym",d:13,goal:"Fitness plus controlled sparring",av:"Mon, Wed, Sat",v:1,likes:1,hue:148},
+{id:5,n:"Jake W.",a:22,w:"Welterweight",exp:"Advanced",h:"5ft 9",st:"Southpaw",gym:"Box 2 Burn",d:17,goal:"Hard rounds with someone who pushes back",av:"Evenings after 7",v:1,likes:0,hue:185},
+{id:6,n:"Amara O.",a:29,w:"Lightweight",exp:"Intermediate",h:"5ft 6",st:"Orthodox",gym:"STC Boxing & Fitness",d:18,goal:"Tighten defense, slip and counter drills",av:"Tue, Fri",v:0,likes:1,hue:222},
+{id:7,n:"Ben K.",a:41,w:"Heavyweight",exp:"Beginner",h:"6ft 2",st:"Orthodox",gym:"33 Boxing Club",d:16,goal:"Get in shape, learn the basics safely",av:"Weekday lunch",v:0,likes:0,hue:259},
+{id:8,n:"Sofia L.",a:26,w:"Featherweight",exp:"Advanced",h:"5ft 5",st:"Southpaw",gym:"Nonantum Boxing Club",d:18,goal:"Technical rounds, film and review after",av:"Thu and Sun",v:1,likes:1,hue:296},
+{id:9,n:"Tyrese B.",a:25,w:"Welterweight",exp:"Advanced",h:"5ft 11",st:"Orthodox",gym:"STC Boxing & Fitness",d:18,goal:"Sharpen counters with live rounds",av:"Mon and Thu nights",v:1,likes:1,hue:333},
+{id:10,n:"Hannah P.",a:28,w:"Lightweight",exp:"Beginner",h:"5ft 5",st:"Orthodox",gym:"TITLE Boxing Club Marlborough",d:2,goal:"Learn the basics with a patient partner",av:"Saturday mornings",v:0,likes:1,hue:10},
+{id:11,n:"Diego R.",a:32,w:"Middleweight",exp:"Intermediate",h:"5ft 11",st:"Southpaw",gym:"Camp Get Right Boxing Gym",d:13,goal:"Work on footwork and cutting off the ring",av:"Tue and Fri evenings",v:1,likes:1,hue:47},
+{id:12,n:"Maya C.",a:23,w:"Featherweight",exp:"Intermediate",h:"5ft 3",st:"Orthodox",gym:"Upperkuts Boxing",d:8,goal:"Technical rounds at a matched pace",av:"Weekday evenings",v:1,likes:1,hue:84},
+{id:13,n:"Kofi A.",a:29,w:"Heavyweight",exp:"Advanced",h:"6ft 3",st:"Orthodox",gym:"33 Boxing Club",d:16,goal:"Heavy bag work and controlled sparring",av:"Sat and Sun",v:1,likes:0,hue:121},
+{id:14,n:"Elena V.",a:34,w:"Lightweight",exp:"Intermediate",h:"5ft 6",st:"Southpaw",gym:"Bancroft Boxing Gym",d:11,goal:"Easing back into sparring after a break",av:"Wed and Sat",v:0,likes:1,hue:158},
+{id:15,n:"Noah F.",a:20,w:"Welterweight",exp:"Beginner",h:"5ft 10",st:"Orthodox",gym:"TITLE Boxing Club Marlborough",d:2,goal:"First sparring sessions, light contact",av:"Evenings after 6",v:0,likes:1,hue:195},
+{id:16,n:"Ravi S.",a:27,w:"Middleweight",exp:"Advanced",h:"6ft 0",st:"Orthodox",gym:"STC Boxing & Fitness",d:18,goal:"Fight prep rounds, three days a week",av:"Mon, Wed, Fri",v:1,likes:0,hue:232},
+{id:17,n:"Chloe D.",a:22,w:"Featherweight",exp:"Advanced",h:"5ft 4",st:"Southpaw",gym:"Box 2 Burn",d:17,goal:"Quick hands and high output rounds",av:"Thu and Sun",v:1,likes:1,hue:269},
+{id:18,n:"Andre W.",a:38,w:"Heavyweight",exp:"Intermediate",h:"6ft 1",st:"Orthodox",gym:"Nonantum Boxing Club",d:18,goal:"Technical work with no hard shots",av:"Weekday lunch",v:0,likes:1,hue:306},
+{id:19,n:"Jess M.",a:26,w:"Lightweight",exp:"Beginner",h:"5ft 5",st:"Orthodox",gym:"TITLE Boxing Club Marlborough",d:2,goal:"Pad work and light drills",av:"Sunday afternoons",v:0,likes:1,hue:343},
+{id:20,n:"Omar H.",a:30,w:"Welterweight",exp:"Intermediate",h:"5ft 9",st:"Orthodox",gym:"Upperkuts Boxing",d:8,goal:"Steady rounds to prep for a smoker",av:"Tue and Thu",v:1,likes:1,hue:20},
+{id:21,n:"Lena K.",a:25,w:"Middleweight",exp:"Advanced",h:"5ft 9",st:"Southpaw",gym:"Camp Get Right Boxing Gym",d:13,goal:"Sparring with other lefties welcome",av:"Weekend mornings",v:1,likes:0,hue:57},
+{id:22,n:"Sam T.",a:21,w:"Featherweight",exp:"Beginner",h:"5ft 6",st:"Orthodox",gym:"33 Boxing Club",d:16,goal:"Learn defense, slip and roll",av:"Mon and Wed evenings",v:0,likes:1,hue:94},
+{id:23,n:"Brianna L.",a:33,w:"Lightweight",exp:"Intermediate",h:"5ft 7",st:"Orthodox",gym:"Bancroft Boxing Gym",d:11,goal:"Conditioning plus easy sparring",av:"Tuesday mornings",v:1,likes:1,hue:131},
+{id:24,n:"Marco G.",a:36,w:"Welterweight",exp:"Advanced",h:"5ft 10",st:"Southpaw",gym:"Lowell Boxing Club",d:23,goal:"Rounds with someone who moves",av:"Friday evenings",v:1,likes:0,hue:168}
+];
+var GYMS=[
+{n:"TITLE Boxing Club Marlborough",addr:"43 A Apex Dr, Marlborough, MA",mi:2},
+{n:"Upperkuts Boxing",addr:"40 Summer St, Ashland, MA",mi:8},
+{n:"Bancroft Boxing Gym",addr:"12 Walnut St, Natick, MA",mi:11},
+{n:"Box 2 Burn",addr:"174 Littleton Rd, Westford, MA",mi:17},
+{n:"Camp Get Right Boxing Gym",addr:"376 W Boylston St, Worcester, MA",mi:13},
+{n:"33 Boxing Club",addr:"1017 Southbridge St, Worcester, MA",mi:16},
+{n:"STC Boxing & Fitness",addr:"20 Clematis Ave, Waltham, MA",mi:18},
+{n:"Nonantum Boxing Club",addr:"75 Adams St, Newton, MA",mi:18},
+{n:"Lowell Boxing Club",addr:"6 Progress Ave, Tyngsborough, MA",mi:23},
+{n:"Underground Boxing 978",addr:"1595 Lakeview Ave, Dracut, MA",mi:25}
+];
+var REPLIES=['Sounds good to me. Which gym is easiest for you to get to?','Nice. Technical pace, around 60 to 70 percent?','Perfect. Bring a mouthguard and your own wraps.','Great, see you there. Message me if anything changes.'];
+var W=['All','Featherweight','Lightweight','Welterweight','Middleweight','Heavyweight'],E=['All','Beginner','Intermediate','Advanced'];
+var f={w:'All',e:'All'},tab='discover',openId=null,matches=[],chats={},me={n:'',a:'',w:'Welterweight',exp:'Intermediate',st:'Orthodox',gym:'TITLE Boxing Club Marlborough',goal:'',av:''},sess=[],rsvp={},rate={},blocked=[],cfg={theme:'dark',maxd:40,verified:false,units:'mi',nMatch:true,nMsg:true},sheet=false,unread={},myEv=[],evForm=false;
+function save(){try{localStorage.setItem('bb1',JSON.stringify({matches:matches,chats:chats,me:me,sess:sess,rsvp:rsvp,rate:rate,blocked:blocked,cfg:cfg,seeded:seeded,unread:unread,myEv:myEv,done:D.filter(function(p){return p.done}).map(function(p){return p.id})}))}catch(e){}}
+function load(){try{var s=JSON.parse(localStorage.getItem('bb1')||'null');if(!s)return;matches=s.matches||[];chats=s.chats||{};me=s.me||me;sess=s.sess||[];rsvp=s.rsvp||{};rate=s.rate||{};blocked=s.blocked||[];cfg=Object.assign(cfg,s.cfg||{});seeded=!!s.seeded;unread=s.unread||{};myEv=s.myEv||[];(s.done||[]).forEach(function(i){D[i-1].done=1})}catch(e){}}
+var $=function(s){return document.querySelector(s)};
+function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
+function pool(){return D.filter(function(p){return !p.done&&blocked.indexOf(p.id)<0&&p.d<=cfg.maxd&&(!cfg.verified||p.v)&&(f.w==='All'||p.w===f.w)&&(f.e==='All'||p.exp===f.e)}).sort(function(a,b){return score(b)-score(a)})}
+function score(p){var s=100-Math.abs(W.indexOf(me.w)-W.indexOf(p.w))*12-Math.abs(E.indexOf(me.exp)-E.indexOf(p.exp))*10-p.d;return Math.max(40,Math.min(99,s))}
+function col(p){return 'linear-gradient(160deg,hsl('+(p.hue||0)+' 32% 30%),#0C0C0C 85%)'}
+function ini(p){return p.n.split(' ').map(function(x){return x[0]}).join('')}
+function sel(id,opts,val){return '<select id="'+id+'" aria-label="'+(id==='Weight'?'Weight class':'Experience level')+'">'+opts.map(function(o){return '<option value="'+o+'"'+(o===val?' selected':'')+'>'+(o==='All'?(id==='Weight'?'All weights':'All levels'):o)+'</option>'}).join('')+'</select>'}
+function card(p,back){
+  return '<div class="card'+(back?' back':'')+'" data-id="'+p.id+'"><div class="photo" style="background:'+col(p)+'"><span class="ini">'+ini(p)+'</span><span class="fit">'+score(p)+'% fit</span>'+(p.v?'<span class="ver">Verified</span>':'')+'<span class="stamp s">SPAR</span><span class="stamp p">PASS</span><div class="who"><h2>'+p.n+' <small>'+p.a+'</small></h2><p>'+p.exp+', '+p.w+'</p></div></div><div class="info"><div class="tags"><span class="tag">'+p.st+'</span><span class="tag">'+p.h+'</span><span class="tag">'+p.av+'</span></div><p class="meta"><b>'+p.gym+'</b></p><p class="meta">'+dist(p.d)+' away</p><p class="meta">Goal: '+p.goal+'</p></div></div>';
+}
+function discover(){
+  var q=pool(),h='<div class="disc">';
+  if(!q.length){return h+'<div class="empty"><h2>No boxers left</h2><p>Widen the weight class, level or distance in Settings to see more training partners.</p><button class="btn" id="reset">Reset filters</button></div></div>'}
+  return h+'<div class="stack">'+(q[1]?card(q[1],1):'')+card(q[0])+'</div><div class="actions"><button class="act" id="pass" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><button class="act go" id="spar" aria-label="Spar"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></button></div></div>';
+}
+function gyms(){
+  return eventsHtml()+'<h2 style="margin:14px 0 10px;font-size:24px">Boxing gyms near Marlborough</h2>'+GYMS.map(function(g){return '<div class="gym"><h3>'+g.n+'</h3><p class="meta">'+g.addr+'</p><p class="meta">About '+dist(g.mi)+' from Marlborough</p></div>'}).join('')+'<p class="note">Check with each gym for sparring and class times.</p>';
+}
+function render(){
+  if(tab==='matches'&&openId)delete unread[openId];save();renderSheet();var m=$('#main');
+  m.innerHTML=tab==='discover'?discover():tab==='gyms'?gyms():tab==='me'?meView():tab==='settings'?settingsView():(openId?chatView():matchList());
+  $('#nav').innerHTML=[['discover','Discover'],['matches','Messages'],['gyms','Meetups'],['me','Profile']].map(function(t){return '<button data-tab="'+t[0]+'"'+(tab===t[0]?' aria-current="true"':'')+'>'+ICON[t[0]]+'<span>'+t[1]+'</span>'+(t[0]==='matches'&&Object.keys(unread).length?'<i class="dot">'+Object.keys(unread).length+'</i>':'')+'</button>'}).join('');
+  bind();
+}
+function decide(dir){
+  var top=pool()[0];if(!top)return;
+  var el=$('.card:not(.back)');
+  if(el){el.classList.remove('drag');el.style.transform='translateX('+(dir>0?600:-600)+'px) rotate('+(dir*25)+'deg)';el.style.opacity=0}
+  setTimeout(function(){
+    top.done=1;
+    if(dir>0&&top.likes){matches.push(top.id);unread[top.id]=1;chats[top.id]=[{t:'Hey, I saw you want a training partner too. '+top.goal+' is what I’m after.',ts:Date.now()}];showMatch(top)}
+    render();
+  },220);
+}
+function showMatch(p){if(!cfg.nMatch)return;
+  var mo=$('#modal');mo.hidden=false;
+  mo.innerHTML='<div><div class="pp" style="justify-content:center"><i class="pav">'+(me.photo?'<img alt="" src="'+me.photo+'">':esc((me.n||'You')[0].toUpperCase()))+'</i><i class="pav" style="background:'+col(p)+'">'+ini(p)+'</i></div><h2>Sparring match</h2><p>You and '+p.n+' both want to train. Say hello and set a session.</p><button class="btn" id="mchat">Send a message</button><br><button class="back-btn" id="mclose">Keep swiping</button></div>';
+  $('#mchat').onclick=function(){mo.hidden=true;tab='matches';openId=p.id;render()};
+  $('#mclose').onclick=function(){mo.hidden=true};
+}
+function bind(){
+  document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){tab=b.dataset.tab;openId=null;render()}});
+  var fb=$('#fbtn');if(fb){fb.hidden=tab!=='discover';fb.classList.toggle('on',f.w!=='All'||f.e!=='All')}
+  if($('#reset'))$('#reset').onclick=function(){f={w:'All',e:'All'};render()};
+  if($('#pass')){$('#pass').onclick=function(){decide(-1)};$('#spar').onclick=function(){decide(1)}}
+  var top=$('.card:not(.back)');
+  if(top){
+    var x0=0,dx=0,on=false;
+    top.onpointerdown=function(e){on=true;x0=e.clientX;dx=0;top.classList.add('drag');top.setPointerCapture(e.pointerId)};
+    top.onpointermove=function(e){if(!on)return;dx=e.clientX-x0;top.style.transform='translateX('+dx+'px) rotate('+dx/18+'deg)';top.querySelector('.stamp.s').style.opacity=Math.max(0,dx/100);top.querySelector('.stamp.p').style.opacity=Math.max(0,-dx/100)};
+    top.onpointerup=function(){if(!on)return;on=false;if(Math.abs(dx)>100){decide(dx>0?1:-1)}else{top.classList.remove('drag');top.style.transform='';top.querySelectorAll('.stamp').forEach(function(s){s.style.opacity=0})}};
+  }
+  document.querySelectorAll('[data-chat]').forEach(function(b){b.onclick=function(){openId=+b.dataset.chat;info=false;render()}});
+  if($('#back'))$('#back').onclick=function(){openId=null;render()};
+  if($('#send')){
+    var go=function(){
+      var v=$('#txt').value.trim();if(!v)return;
+      var id=openId,c=chats[id];c.push({t:v,me:1,ts:Date.now()});
+      var n=c.filter(function(m){return m.me}).length;
+      typing[id]=true;render();var t0=$('#txt');if(t0)t0.focus();
+      setTimeout(function(){
+        typing[id]=false;c.push({t:REPLIES[Math.min(n-1,REPLIES.length-1)],ts:Date.now()});
+        var viewing=(openId===id&&tab==='matches'),tx=$('#txt'),val=viewing&&tx?tx.value:'';
+        if(!viewing&&cfg.nMsg)unread[id]=1;
+        render();
+        if(viewing&&val){var t2=$('#txt');if(t2){t2.value=val;t2.focus()}}
+      },1500);
+    };
+    $('#send').onclick=go;$('#txt').onkeydown=function(e){if(e.key==='Enter')go()};
+    var ms=$('#msgs');ms.scrollTop=ms.scrollHeight;
+  }
+}
+var EVENTS=[{n:'Open sparring night (sample)',w:'Location set by the host',d:'Tue 7pm',c:14},{n:'Beginner technique clinic (sample)',w:'Location set by the host',d:'Sat 10am',c:9},{n:'Amateur smoker (sample)',w:'Location set by the host',d:'Next month',c:60}];
+function chatTools(p){var sl=['Tue 7:00pm','Thu 7:00pm','Sat 10:00am','Sun 11:00am'],did=sess.some(function(s){return s.id===p.id});return '<div class="filters" style="margin:0 0 8px"><select id="slot" aria-label="Session time">'+sl.map(function(s){return '<option>'+s+'</option>'}).join('')+'</select><button class="btn" style="margin:0;white-space:nowrap" data-act="book">Book session</button></div><div class="tags" style="margin-bottom:6px;align-items:center">'+(did?'<span class="meta">Rate partner:</span>'+[1,2,3,4,5].map(function(n){return '<button class="tag" style="background:'+(rate[p.id]>=n?'var(--grad);color:var(--on-acc)':'var(--surf)')+'" data-act="rate" data-id="'+n+'">'+n+'</button>'}).join(''):'')+'<button class="tag" style="background:var(--surf);margin-left:auto" data-act="block">Block and report</button></div>'}
+function eventsHtml(){
+  var all=myEv.map(function(v){return Object.assign({key:v.id,mine:1},v)}).concat(EVENTS.map(function(v,i){return Object.assign({key:'e'+i},v)}));
+  return '<div class="evh"><h2 class="big" style="font-size:26px">Meetups</h2><button class="btn" style="margin:0" data-s="evform">'+(evForm?'Cancel':'Create meetup')+'</button></div>'+(evForm?evFormHtml():'')+'<div class="mg">'+all.map(function(v,i){var on=rsvp[v.key],h=(i*67+20)%360,bg=v.cov?'background-image:url('+v.cov+')':'background-image:linear-gradient(160deg,hsl('+h+' 45% 32%),#0C0C0C 90%)';return '<div class="mt" style="'+bg+'"><span class="ini" aria-hidden="true">'+esc(v.n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0]}).join('').toUpperCase())+'</span>'+(v.mine?'<button class="del" aria-label="Delete meetup '+esc(v.n)+'" data-s="evdel" data-v="'+v.id+'">Delete</button>':'')+'<h3>'+esc(v.n)+'</h3><p>'+esc(v.mine?v.w:'Host picks the spot')+'</p><p>'+esc(v.d)+', '+(v.c+(on?1:0))+' going</p><button class="btn" data-s="rsvp" data-v="'+v.key+'">'+(on?'Cancel RSVP':'RSVP')+'</button></div>'}).join('')+'</div>';
+}
+function meView(){var st='';var fld=function(k,l,t){return '<label class="meta" style="display:block;margin-top:10px">'+l+'<input data-f="'+k+'" value="'+esc(me[k]).replace(/"/g,'&quot;')+'" type="'+(t||'text')+'" class="fld"></label>'};var sl=function(k,l,o){return '<div class="meta" style="margin-top:14px" id="lb'+k+'">'+l+'</div><div class="tags" role="radiogroup" aria-labelledby="lb'+k+'" style="margin-top:8px">'+o.map(function(x){var on=x===me[k];return '<button class="tag" role="radio" aria-checked="'+on+'" style="padding:9px 14px;font-size:14px'+(on?';background:var(--grad);color:var(--on-acc)':'')+'" data-s="pf" data-k="'+k+'" data-v="'+x+'">'+x+'</button>'}).join('')+'</div>'};var gl=function(){return '<div class="meta" style="margin-top:14px" id="lbgym">Home gym</div><div class="group" role="radiogroup" aria-labelledby="lbgym" style="margin-top:8px">'+GYMS.map(function(g){var on=g.n===me.gym;return '<button class="srow" role="radio" aria-checked="'+on+'" data-s="pf" data-k="gym" data-v="'+g.n+'" style="padding:11px 14px;font-weight:'+(on?'800':'500')+'"><span>'+g.n+'</span>'+(on?'<span style="color:var(--acc)" aria-hidden="true">&#10003;</span>':'')+'</button>'}).join('')+'</div>'};return photoHtml()+'<h2 style="margin:6px 0 0;font-size:28px">Your boxer profile</h2><p class="meta">Other boxers are ranked by how well they fit this.</p>'+fld('n','Name')+fld('a','Age','number')+sl('w','Weight class',W.slice(1))+sl('exp','Experience',E.slice(1))+sl('st','Stance',['Orthodox','Southpaw'])+gl()+fld('goal','What you want from sparring')+fld('av','When you are free')+'<p class="note">Saved on this device only. Real accounts come next.</p><button class="btn" data-act="reset">Reset demo</button>'}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,id=+b.dataset.id;if(a==='book'){var p=D[openId-1],t=document.getElementById('slot').value;sess.push({id:openId,t:t});chats[openId].push({t:'Session booked for '+t+' at '+p.gym+'. See you there.',me:1})}else if(a==='rate'){rate[openId]=id}else if(a==='block'){blocked.push(openId);info=false;matches=matches.filter(function(m){return m!==openId});openId=null}else if(a==='info'){info=!info}else if(a==='rsvp'){rsvp[id]=!rsvp[id]}else if(a==='reset'){try{localStorage.removeItem('bb1')}catch(x){}location.reload();return}render()});
+document.addEventListener('input',function(e){var k=e.target.dataset&&e.target.dataset.f;if(k){me[k]=e.target.value;save()}});
+var ICON={discover:'<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 15h6"/></svg>',matches:'<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></svg>',gyms:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'};
+function dist(m){return cfg.units==='km'?Math.round(m*1.609)+' km':m+' mi'}
+function applyTheme(){var r=document.documentElement;if(cfg.theme==='system')delete r.dataset.theme;else r.dataset.theme=cfg.theme}
+function filtersView(){
+  var chips=function(k,o,val,all){return '<div class="tags" style="margin-top:10px">'+o.map(function(x){var on=x===val;return '<button class="tag" style="padding:9px 14px;font-size:14px'+(on?';background:var(--grad);color:var(--on-acc)':'')+'" data-s="'+k+'" data-v="'+x+'" aria-pressed="'+on+'">'+(x==='All'?all:x)+'</button>'}).join('')+'</div>'};
+  return '<button class="back-btn" data-s="close">Done</button><h2 class="big">Filters</h2><p class="sh">Weight class</p><div class="group"><div class="srow col">'+chips('fw',W,f.w,'All weights')+'</div></div><p class="sh">Experience level</p><div class="group"><div class="srow col">'+chips('fe',E,f.e,'All levels')+'</div></div><p class="sh">Distance</p><div class="group"><div class="srow col"><b>Search distance: <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="40" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search distance"></div></div><button class="btn" style="width:100%" data-s="fclear">Clear filters</button>';
+}
+function settingsView(){
+  var seg=function(k,o){return '<div class="seg">'+o.map(function(x){return '<button data-s="'+k+'" data-v="'+x[0]+'"'+(String(cfg[k])===x[0]?' aria-pressed="true"':'')+'>'+x[1]+'</button>'}).join('')+'</div>'};
+  var tog=function(k,l,sub){return '<div class="srow"><div><b>'+l+'</b><span>'+sub+'</span></div><button class="sw" role="switch" aria-checked="'+cfg[k]+'" aria-label="'+l+'" data-s="'+k+'" data-v="toggle"></button></div>'};
+  return '<button class="back-btn" data-s="close">Done</button><h2 class="big">Settings</h2>'+profRow()
+  +'<p class="sh">Appearance</p><div class="group"><div class="srow col"><b>Theme</b>'+seg('theme',[['system','System'],['light','Light'],['dark','Dark']])+'</div></div>'
+  +'<p class="sh">Discovery</p><div class="group"><div class="srow col"><b>Search distance: <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="40" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search distance"></div>'+tog('verified','Verified boxers only','Hide profiles that are not verified')+'<div class="srow col"><b>Distance units</b>'+seg('units',[['mi','Miles'],['km','Kilometers']])+'</div></div>'
+  +'<p class="sh">Notifications</p><div class="group">'+tog('nMatch','Match pop-ups','Show a pop-up when someone matches back')+tog('nMsg','Message alerts','Preview setting, real alerts come with the full app')+'</div>'
+  +'<p class="sh">Account</p><div class="group"><button class="srow link" data-s="profile">Edit my boxer profile</button><button class="srow link" data-s="reset">Reset demo data</button></div>'
+  +'<p class="sh">About</p><div class="group"><div class="srow"><b>Version</b><span>0.7 prototype</span></div><div class="srow"><div><b>Prototype note</b><span>Sample boxers are fictional. Gyms are real.</span></div></div><div class="srow"><div><b>Safety tip</b><span>Spar at a gym with a coach nearby, and agree on intensity first.</span></div></div></div>';
+}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(!b||b.tagName==='INPUT')return;var k=b.dataset.s,v=b.dataset.v;
+  if(k==='open'){sheet=sheet===true?false:true}else if(k==='filters'){sheet=sheet==='f'?false:'f'}else if(k==='pf'){me[b.dataset.k]=v;save()}else if(k==='fw'){f.w=v}else if(k==='fe'){f.e=v}else if(k==='fclear'){f.w='All';f.e='All'}else if(k==='close'){sheet=false}else if(k==='profile'){sheet=false;tab='me';openId=null}else if(k==='rmpic'){delete me.photo}else if(k==='rsvp'){rsvp[v]=!rsvp[v]}else if(k==='evform'){evForm=!evForm;evErr='';evDraft={}}else if(k==='evdel'){myEv=myEv.filter(function(x){return x.id!==v});delete rsvp[v]}else if(k==='evsave'){if(!saveEvent())return}
+  else if(k==='reset'){try{localStorage.removeItem('bb1')}catch(x){}location.reload();return}
+  else if(v==='toggle'){cfg[k]=!cfg[k]}else{cfg[k]=v;if(k==='theme')applyTheme()}
+  render()});
+document.addEventListener('input',function(e){if(e.target.dataset&&e.target.dataset.s==='maxd'){cfg.maxd=+e.target.value;document.getElementById('dv').textContent=dist(cfg.maxd);save()}});
+function renderSheet(){var sh=$('#sheet');if(!sh)return;var was=sh.dataset.open==='1',pn=sh.querySelector('.panel'),st=pn?pn.scrollTop:0;sh.hidden=!sheet;sh.dataset.open=sheet?'1':'0';if(!sheet){sh.innerHTML='';return}sh.innerHTML='<div class="scrim" data-s="close"></div><div class="panel'+(was?'':' in')+'">'+(sheet==='f'?filtersView():settingsView())+'</div>';sh.querySelector('.panel').scrollTop=st}
+function av(sm){return '<i class="pav'+(sm?' sm':'')+'">'+(me.photo?'<img alt="" src="'+me.photo+'">':esc((me.n||'?')[0].toUpperCase()))+'</i>'}
+function photoHtml(){return '<div class="pp">'+av()+'<label class="btn" style="margin:0">'+(me.photo?'Change photo':'Add photo')+'<input type="file" id="pic" accept="image/*" hidden></label>'+(me.photo?'<button class="back-btn" data-s="rmpic">Remove</button>':'')+'</div>'+(picErr?'<p class="err" role="alert">'+picErr+'</p>':'')}
+function profRow(){return '<div class="group" style="margin-top:14px"><button class="srow link" data-s="profile"><span style="display:flex;align-items:center;gap:12px;color:var(--ink);font-size:16px;font-weight:600">'+av(1)+esc(me.n||'Set up your profile')+'</span></button></div>'}
+var evDraft={},evErr='',picErr='';
+function evFormHtml(){var q=function(t){return esc(t||'').replace(/"/g,'&quot;')};return '<div class="group" style="padding:14px 16px;margin-bottom:12px"><label class="meta" style="display:block">Meetup name<input id="evn" class="fld" value="'+q(evDraft.n)+'" placeholder="Sparring night"'+(evErr?' aria-invalid="true"':'')+'></label><label class="meta" style="display:block;margin-top:10px">Where<select id="evw" class="fld">'+GYMS.map(function(g){return '<option'+(g.n===evDraft.w?' selected':'')+'>'+g.n+'</option>'}).join('')+'<option'+(evDraft.w==='Other location'?' selected':'')+'>Other location</option></select></label><div style="display:flex;gap:8px"><label class="meta" style="flex:1;margin-top:10px">Date<input id="evd" type="date" class="fld" value="'+(evDraft.d||new Date().toISOString().slice(0,10))+'"></label><label class="meta" style="flex:1;margin-top:10px">Time<input id="evt" type="time" class="fld" value="'+(evDraft.t||'')+'"></label></div>'+'<label class="meta" style="display:block;margin-top:10px">Cover photo (optional, cropped to a 640 by 640 square)<input id="evcov" type="file" accept="image/*" class="fld"></label>'+(evDraft.cov?'<img class="cov" alt="Cover preview" src="'+evDraft.cov+'">':'')+(evErr?'<p class="err" role="alert">'+evErr+'</p>':'')+'<button class="btn" data-s="evsave">Save meetup</button></div>'}
+function saveEvent(){var g=function(i){return document.getElementById(i)},n=g('evn').value.trim(),d=g('evd').value,t=g('evt').value;evDraft={n:n,w:g('evw').value,d:d,t:t,cov:evDraft.cov};if(!n){evErr='Give your meetup a name.';render();return false}if(!d){evErr='Pick a date for your meetup.';render();return false}var dt=new Date(d+'T'+(t||'12:00')),ds=dt.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})+(t?' at '+dt.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):''),id='u'+Date.now();myEv.unshift({id:id,n:n,w:g('evw').value,d:ds,c:0,cov:evDraft.cov||''});rsvp[id]=true;evForm=false;evErr='';evDraft={};return true}
+document.addEventListener('change',function(e){if(e.target.id!=='pic')return;var fl=e.target.files[0];if(!fl)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement('canvas'),k=Math.min(1,480/Math.max(im.width,im.height));c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);me.photo=c.toDataURL('image/jpeg',.8);picErr='';render()};im.onerror=function(){picErr='That file could not be read as a photo. Try a JPG or PNG.';render()};im.src=r.result};r.onerror=function(){picErr='That file could not be read. Try another photo.';render()};r.readAsDataURL(fl)});
+document.addEventListener('change',function(e){if(e.target.id!=='evcov')return;var fl=e.target.files[0];if(!fl)return;var keep=function(){var n=document.getElementById('evn'),w=document.getElementById('evw'),d=document.getElementById('evd'),t=document.getElementById('evt');evDraft.n=n?n.value:evDraft.n;evDraft.w=w?w.value:evDraft.w;evDraft.d=d?d.value:evDraft.d;evDraft.t=t?t.value:evDraft.t};keep();var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var S=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=640;c.getContext('2d').drawImage(im,(im.width-S)/2,(im.height-S)/2,S,S,0,0,640,640);evDraft.cov=c.toDataURL('image/jpeg',.8);evErr='';render()};im.onerror=function(){evErr='That file could not be read as a photo. Try a JPG or PNG.';render()};im.src=r.result};r.onerror=function(){evErr='That file could not be read. Try another photo.';render()};r.readAsDataURL(fl)});
+var msgQ='',typing={},info=false;
+function ago(ts){if(!ts)return '';var m=Math.max(0,Math.round((Date.now()-ts)/60000));if(m<1)return 'now';if(m<60)return m+'m';var h=Math.round(m/60);if(h<24)return h+'h';return Math.round(h/24)+'d'}
+function tsl(ts){var d=new Date(ts),t=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});return d.toDateString()===new Date().toDateString()?t:d.toLocaleDateString([],{weekday:'short'})+' '+t}
+function lastOf(id){var c=chats[id]||[];return c[c.length-1]||{t:''}}
+function avt(p,sz){return '<span class="av'+(sz?' '+sz:'')+'" style="background:'+col(p)+'">'+ini(p)+'</span>'}
+function convoRows(){
+  if(!matches.length)return '<div class="empty"><h2>No messages yet</h2><p>Swipe right on a boxer. If they want to spar too, you can message them here.</p></div>';
+  var q=msgQ.trim().toLowerCase();
+  var ids=matches.filter(function(id){return !q||D[id-1].n.toLowerCase().indexOf(q)>=0}).sort(function(a,b){return (lastOf(b).ts||0)-(lastOf(a).ts||0)});
+  if(!ids.length)return '<p class="note">No boxers found for '+esc(msgQ)+'.</p>';
+  return ids.map(function(id){var p=D[id-1],l=lastOf(id),un=unread[id];return '<button class="dm'+(un?' un':'')+'" data-chat="'+id+'">'+avt(p)+'<span class="dmt"><b>'+p.n+'</b><span class="sub"><span class="pv">'+(l.me?'You: ':'')+esc(l.t)+'</span><span class="tm">'+ago(l.ts)+'</span></span></span>'+(un?'<i class="ud" aria-label="Unread"></i>':'')+'</button>'}).join('');
+}
+function newRow(){
+  var ids=matches.filter(function(id){return (chats[id]||[]).every(function(m){return !m.me})});
+  if(!ids.length)return '';
+  return '<p class="sh" style="margin:2px 6px 8px">New matches</p><div class="story">'+ids.map(function(id){var p=D[id-1];return '<button class="st" data-chat="'+id+'"><span class="ring'+(unread[id]?' on':'')+'">'+avt(p,'lg')+'</span><span>'+p.n.split(' ')[0]+'</span></button>'}).join('')+'</div>';
+}
+function sessHtml(){if(!sess.length)return '';return '<p class="sh">Booked sessions</p>'+sess.map(function(x){var p=D[x.id-1];return '<div class="gym"><b>'+p.n+'</b><p class="meta">'+x.t+' at '+p.gym+'</p></div>'}).join('')}
+function matchList(){
+  return '<h2 class="big" style="margin-bottom:12px">Messages</h2><label class="sq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="msq" placeholder="Search" aria-label="Search messages" value="'+esc(msgQ).replace(/"/g,'&quot;')+'"></label>'+newRow()+'<div id="mlist">'+convoRows()+'</div>'+sessHtml();
+}
+function chatView(){
+  var p=D[openId-1],c=chats[openId],lastMe=-1,i;
+  for(i=c.length-1;i>=0;i--){if(c[i].me){lastMe=i;break}}
+  var h='<div class="ch"><button class="ic" id="back" aria-label="Back to messages"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>'+avt(p,'sm')+'<span class="cht"><b>'+p.n+'</b><span>'+p.gym+'</span></span><button class="ic" data-act="info" aria-label="Book a session" aria-expanded="'+info+'"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button></div>';
+  if(info)h+='<div class="group" style="padding:12px 14px;margin-bottom:8px">'+chatTools(p)+'</div>';
+  h+='<div class="chat"><div class="msgs" id="msgs">';
+  c.forEach(function(m,j){
+    var pr=c[j-1],nx=c[j+1];
+    if(m.ts&&(!pr||!pr.ts||m.ts-pr.ts>10800000))h+='<p class="tsl">'+tsl(m.ts)+'</p>';
+    if(m.me)h+='<div class="mr me"><div class="m me">'+esc(m.t)+'</div></div>';
+    else h+='<div class="mr">'+((!nx||nx.me)?avt(p,'xs'):'<span class="avs"></span>')+'<div class="m">'+esc(m.t)+'</div></div>';
+  });
+  if(typing[openId])h+='<div class="mr">'+avt(p,'xs')+'<div class="m" aria-label="Typing"><span class="td"></span><span class="td"></span><span class="td"></span></div></div>';
+  else if(lastMe>=0)h+='<p class="seen">'+(lastMe<c.length-1?'Seen':'Sent')+'</p>';
+  return h+'</div><div class="send"><input id="txt" placeholder="Message..." aria-label="Message"><button id="send">Send</button></div></div>';
+}
+var seeded=false;
+function seed(){
+  if(seeded||matches.length)return;
+  var T=Date.now(),M=60000;
+  var S=[
+   [9,[{t:'Hey! Quick question, do you spar southpaw or orthodox?',ts:T-300*M}],0],
+   [17,[{t:'I saw you like high-output rounds too. Down to try Thursday?',ts:T-8*M}],1],
+   [12,[{t:'Matched! Which gym do you usually train at?',ts:T-300*M},{t:'TITLE in Marlborough. You?',me:1,ts:T-280*M},{t:'Upperkuts in Ashland, so we are close. Want to trade rounds next week?',ts:T-45*M}],1],
+   [1,[{t:'Hey, saw you want a training partner too. Technical sparring, light to medium is what I am after.',ts:T-1500*M},{t:'Same here. I am usually free Tuesday evenings.',me:1,ts:T-1480*M},{t:'Tuesday at 7 works for me. Technical pace, 60 to 70 percent?',ts:T-1440*M}],1],
+   [11,[{t:'Hey, good to match. What level are you at right now?',ts:T-3000*M},{t:'Intermediate, about two years in.',me:1,ts:T-2990*M},{t:'Perfect. Bring a mouthguard and your own wraps.',ts:T-2900*M},{t:'Will do. See you Friday.',me:1,ts:T-2880*M}],0]
+  ];
+  S.forEach(function(x){D[x[0]-1].done=1;matches.push(x[0]);chats[x[0]]=x[1];if(x[2])unread[x[0]]=1});
+  seeded=true;
+}
+document.addEventListener('input',function(e){if(e.target.id!=='msq')return;msgQ=e.target.value;var l=document.getElementById('mlist');if(l){l.innerHTML=convoRows();bind()}});
+document.addEventListener('keydown',function(e){if(tab==='discover'&&!sheet&&!$('#txt')&&e.target.tagName!=='SELECT'){if(e.key==='ArrowRight')decide(1);if(e.key==='ArrowLeft')decide(-1)}});
+load();seed();applyTheme();
+render();
+</script>
+</body>
+</html>
