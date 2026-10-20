@@ -6,7 +6,7 @@
 <title>Boxing Buddies</title>
 <meta name="theme-color" content="#101011"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <style>
 /* ============ BOXING BUDDIES DESIGN SYSTEM ============
    1 Tokens  2 Base  3 Type  4 Icons  5 Components  6 Screens  7 Motion/a11y */
@@ -25,7 +25,7 @@
   --sh-2:0 10px 30px rgba(0,0,0,.18);
   --bw:1px;--ring:inset 0 0 0 1px var(--field);--ring-soft:inset 0 0 0 1px var(--line);
   /* type */
-  --font:"Plus Jakarta Sans",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font:"Figtree",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
   --t-cap:12px;--t-sm:14px;--t-md:16px;--t-lg:18px;--t-xl:22px;--t-2xl:28px;
   --w-body:500;--w-label:600;--w-strong:700;--w-display:800;
   /* space (4pt grid) */
@@ -386,6 +386,12 @@ main.enter{animation:fade .16s ease-out}
 .field>.filebtn{display:flex;width:max-content}
 .field-row{margin-top:var(--s-4)}.field-row>.field{margin-top:0}
 .srow.col input[type=range]{margin-top:0}
+
+/* 11 names regular weight, dark gradient background */
+.who h2,.who h2 small,.dmt b,.dm.un .dmt b,.cht b,.hd h2,.hd h2 small,.psum h2,.st span,.box.pad>b,.big small{font-weight:500}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #app{background:linear-gradient(180deg,#1D1D20 0%,#0D0D0E 50%,#000 100%)}}
+:root[data-theme="dark"] #app{background:linear-gradient(180deg,#1D1D20 0%,#0D0D0E 50%,#000 100%)}
+.mono,.mono .ini,.av,.pav,.ring .av{font-weight:500}
 </style>
 </head>
 <body>
@@ -426,23 +432,24 @@ var D=[
 {id:24,n:"Marco G.",a:36,w:"Welterweight",exp:"Advanced",h:"5ft 10",st:"Southpaw",gym:"Lowell Boxing Club",d:23,goal:"Rounds with someone who moves",av:"Friday evenings",v:1,likes:0,hue:168}
 ];
 var GYMS=[
-{n:"TITLE Boxing Club Marlborough",addr:"43 A Apex Dr, Marlborough, MA",mi:2},
-{n:"Upperkuts Boxing",addr:"40 Summer St, Ashland, MA",mi:8},
-{n:"Bancroft Boxing Gym",addr:"12 Walnut St, Natick, MA",mi:11},
-{n:"Box 2 Burn",addr:"174 Littleton Rd, Westford, MA",mi:17},
-{n:"Camp Get Right Boxing Gym",addr:"376 W Boylston St, Worcester, MA",mi:13},
-{n:"33 Boxing Club",addr:"1017 Southbridge St, Worcester, MA",mi:16},
-{n:"STC Boxing & Fitness",addr:"20 Clematis Ave, Waltham, MA",mi:18},
-{n:"Nonantum Boxing Club",addr:"75 Adams St, Newton, MA",mi:18},
-{n:"Lowell Boxing Club",addr:"6 Progress Ave, Tyngsborough, MA",mi:23},
-{n:"Underground Boxing 978",addr:"1595 Lakeview Ave, Dracut, MA",mi:25}
+{n:"TITLE Boxing Club Marlborough",addr:"43 A Apex Dr, Marlborough, MA",lat:42.3459,lng:-71.5523,mi:2},
+{n:"Upperkuts Boxing",addr:"40 Summer St, Ashland, MA",lat:42.261,lng:-71.4634,mi:8},
+{n:"Bancroft Boxing Gym",addr:"12 Walnut St, Natick, MA",lat:42.2837,lng:-71.3495,mi:11},
+{n:"Box 2 Burn",addr:"174 Littleton Rd, Westford, MA",lat:42.5792,lng:-71.4378,mi:17},
+{n:"Camp Get Right Boxing Gym",addr:"376 W Boylston St, Worcester, MA",lat:42.2626,lng:-71.8023,mi:13},
+{n:"33 Boxing Club",addr:"1017 Southbridge St, Worcester, MA",lat:42.2626,lng:-71.8023,mi:16},
+{n:"STC Boxing & Fitness",addr:"20 Clematis Ave, Waltham, MA",lat:42.3765,lng:-71.2356,mi:18},
+{n:"Nonantum Boxing Club",addr:"75 Adams St, Newton, MA",lat:42.337,lng:-71.2092,mi:18},
+{n:"Lowell Boxing Club",addr:"6 Progress Ave, Tyngsborough, MA",lat:42.6728,lng:-71.4245,mi:23},
+{n:"Underground Boxing 978",addr:"1595 Lakeview Ave, Dracut, MA",lat:42.6704,lng:-71.3017,mi:25}
 ];
+var TOWNS=[{n:"Marlborough, MA",lat:42.3459,lng:-71.5523},{n:"Hudson, MA",lat:42.3918,lng:-71.5667},{n:"Southborough, MA",lat:42.3059,lng:-71.5242},{n:"Northborough, MA",lat:42.3195,lng:-71.6412},{n:"Westborough, MA",lat:42.2695,lng:-71.6162},{n:"Shrewsbury, MA",lat:42.2959,lng:-71.7128},{n:"Worcester, MA",lat:42.2626,lng:-71.8023},{n:"Framingham, MA",lat:42.2793,lng:-71.4162},{n:"Ashland, MA",lat:42.261,lng:-71.4634},{n:"Hopkinton, MA",lat:42.2287,lng:-71.5226},{n:"Milford, MA",lat:42.1398,lng:-71.5162},{n:"Franklin, MA",lat:42.0834,lng:-71.3967},{n:"Sudbury, MA",lat:42.3834,lng:-71.4162},{n:"Stow, MA",lat:42.4373,lng:-71.5148},{n:"Maynard, MA",lat:42.4334,lng:-71.4495},{n:"Acton, MA",lat:42.4851,lng:-71.4328},{n:"Concord, MA",lat:42.4604,lng:-71.3489},{n:"Westford, MA",lat:42.5792,lng:-71.4378},{n:"Chelmsford, MA",lat:42.5998,lng:-71.3673},{n:"Lowell, MA",lat:42.6334,lng:-71.3162},{n:"Tyngsborough, MA",lat:42.6728,lng:-71.4245},{n:"Dracut, MA",lat:42.6704,lng:-71.3017},{n:"Andover, MA",lat:42.6584,lng:-71.137},{n:"Lawrence, MA",lat:42.707,lng:-71.1631},{n:"Haverhill, MA",lat:42.7762,lng:-71.0773},{n:"Leominster, MA",lat:42.5251,lng:-71.7598},{n:"Fitchburg, MA",lat:42.5834,lng:-71.8023},{n:"Natick, MA",lat:42.2837,lng:-71.3495},{n:"Wellesley, MA",lat:42.2968,lng:-71.2924},{n:"Newton, MA",lat:42.337,lng:-71.2092},{n:"Waltham, MA",lat:42.3765,lng:-71.2356},{n:"Watertown, MA",lat:42.3709,lng:-71.1828},{n:"Lexington, MA",lat:42.4473,lng:-71.2245},{n:"Burlington, MA",lat:42.5048,lng:-71.1956},{n:"Woburn, MA",lat:42.4793,lng:-71.1523},{n:"Cambridge, MA",lat:42.3736,lng:-71.1097},{n:"Somerville, MA",lat:42.3876,lng:-71.0995},{n:"Medford, MA",lat:42.4184,lng:-71.1062},{n:"Malden, MA",lat:42.4251,lng:-71.0662},{n:"Boston, MA",lat:42.3601,lng:-71.0589},{n:"Dedham, MA",lat:42.2418,lng:-71.1662},{n:"Norwood, MA",lat:42.1945,lng:-71.1995},{n:"Quincy, MA",lat:42.2529,lng:-71.0023},{n:"Braintree, MA",lat:42.2057,lng:-71.0023},{n:"Brockton, MA",lat:42.0834,lng:-71.0184},{n:"Lynn, MA",lat:42.4668,lng:-70.9495},{n:"Salem, MA",lat:42.5195,lng:-70.8967},{n:"Taunton, MA",lat:41.9001,lng:-71.0898},{n:"Plymouth, MA",lat:41.9584,lng:-70.6673},{n:"Springfield, MA",lat:42.1015,lng:-72.5898},{n:"Nashua, NH",lat:42.7654,lng:-71.4676},{n:"Manchester, NH",lat:42.9956,lng:-71.4548},{n:"Providence, RI",lat:41.824,lng:-71.4128}];
 var REPLIES=['Sounds good to me. Which gym is easiest for you to get to?','Nice. Technical pace, around 60 to 70 percent?','Perfect. Bring a mouthguard and your own wraps.','Great, see you there. Message me if anything changes.'];
 var W=['All','Featherweight','Lightweight','Welterweight','Middleweight','Heavyweight'],E=['All','Beginner','Intermediate','Advanced'];
-var f={w:'All',e:'All'},tab='discover',openId=null,matches=[],chats={},me={n:'',a:'',w:'Welterweight',exp:'Intermediate',st:'Orthodox',gym:'TITLE Boxing Club Marlborough',goal:'',av:''},sess=[],rsvp={},rate={},blocked=[],cfg={theme:'dark',maxd:40,verified:false,units:'mi',nMatch:true,nMsg:true},sheet=false,unread={},myEv=[],evForm=false;
+var f={w:'All',e:'All'},tab='discover',openId=null,matches=[],chats={},me={n:'',a:'',w:'Welterweight',exp:'Intermediate',st:'Orthodox',gym:'TITLE Boxing Club Marlborough',goal:'',av:''},sess=[],rsvp={},rate={},blocked=[],cfg={loc:{name:'Marlborough, MA',lat:42.3459,lng:-71.5523,src:'town'},theme:'dark',maxd:40,verified:false,units:'mi',nMatch:true,nMsg:true},sheet=false,unread={},myEv=[],evForm=false;
 var saveFail=false;
 function save(q){try{localStorage.setItem('bb1',JSON.stringify({matches:matches,chats:chats,me:me,sess:sess,rsvp:rsvp,rate:rate,blocked:blocked,cfg:cfg,seeded:seeded,onb:onb,unread:unread,myEv:myEv,done:D.filter(function(p){return p.done}).map(function(p){return p.id})}));saveFail=false;return true}catch(e){if(!q&&!saveFail){setTimeout(function(){toast('Could not save on this device. Storage may be full or blocked.','err')},0)}if(!q)saveFail=true;return false}}
-function load(){try{var s=JSON.parse(localStorage.getItem('bb1')||'null');if(!s)return;onb=s.onb===undefined?0:s.onb;var A=function(x){return Array.isArray(x)?x:[]},O=function(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}},ok=function(i){return D.some(function(p){return p.id===i})};matches=A(s.matches).filter(ok);chats=O(s.chats);me=Object.assign(me,O(s.me));sess=A(s.sess);rsvp=O(s.rsvp);rate=O(s.rate);blocked=A(s.blocked);cfg=Object.assign(cfg,O(s.cfg));seeded=!!s.seeded;unread=O(s.unread);myEv=A(s.myEv).filter(function(v){return v&&v.id!==undefined&&typeof v.n==='string'});(s.done||[]).forEach(function(i){D[i-1].done=1})}catch(e){}}
+function load(){try{var s=JSON.parse(localStorage.getItem('bb1')||'null');if(!s)return;onb=s.onb===undefined?0:s.onb;var A=function(x){return Array.isArray(x)?x:[]},O=function(x){return x&&typeof x==='object'&&!Array.isArray(x)?x:{}},ok=function(i){return D.some(function(p){return p.id===i})};matches=A(s.matches).filter(ok);chats=O(s.chats);me=Object.assign(me,O(s.me));sess=A(s.sess);rsvp=O(s.rsvp);rate=O(s.rate);blocked=A(s.blocked);cfg=Object.assign(cfg,O(s.cfg));if(!cfg.loc||typeof cfg.loc.lat!=='number'||typeof cfg.loc.lng!=='number'||typeof cfg.loc.name!=='string')cfg.loc={name:'Marlborough, MA',lat:42.3459,lng:-71.5523,src:'town'};seeded=!!s.seeded;unread=O(s.unread);myEv=A(s.myEv).filter(function(v){return v&&v.id!==undefined&&typeof v.n==='string'});(s.done||[]).forEach(function(i){D[i-1].done=1})}catch(e){}}
 var $=function(s){return document.querySelector(s)};
 function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
 function pool(){return D.filter(function(p){return !p.done&&blocked.indexOf(p.id)<0&&p.d<=cfg.maxd&&(!cfg.verified||p.v)&&(f.w==='All'||p.w===f.w)&&(f.e==='All'||p.exp===f.e)}).sort(function(a,b){return score(b)-score(a)})}
@@ -455,11 +462,13 @@ function card(p,back){
 }
 function discover(){
   var q=pool(),h='<div class="disc">';
+  if(!q.length&&!D.some(function(p){return !p.done&&blocked.indexOf(p.id)<0&&p.d<=cfg.maxd})&&D.some(function(p){return !p.done&&blocked.indexOf(p.id)<0})){return h+'<div class="empty">'+emptyArt()+'<h2>No boxers within '+dist(cfg.maxd)+'</h2><p>Nobody is that close to '+esc(locLabel())+'. This prototype only has sample boxers around Marlborough, MA. Try a bigger radius or another location.</p><div class="btn-row"><button class="btn btn-sec" data-s="loc">Change location</button><button class="btn" data-s="filters">Open filters</button></div></div></div>'}
   if(!q.length){return h+'<div class="empty">'+emptyArt()+'<h2>You have seen everyone nearby</h2><p>Try a wider distance or weight class to find more training partners.</p><div class="btn-row"><button class="btn btn-sec" data-s="filters">Open filters</button><button class="btn" id="reset">Reset filters</button></div></div></div>'}
   return h+'<div class="stack">'+(q[1]?card(q[1],1):'')+card(q[0])+'</div><div class="actions"><div class="act-col"><button class="ibtn lg" id="pass" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>Pass</div><div class="act-col"><button class="ibtn lg pri" id="spar" aria-label="Spar"><svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg></button>Spar</div></div></div>';
 }
 function gyms(){
-  return eventsHtml()+'<h2 class="sech">Gyms near Marlborough</h2>'+GYMS.slice().sort(function(a,b){return a.mi-b.mi}).map(function(g){return '<div class="box pad gym-row"><div><h3>'+g.n+'</h3><p class="meta">'+g.addr+'</p><p class="meta">'+dist(g.mi)+' from Marlborough</p></div><a class="btn btn-sec btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(g.n+' '+g.addr)+'" aria-label="Directions to '+g.n+'">Directions</a></div>'}).join('')+'<p class="note">Check with each gym for sparring and class times.</p>';
+  var gl=GYMS.filter(function(g){return g.mi<=cfg.maxd}).sort(function(a,b){return a.mi-b.mi});
+  return eventsHtml()+'<h2 class="sech">Gyms near '+esc(locLabel())+'</h2>'+(gl.length?gl.map(function(g){return '<div class="box pad gym-row"><div><h3>'+g.n+'</h3><p class="meta">'+g.addr+'</p><p class="meta">About '+dist(g.mi)+' away</p></div><a class="btn btn-sec btn-sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(g.n+' '+g.addr)+'" aria-label="Directions to '+g.n+'">Directions</a></div>'}).join(''):'<div class="box pad"><p class="meta">No gyms within '+dist(cfg.maxd)+' of '+esc(locLabel())+'. This prototype only has sample gyms around Marlborough, MA.</p><div class="btn-row mt-3"><button class="btn btn-sec" data-s="loc">Change location</button></div></div>')+'<p class="note">Check with each gym for sparring and class times.</p>';
 }
 function render(){try{renderApp()}catch(e){console.error(e);fatal()}}
 function fatal(){var m=$('#main');if(!m)return;var h=$('header');if(h)h.hidden=true;m.innerHTML='<div class="fatal"><h2>Something went wrong</h2><p>The app hit an unexpected error. Your data is still on this device. Reload to try again.</p><button class="btn btn-block" id="fre">Reload</button><button class="btn btn-sec btn-block" id="frs">Reset demo data</button></div>';$('#fre').onclick=function(){location.reload()};$('#frs').onclick=function(){try{localStorage.removeItem('bb1')}catch(x){}location.reload()}}
@@ -548,15 +557,45 @@ function meView(){var p=pct();
   +'<p class="note">Saved on this device only. Real accounts come next.</p>'}
 function onbView(){
   var st=onb,top=function(back){return '<div class="onb-top">'+(back?'<button class="ibtn" data-s="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':'')+'<span class="wordmark">Boxing Buddies</span><button class="btn btn-ghost btn-sm" data-s="oskip">Skip</button></div><div class="steps" role="img" aria-label="Step '+(st-1)+' of 2"><i class="on"></i><i'+(st>2?' class="on"':'')+'></i></div>'};
-  if(st===1)return '<div class="onb"><div class="onb-art">'+ropes()+'</div><div class="onb-body"><span class="wordmark">Boxing Buddies</span><h1>Find someone to spar with.</h1><p>Match with boxers near Marlborough who train at your level, then book a session at a real gym.</p><ul class="pts"><li><span><b>Ranked by fit.</b> Weight class, experience and distance decide who you see first.</span></li><li><span><b>Real gyms.</b> Ten boxing gyms within 40 miles of Marlborough.</span></li><li><span><b>Plan it in chat.</b> Agree on a time, book the session, add it to your calendar.</span></li></ul></div><div class="onb-cta"><button class="btn btn-block" data-s="onext">Get started</button><button class="btn btn-ghost btn-block" data-s="oskip">Look around first</button></div></div>';
+  if(st===1)return '<div class="onb"><div class="onb-art">'+ropes()+'</div><div class="onb-body"><span class="wordmark">Boxing Buddies</span><h1>Find someone to spar with.</h1><p>Match with boxers near you who train at your level, then book a session at a real gym.</p><ul class="pts"><li><span><b>Ranked by fit.</b> Weight class, experience and distance decide who you see first.</span></li><li><span><b>Real gyms.</b> Sample gyms and boxers around Marlborough, MA. Set your own location and radius any time.</span></li><li><span><b>Plan it in chat.</b> Agree on a time, book the session, add it to your calendar.</span></li></ul></div><div class="onb-cta"><button class="btn btn-block" data-s="onext">Get started</button><button class="btn btn-ghost btn-block" data-s="oskip">Look around first</button></div></div>';
   if(st===2)return '<div class="onb">'+top(1)+'<div class="onb-body"><h1>How do you box?</h1><p>We use this to rank partners by fit. You can change it any time.</p>'+fieldHtml('n','Your name')+chipGroup('w','Weight class',W.slice(1))+chipGroup('exp','Experience',E.slice(1))+chipGroup('st','Stance',['Orthodox','Southpaw'])+'</div><div class="onb-cta"><button class="btn btn-block" data-s="onext">Continue</button></div></div>';
-  return '<div class="onb">'+top(1)+'<div class="onb-body"><h1>Where do you train?</h1><p>Pick your home gym. Boxers who train close to you rank higher.</p>'+gymList()+fieldHtml('av','When are you free?','text','e.g. Tue and Thu evenings')+'</div><div class="onb-cta"><button class="btn btn-block" data-s="odone">Start sparring</button></div></div>';
+  return '<div class="onb">'+top(1)+'<div class="onb-body"><h1>Where do you train?</h1><p>Set where you live and how far you will travel, then pick your home gym. Closer boxers rank higher.</p><p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-s="loc"><div><b>'+esc(cfg.loc.name)+'</b><span>Within '+dist(cfg.maxd)+'</span></div></button></div><p class="field-l mt-3">Home gym</p>'+gymList()+fieldHtml('av','When are you free?','text','e.g. Tue and Thu evenings')+'</div><div class="onb-cta"><button class="btn btn-block" data-s="odone">Start sparring</button></div></div>';
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,id=+b.dataset.id;if(a==='book'){var p=D[openId-1],t=document.getElementById('slot').value;if(sess.some(function(x){return x.id===openId&&x.t===t})){toast('You already booked '+t+' with '+p.n.split(' ')[0],'err');return}sess.push({id:openId,t:t});chats[openId].push({t:'Session booked for '+t+' at '+p.gym+'. See you there.',me:1});toast('Session booked')}else if(a==='rate'){rate[openId]=id}else if(a==='block'){var bid=openId,bn=D[bid-1].n;confirmDlg({title:'Block '+bn+'?',body:'You will no longer see each other in Discover or Messages. Resetting demo data brings them back.',yes:'Block',danger:1,fn:function(){blocked.push(bid);info=false;matches=matches.filter(function(m){return m!==bid});openId=null;render();toast(bn+' blocked')}});return}else if(a==='info'){info=!info}else if(a==='rsvp'){rsvp[id]=!rsvp[id];toast(rsvp[id]?'You are going':'RSVP cancelled')}else if(a==='reset'){resetAsk();return}render()});
 document.addEventListener('click',function(e){var b=e.target.closest('[data-q]');if(!b)return;var t=$('#txt');if(!t)return;t.value=b.dataset.q;t.focus();var sb=$('#send');if(sb)sb.disabled=false});
 document.addEventListener('change',function(e){var el=e.target,k=el.dataset&&el.dataset.f;if(!k)return;var msg='';if(k==='a'&&el.value!==''){var n=+el.value;if(!(n>=16&&n<=80&&n===Math.floor(n)))msg='Enter a whole number from 16 to 80.'}if(k==='n'&&el.value.length>30)msg='Keep your name under 30 characters.';var nx=el.nextElementSibling;if(nx&&nx.classList.contains('field-err'))nx.remove();if(msg){el.setAttribute('aria-invalid','true');var p=document.createElement('p');p.className='field-err';p.setAttribute('role','alert');p.textContent=msg;el.insertAdjacentElement('afterend',p)}else{el.removeAttribute('aria-invalid')}});
 document.addEventListener('input',function(e){var k=e.target.dataset&&e.target.dataset.f;if(k){me[k]=e.target.value;if(e.target.getAttribute('aria-invalid')){e.target.removeAttribute('aria-invalid');var nx=e.target.nextElementSibling;if(nx&&nx.classList.contains('field-err'))nx.remove()}save()}});
 var ICON={discover:'<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 15h6"/></svg>',matches:'<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></svg>',gyms:'<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'};
+function hav(a,b,c,d){var t=Math.PI/180,x=(c-a)*t,y=(d-b)*t,q=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)*Math.sin(y/2);return 3958.8*2*Math.asin(Math.sqrt(q))}
+function recalc(){var L=cfg.loc;GYMS.forEach(function(g){g.mi=Math.max(1,Math.round(hav(L.lat,L.lng,g.lat,g.lng)))});D.forEach(function(p){for(var i=0;i<GYMS.length;i++){if(GYMS[i].n===p.gym){p.d=GYMS[i].mi;break}}})}
+function nearTown(lat,lng){var b=null,bd=1e9;TOWNS.forEach(function(t){var d=hav(lat,lng,t.lat,t.lng);if(d<bd){bd=d;b=t}});return {t:b,d:bd}}
+function locLabel(){return cfg.loc.name==='Current location'?'your location':cfg.loc.name}
+var locBack=false,locBusy=false,locMsg='',locMsgErr=false;
+function locRows(q){q=(q||'').trim().toLowerCase();var rows=TOWNS.filter(function(t){return !q||t.n.toLowerCase().indexOf(q)>=0});if(!rows.length)return '<p class="note">No towns match "'+esc(q)+'". Try another spelling, or use your current location.</p>';return rows.map(function(t){var i=TOWNS.indexOf(t),on=cfg.loc.src==='town'&&cfg.loc.name===t.n;return '<button class="srow opt" role="radio" aria-checked="'+on+'" data-s="locpick" data-v="'+i+'"><span>'+t.n+'</span>'+(on?'<span class="chk" aria-hidden="true">&#10003;</span>':'')+'</button>'}).join('')}
+function locationView(){
+  return '<button class="btn btn-sec btn-sm sheet-done" data-s="locback">Done</button><h2 class="big">Location</h2><p class="meta mt-2">Current: <b>'+esc(cfg.loc.name)+'</b></p>'
+  +'<button class="btn btn-sec btn-block mt-3'+(locBusy?' is-loading':'')+'" id="locgps" data-s="locgps"'+(locBusy?' disabled aria-busy="true"':'')+'>'+(locBusy?'Finding you':'Use my current location')+'</button>'
+  +'<p class="'+(locMsgErr?'field-err':'help')+'" id="locmsg" role="status" aria-live="polite">'+esc(locMsg)+'</p>'
+  +'<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="100" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search radius"></div></div>'
+  +'<p class="eyebrow">Or pick a town</p><label class="sq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="locq" placeholder="Search towns" aria-label="Search towns" autocomplete="off"></label>'
+  +'<div class="box" id="loclist" role="radiogroup" aria-label="Town">'+locRows('')+'</div>'
+  +'<p class="note">Distances are approximate, measured in a straight line from the middle of your town to each gym. Your location stays on this device.</p>';
+}
+function locGps(){
+  if(locBusy)return;
+  if(!navigator.geolocation){locMsg='This browser cannot share your location. Pick a town below instead.';locMsgErr=true;render();return}
+  locBusy=true;locMsg='';locMsgErr=false;render();
+  navigator.geolocation.getCurrentPosition(function(pos){
+    locBusy=false;var la=Math.round(pos.coords.latitude*100)/100,ln=Math.round(pos.coords.longitude*100)/100,n=nearTown(la,ln);
+    cfg.loc={name:(n.d<=40?'Near '+n.t.n:'Current location'),lat:la,lng:ln,src:'gps'};recalc();
+    locMsg=n.d<=40?'':'You are far from the sample gyms, so few or no results will show. This prototype only has sample boxers and gyms around Marlborough, MA.';locMsgErr=false;
+    save();render();toast('Location updated');
+  },function(err){
+    locBusy=false;locMsgErr=true;
+    locMsg=err&&err.code===1?'Location access is blocked for this page. Allow it in your browser settings, or pick a town below.':err&&err.code===3?'Finding your location took too long. Try again, or pick a town below.':'Your location is not available right now. Pick a town below instead.';
+    render();
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:600000});
+}
 function dist(m){return cfg.units==='km'?Math.round(m*1.609)+' km':m+' mi'}
 function applyTheme(){var r=document.documentElement;if(cfg.theme==='system')delete r.dataset.theme;else r.dataset.theme=cfg.theme}
 function stats(p){var n=6+p.id*5%38,rt=(4.2+(p.id*7%8)/10).toFixed(1);return {n:n,rt:rt}}
@@ -569,13 +608,13 @@ function profileSheet(){var p=pool()[0];if(!p)return '<button class="btn btn-sec
 function icsFor(x){var p=D[x.id-1],m=/^(\w{3}) (\d+):(\d+)(am|pm)$/.exec(x.t),days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];if(!m)return '';var d=new Date(),h=+m[2]%12+(m[4]==='pm'?12:0);d.setHours(h,+m[3],0,0);var add=(days.indexOf(m[1])-d.getDay()+7)%7;if(add===0&&d<new Date())add=7;d.setDate(d.getDate()+add);var f2=function(t){return t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'T'+('0'+t.getHours()).slice(-2)+('0'+t.getMinutes()).slice(-2)+'00'},e=new Date(d.getTime()+3600000);return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Boxing Buddies//EN\r\nBEGIN:VEVENT\r\nUID:bb-'+x.id+'-'+d.getTime()+'@boxingbuddies\r\nDTSTAMP:'+f2(new Date())+'\r\nDTSTART:'+f2(d)+'\r\nDTEND:'+f2(e)+'\r\nSUMMARY:Sparring with '+p.n+'\r\nLOCATION:'+p.gym+'\r\nEND:VEVENT\r\nEND:VCALENDAR'}
 function filtersView(){
   var chips=function(k,o,val,all){return '<div class="chips">'+o.map(function(x){var on=x===val;return '<button class="chip" data-s="'+k+'" data-v="'+x+'" aria-pressed="'+on+'">'+(x==='All'?all:x)+'</button>'}).join('')+'</div>'};
-  return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button><h2 class="big">Filters</h2><p class="eyebrow">Weight class</p><div class="box"><div class="srow col">'+chips('fw',W,f.w,'All weights')+'</div></div><p class="eyebrow">Experience level</p><div class="box"><div class="srow col">'+chips('fe',E,f.e,'All levels')+'</div></div><p class="eyebrow">Distance</p><div class="box"><div class="srow col"><b>Search distance: <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="40" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search distance"></div></div><button class="btn btn-sec btn-block mt-4" data-s="fclear">Clear filters</button><button class="btn btn-block mt-2" id="fcount" data-s="close"'+(fcount()?'':' disabled')+'>'+fcountLabel()+'</button>';
+  return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button><h2 class="big">Filters</h2><p class="eyebrow">Weight class</p><div class="box"><div class="srow col">'+chips('fw',W,f.w,'All weights')+'</div></div><p class="eyebrow">Experience level</p><div class="box"><div class="srow col">'+chips('fe',E,f.e,'All levels')+'</div></div>'+'<p class="eyebrow">Location</p><div class="box"><button class="srow link" data-s="loc"><div><b>'+esc(cfg.loc.name)+'</b><span>Within '+dist(cfg.maxd)+'</span></div></button></div>'+'<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="100" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search radius"></div></div><button class="btn btn-sec btn-block mt-4" data-s="fclear">Clear filters</button><button class="btn btn-block mt-2" id="fcount" data-s="close"'+(fcount()?'':' disabled')+'>'+fcountLabel()+'</button>';
 }
 function settingsView(){
   var seg=function(k,o){return '<div class="seg">'+o.map(function(x){return '<button data-s="'+k+'" data-v="'+x[0]+'"'+(String(cfg[k])===x[0]?' aria-pressed="true"':'')+'>'+x[1]+'</button>'}).join('')+'</div>'};
   var tog=function(k,l,sub){return '<div class="srow"><div><b>'+l+'</b><span>'+sub+'</span></div><button class="sw" role="switch" aria-checked="'+cfg[k]+'" aria-label="'+l+'" data-s="'+k+'" data-v="toggle"></button></div>'};
   return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button><h2 class="big">Settings</h2>'+profRow()
-  +'<p class="eyebrow">Discovery</p><div class="box"><div class="srow col"><b>Search distance: <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="40" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search distance"></div>'+tog('verified','Verified boxers only','Hide profiles that are not verified')+'<div class="srow col"><b>Distance units</b>'+seg('units',[['mi','Miles'],['km','Kilometers']])+'</div></div>'
+  +'<p class="eyebrow">Discovery</p><div class="box"><button class="srow link" data-s="loc"><div><b>Location</b><span>'+esc(cfg.loc.name)+'</span></div></button><div class="srow col"><b>Radius: <em id="dv">'+dist(cfg.maxd)+'</em></b><input type="range" min="5" max="100" step="5" value="'+cfg.maxd+'" data-s="maxd" aria-label="Search radius"></div>'+tog('verified','Verified boxers only','Hide profiles that are not verified')+'<div class="srow col"><b>Distance units</b>'+seg('units',[['mi','Miles'],['km','Kilometers']])+'</div></div>'
   +'<p class="eyebrow">Appearance</p><div class="box"><div class="srow col"><b>Theme</b>'+seg('theme',[['system','System'],['light','Light'],['dark','Dark']])+'</div></div>'
   +'<p class="eyebrow">Notifications</p><div class="box">'+tog('nMatch','Match pop-ups','Show a pop-up when someone matches back')+tog('nMsg','Message alerts','Preview setting, real alerts come with the full app')+'</div>'
   +'<p class="eyebrow">Account</p><div class="box"><button class="srow link" data-s="profile">Edit my boxer profile</button><button class="srow link" data-s="replay">Replay intro</button><button class="srow link" data-s="reset">Reset demo data</button></div>'
@@ -583,17 +622,21 @@ function settingsView(){
 }
 document.addEventListener('click',function(e){var b=e.target.closest('[data-s]');if(!b||b.tagName==='INPUT')return;var k=b.dataset.s,v=b.dataset.v;
   if(k==='onext'){onb=Math.min(3,onb+1);save();render();$('#main').scrollTop=0;return}else if(k==='oback'){onb=Math.max(1,onb-1);save();render();$('#main').scrollTop=0;return}else if(k==='oskip'||k==='odone'){onb=0;tab='discover';save();if(k==='odone')toast('Profile saved');render();$('#main').scrollTop=0;return}else if(k==='replay'){sheet=false;onb=1;save();render();return}else if(k==='open'){sheet=sheet===true?false:true}else if(k==='filters'){sheet=sheet==='f'?false:'f'}else if(k==='ics'){var x=sess[+v],c=x&&icsFor(x);if(c){var a=document.createElement('a');a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(c);a.download='sparring-session.ics';document.body.appendChild(a);a.click();a.remove();toast('Calendar file ready')}return}else if(k==='psp'||k==='pss'){sheet=false;decide(k==='pss'?1:-1);return}else if(k==='pf'){me[b.dataset.k]=v;save()}else if(k==='fw'){f.w=v}else if(k==='fe'){f.e=v}else if(k==='fclear'){f.w='All';f.e='All'}else if(k==='close'){sheet=false}else if(k==='profile'){sheet=false;tab='me';openId=null}else if(k==='rmpic'){delete me.photo}else if(k==='rsvp'){rsvp[v]=!rsvp[v];toast(rsvp[v]?'You are going':'RSVP cancelled')}else if(k==='evform'){evForm=!evForm;evErr='';evDraft={}}else if(k==='evdel'){var ix=myEv.findIndex(function(x){return x.id===v}),gone=myEv[ix],rv=rsvp[v];if(ix<0)return;myEv.splice(ix,1);delete rsvp[v];render();toast('Meetup deleted',null,{label:'Undo',fn:function(){myEv.splice(Math.min(ix,myEv.length),0,gone);if(rv)rsvp[v]=rv;render()}});return}else if(k==='evsave'){if(evBusy||!saveEvent())return;toast('Meetup created')}
+  else if(k==='loc'){locBack=sheet||false;locMsg='';locMsgErr=false;sheet='l'}
+  else if(k==='locback'){sheet=locBack||false}
+  else if(k==='locgps'){locGps();return}
+  else if(k==='locpick'){var tw=TOWNS[+v];if(tw){cfg.loc={name:tw.n,lat:tw.lat,lng:tw.lng,src:'town'};recalc();locMsg='';locMsgErr=false;save();render();toast('Location set to '+tw.n);return}}
   else if(k==='reset'){resetAsk();return}
   else if(v==='toggle'){cfg[k]=!cfg[k]}else{cfg[k]=v;if(k==='theme')applyTheme()}
   render()});
-document.addEventListener('input',function(e){if(e.target.dataset&&e.target.dataset.s==='maxd'){cfg.maxd=+e.target.value;document.getElementById('dv').textContent=dist(cfg.maxd);save();var fc=document.getElementById('fcount');if(fc){fc.textContent=fcountLabel();fc.disabled=!fcount()}}});
+document.addEventListener('input',function(e){if(e.target.id==='locq'){var ll=document.getElementById('loclist');if(ll)ll.innerHTML=locRows(e.target.value);return}if(e.target.dataset&&e.target.dataset.s==='maxd'){cfg.maxd=+e.target.value;document.getElementById('dv').textContent=dist(cfg.maxd);save();var fc=document.getElementById('fcount');if(fc){fc.textContent=fcountLabel();fc.disabled=!fcount()}}});
 function renderSheet(){var sh=$('#sheet');if(!sh)return;var was=sh.dataset.open==='1',pn=sh.querySelector('.panel'),st=pn?pn.scrollTop:0,fk=was?focusKey(document.activeElement):'';
   if(!sheet){if(was){sh.dataset.open='0';sh.classList.add('out');var op=sheetOpener;setTimeout(function(){if(sheet)return;sh.hidden=true;sh.classList.remove('out');sh.innerHTML='';if(op)restoreFocus(op)},170)}return}
   if(!was)sheetOpener=focusKey(document.activeElement);
   sh.classList.remove('out');sh.hidden=false;sh.dataset.open='1';
-  sh.innerHTML='<div class="scrim" data-s="close"></div><div class="panel'+(was?'':' in')+'" role="dialog" aria-modal="true" aria-label="'+(sheet==='f'?'Filters':sheet==='p'?'Boxer profile':'Settings')+'">'+(sheet==='f'?filtersView():sheet==='p'?profileSheet():settingsView())+'</div>';
-  var np=sh.querySelector('.panel');np.scrollTop=st;
-  if(!was){var d=np.querySelector('.sheet-done');if(d)d.focus({preventScroll:true})}else if(fk){restoreFocus('#sheet '+fk)}}
+  sh.innerHTML='<div class="scrim" data-s="close"></div><div class="panel'+(was?'':' in')+'" role="dialog" aria-modal="true" aria-label="'+(sheet==='f'?'Filters':sheet==='p'?'Boxer profile':sheet==='l'?'Location':'Settings')+'">'+(sheet==='f'?filtersView():sheet==='p'?profileSheet():sheet==='l'?locationView():settingsView())+'</div>';
+  var np=sh.querySelector('.panel');var kind=String(sheet),swapped=was&&sh.dataset.kind&&sh.dataset.kind!==kind;sh.dataset.kind=kind;np.scrollTop=swapped?0:st;
+  if(!was){var d=np.querySelector('.sheet-done');if(d)d.focus({preventScroll:true})}else if(swapped){var d2=np.querySelector('.sheet-done');if(d2)d2.focus({preventScroll:true})}else if(fk){restoreFocus('#sheet '+fk)}}
 function av(sm){if(picBusy&&!sm)return '<i class="pav skeleton" role="img" aria-label="Loading photo"></i>';return '<i class="pav'+(sm?' sm':'')+'">'+(me.photo?'<img alt="" src="'+me.photo+'">':(me.n?esc(me.n[0].toUpperCase()):''))+'</i>'}
 function photoHtml(){return '<div class="pp">'+av()+'<label class="btn">'+(me.photo?'Change photo':'Add photo')+'<input type="file" id="pic" accept="image/*" hidden></label>'+(me.photo?'<button class="btn btn-ghost" data-s="rmpic">Remove</button>':'')+'</div>'+(picErr?'<p class="field-err" role="alert">'+picErr+'</p>':'')}
 function profRow(){return '<div class="box mt-3"><button class="srow link" data-s="profile"><span class="who-row">'+av(1)+esc(me.n||'Set up your profile')+'</span></button></div>'}
@@ -673,7 +716,7 @@ function seed(){
 }
 document.addEventListener('input',function(e){if(e.target.id!=='msq')return;msgQ=e.target.value;var l=document.getElementById('mlist');if(l){l.innerHTML=convoRows();bind()}});
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id&&/^ev[ndt]$/.test(e.target.id)){var sb=$('#evsaveb');if(sb)sb.click();return}if(tab==='discover'&&onb===0&&!sheet&&$('#modal').hidden&&!$('#txt')&&e.target.tagName!=='SELECT'&&e.target.tagName!=='INPUT'){if(e.key==='ArrowRight')decide(1);if(e.key==='ArrowLeft')decide(-1)}});
-load();seed();applyTheme();
+load();recalc();seed();applyTheme();
 render();
 </script>
 <script>if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
