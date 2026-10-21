@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Boxing Buddies</title>
-<meta name="theme-color" content="#110F0E"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D0E10"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
@@ -1055,7 +1055,7 @@ header h1::after{display:none}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D0E10;--card:#16181B;--surf:#1F2226;--surf2:#292D32;--line:#2E333A;--ink:#F4F1EC;--mute:#A4A9B1;--field:#6F7680;--on:#0D0E10;--ok:#70B49A;
 --ember-rgb:240 90 40;--glow-rgb:255 128 58;--steel-rgb:104 138 180;--hl:rgba(200,215,235,.08);
 --lit-base:linear-gradient(180deg,#14181D 0%,#0E1013 45%,#0B0C0E 100%);
---lit-tr:radial-gradient(70% 26% at 100% 0%,rgb(var(--glow-rgb)/calc(.36*var(--amb,.5))),transparent 72%);
+--lit-tr:radial-gradient(70% 26% at 100% 0%,rgb(var(--glow-rgb)/calc(.27*var(--amb,.5))),transparent 70%);
 --lit-bl:radial-gradient(65% 24% at 0% 100%,rgb(var(--glow-rgb)/calc(.26*var(--amb,.5))),transparent 72%);
 --lit-steel:linear-gradient(90deg,rgb(var(--steel-rgb)/calc(.34*var(--amb,.5))),transparent 18%),linear-gradient(0deg,rgb(var(--steel-rgb)/calc(.14*var(--amb,.5))),transparent 22%);
 --lit-streaks:repeating-linear-gradient(118deg,transparent 0 17px,rgb(var(--glow-rgb)/.4) 17px 18px,transparent 18px 41px),repeating-linear-gradient(111deg,transparent 0 9px,rgb(var(--glow-rgb)/.22) 9px 9.5px,transparent 9.5px 63px);
@@ -1067,11 +1067,11 @@ header h1::after{display:none}
 --surf-grad:linear-gradient(180deg,#1C1F23,#16181B 70%);
 --surf-key:linear-gradient(180deg,#22262B,#181A1E 70%);
 --g-primary:linear-gradient(180deg,#FF7A3E,#EC5222);
---sh-card:0 18px 34px -18px rgba(0,0,0,.85)}}
+--sh-card:0 18px 34px -18px rgba(0,0,0,.85);--gold:#E8B04A;--gold-l:#F2CB7E;--info:#6A9BD1;--info-l:#9DBFE6;--rose:#E08A7C;--mint:#9AD0BA}}
 :root[data-theme="dark"]{--bg:#0D0E10;--card:#16181B;--surf:#1F2226;--surf2:#292D32;--line:#2E333A;--ink:#F4F1EC;--mute:#A4A9B1;--field:#6F7680;--on:#0D0E10;--ok:#70B49A;
 --ember-rgb:240 90 40;--glow-rgb:255 128 58;--steel-rgb:104 138 180;--hl:rgba(200,215,235,.08);
 --lit-base:linear-gradient(180deg,#14181D 0%,#0E1013 45%,#0B0C0E 100%);
---lit-tr:radial-gradient(70% 26% at 100% 0%,rgb(var(--glow-rgb)/calc(.36*var(--amb,.5))),transparent 72%);
+--lit-tr:radial-gradient(70% 26% at 100% 0%,rgb(var(--glow-rgb)/calc(.27*var(--amb,.5))),transparent 70%);
 --lit-bl:radial-gradient(65% 24% at 0% 100%,rgb(var(--glow-rgb)/calc(.26*var(--amb,.5))),transparent 72%);
 --lit-steel:linear-gradient(90deg,rgb(var(--steel-rgb)/calc(.34*var(--amb,.5))),transparent 18%),linear-gradient(0deg,rgb(var(--steel-rgb)/calc(.14*var(--amb,.5))),transparent 22%);
 --lit-streaks:repeating-linear-gradient(118deg,transparent 0 17px,rgb(var(--glow-rgb)/.4) 17px 18px,transparent 18px 41px),repeating-linear-gradient(111deg,transparent 0 9px,rgb(var(--glow-rgb)/.22) 9px 9.5px,transparent 9.5px 63px);
@@ -1083,7 +1083,7 @@ header h1::after{display:none}
 --surf-grad:linear-gradient(180deg,#1C1F23,#16181B 70%);
 --surf-key:linear-gradient(180deg,#22262B,#181A1E 70%);
 --g-primary:linear-gradient(180deg,#FF7A3E,#EC5222);
---sh-card:0 18px 34px -18px rgba(0,0,0,.85)}
+--sh-card:0 18px 34px -18px rgba(0,0,0,.85);--gold:#E8B04A;--gold-l:#F2CB7E;--info:#6A9BD1;--info-l:#9DBFE6;--rose:#E08A7C;--mint:#9AD0BA}
 #app{--amb:.5;--streak:.22;isolation:isolate}
 #app[data-view="onb"]{--amb:1;--streak:.6}
 #app[data-view="discover"]{--amb:.85;--streak:.4}
@@ -1142,6 +1142,199 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 .sech,.ch{background:none}
 .modal{backdrop-filter:blur(2px)}
 @media (prefers-reduced-motion:reduce){#app::after{animation:none}}
+/* 25. responsive frame, one memorable number on the boxer card, calmer type, motion that answers taps */
+@media (min-width:720px){#app{max-width:500px}}
+@media (min-width:720px) and (max-height:860px){.facts{display:none}.info{gap:var(--s-2);padding:var(--s-3) var(--s-4) var(--s-4)}.photo{min-height:150px}.stack{min-height:220px;margin-bottom:var(--s-3)}.actions{padding-bottom:var(--s-3)}}
+@media (min-width:720px) and (max-height:720px){.cmp{display:none}.hs{display:none}}
+@media (min-width:1100px) and (max-width:1239px){.stage-note{display:none}}
+@media (min-width:1240px){.stage-note{left:auto;right:calc(50% + 250px + 48px);width:300px}.stage-note .mark{width:48px;height:auto;display:block}}
+.stage-note .wordmark{display:none}
+/* boxer card: the compatibility number is the one bold thing */
+.fitrow{align-items:baseline}
+.fitrow b{font:700 30px/1 "Barlow Condensed","Arial Narrow",var(--font);letter-spacing:.01em;color:var(--ok);font-variant-numeric:tabular-nums}
+.fbar{height:8px;border-radius:999px}
+.fbar i{border-radius:999px}
+.fit.hi{background:rgba(112,180,154,.16);color:#BFE3D3;box-shadow:inset 0 0 0 1px rgba(112,180,154,.35)}
+.mt .tg{text-transform:none;letter-spacing:0;font-weight:500}
+.gym-row{margin-bottom:var(--s-3)}
+.gym-row h3{font-weight:500}
+/* motion: only in answer to a tap, and never for reduced-motion users */
+@media (prefers-reduced-motion:no-preference){
+ #main.tabin{animation:tabIn .24s cubic-bezier(.2,.7,.2,1)}
+ .btn,.chip,.ibtn,nav button{transition:transform .12s ease,background-color .15s ease,box-shadow .15s ease}
+ .btn:active,.chip:active,.ibtn:active{transform:scale(.97)}
+ .dialog.match{animation:matchIn .36s cubic-bezier(.2,.8,.2,1)}
+}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes matchIn{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+/* 26. cleanup: cool palette everywhere, quiet sheets, one Settings title, even filter grid, photo-less boxer card */
+.chip,.chip[aria-pressed="false"]{background:var(--surf)}
+.sw:not([aria-checked="true"]){background:var(--surf2)}
+.seg{background:var(--surf)}
+.sheet-done{background:rgba(13,14,16,.6)}
+#app:has(.panel){--amb:.35;--streak:.08}
+#app[data-view="settings"]{--amb:.38;--streak:.08}
+/* settings opened as a page: the header already says Settings, so the page keeps one title and the Done button takes the header button's place */
+#app[data-view="settings"] main>h2.big{display:none}
+#app[data-view="settings"] header .ibtn{visibility:hidden}
+#app[data-view="settings"] main>.sheet-done{position:absolute;top:calc(env(safe-area-inset-top,0px) + var(--s-4) + 4px);right:var(--gutter);margin:0;z-index:6}
+/* filters: two even columns, no extra frames */
+.panel .box:has(.chips){background:none;box-shadow:none;padding:0}
+.panel .box:has(.chips) .srow{padding-left:0;padding-right:0}
+.panel .box:has(.chips) .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-2)}
+.panel .box:has(.chips) .chip{width:100%;justify-content:center}
+.panel .box:has(.chips) .chip:not([aria-pressed="true"]):not([aria-checked="true"]){box-shadow:var(--edge-steel,inset 0 0 0 1px var(--line))}
+/* boxer card without a photo: a quiet monogram, replaced automatically when photos/N.jpg exists */
+.photo .ghost{position:absolute;left:0;right:0;top:15%;text-align:center;font:700 clamp(84px,22vw,104px)/1 "Barlow Condensed","Arial Narrow",var(--font);letter-spacing:.02em;color:rgba(190,205,225,.07);z-index:0;pointer-events:none;user-select:none}
+@media (min-height:880px){.info .quote{display:block;margin:0;color:var(--mute);font-size:var(--t-sm);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.info .quote .cap{display:inline;margin-right:6px;color:var(--ink)}}
+/* 27. color roles: orange = action, mint = fit, gold = standing, steel = information, rose = pass/mismatch */
+#pass,.actions .ibtn.lg:not(.pri){color:var(--rose,var(--ink))}
+#pass{box-shadow:inset 0 0 0 1px rgb(217 119 106/.38),var(--edge-inner,none)}
+.ver{color:var(--gold-l,var(--ink));box-shadow:inset 0 0 0 1px rgb(232 176 74/.35)}
+.card .line span{color:var(--info-l,var(--mute))}
+.fbar i{background:linear-gradient(90deg,var(--ok,#70B49A),var(--mint,#9AD0BA))}
+.cmp .no,.cmp .bad{color:var(--rose,var(--mute))}
+.ud{background:var(--info,#6A9BD1);box-shadow:none}
+.ring.on{background:linear-gradient(135deg,var(--info,#6A9BD1),var(--info-l,#9DBFE6));box-shadow:none}
+.stats3>div:nth-child(1) b{color:var(--ink)}
+.stats3>div:nth-child(2) b{color:var(--gold,var(--ink))}
+.stats3>div:nth-child(3) b{color:var(--mint,var(--ink))}
+.mt .going{color:var(--gold-l,var(--ink))}
+.mt p:not(:has(.going)){color:var(--info-l,var(--ink))}
+.bar{background:var(--surf2)}
+.bar i{background:linear-gradient(90deg,var(--gold,#E8B04A),var(--mint,#9AD0BA));border-radius:999px}
+.tk-ok,.chk{color:var(--ok)}
+/* 28. Messages: two-line conversation rows, clear unread hierarchy, calm search focus, no-results card */
+.dm{background:var(--surf-grad,var(--card));box-shadow:var(--edge-steel,0 0 0 1px var(--line));border-radius:16px;padding:12px 14px;margin-bottom:var(--s-2);gap:var(--s-3);transition:background-color .15s ease,box-shadow .15s ease}
+.dm:hover{background:var(--surf-key,var(--surf))}
+.dm .dmt{gap:3px}
+.dm1{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-2)}
+.dm1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dm .tm{font-size:12px;color:var(--mute)}
+.dm .pv{display:block;color:var(--mute);font-size:var(--t-sm)}
+.dm:not(.un) .dmt b{color:#D8D6D1}
+.dm.un{background:var(--surf-key,var(--surf));box-shadow:var(--edge-steel,0 0 0 1px var(--line)),inset 3px 0 0 var(--info,#6A9BD1)}
+.dm.un .dmt b{color:#fff}
+.dm.un .pv{color:var(--ink);font-weight:500}
+.dm.un .tm{color:var(--info-l,var(--ink))}
+.dm.un .av{box-shadow:0 0 0 2px rgb(var(--steel-rgb,104 138 180)/.55)}
+.dm .ud{flex:none;width:10px;height:10px;border-radius:50%}
+/* new matches */
+.story{gap:var(--s-5)}
+.ring{background:var(--surf2)}
+.ring.on{background:linear-gradient(135deg,var(--ember,#F05A28),var(--info,#6A9BD1));box-shadow:none}
+#nrow[hidden]{display:none}
+/* search */
+.sq{transition:box-shadow .15s ease,background-color .15s ease}
+.sq:focus-within{background:var(--surf2);box-shadow:0 0 0 1px rgb(240 90 40/.6),0 0 0 4px rgb(240 90 40/.14)}
+.sq input:focus,.sq input:focus-visible{outline:0;box-shadow:none}
+.nores{text-align:center;padding:var(--s-7) var(--s-4);display:flex;flex-direction:column;align-items:center;gap:var(--s-2)}
+.nores b{font-weight:500;font-size:var(--t-lg);overflow-wrap:anywhere}
+.nores p{margin:0 0 var(--s-3);color:var(--mute)}
+/* 29. conversation view: calmer ember bubbles, steel-edged incoming, pill composer */
+.ch{padding-bottom:var(--s-4)}
+.ch .av{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px rgb(var(--steel-rgb,104 138 180)/.55)}
+.m{border-radius:18px 18px 18px 6px;background:var(--surf-grad,var(--surf));box-shadow:var(--edge-steel,none);line-height:1.4}
+.m.me{border-radius:18px 18px 6px 18px;background:linear-gradient(180deg,#F26A33,#E4531F);color:#190B05;box-shadow:inset 0 1px 0 rgb(255 255 255/.18)}
+.m .td{background:var(--mute)}
+.send{align-items:center;gap:var(--s-2);background:var(--surf);border-radius:999px;padding:6px 6px 6px var(--s-4);box-shadow:var(--edge-steel,inset 0 0 0 1px var(--line));transition:box-shadow .15s ease,background-color .15s ease}
+.send:focus-within{background:var(--surf2);box-shadow:0 0 0 1px rgb(240 90 40/.6),0 0 0 4px rgb(240 90 40/.14)}
+.send .input,.send .input:focus,.send .input:focus-visible{background:none;box-shadow:none;border:0;outline:0;padding:var(--s-2) 0;min-height:40px}
+.send .btn{border-radius:999px;min-height:40px;padding:0 var(--s-5)}
+.send .btn:disabled{background:var(--surf2);color:var(--mute);box-shadow:none;opacity:1}
+.quick .chip{border-radius:999px;box-shadow:var(--edge-steel,inset 0 0 0 1px var(--line))}
+/* 30. Messages, tailored to the reference: flat rows, time + dot on the right, colored avatars and rings, labeled sections */
+:is(.dm,.st)[data-chat$="0"],:is(.dm,.st)[data-chat$="5"]{--c1:#D9531F;--c2:#6E2A10}
+:is(.dm,.st)[data-chat$="1"],:is(.dm,.st)[data-chat$="6"]{--c1:#4F7DB5;--c2:#243F66}
+:is(.dm,.st)[data-chat$="2"],:is(.dm,.st)[data-chat$="7"]{--c1:#BF6459;--c2:#6B2B28}
+:is(.dm,.st)[data-chat$="3"],:is(.dm,.st)[data-chat$="8"]{--c1:#B98A2C;--c2:#6B4A10}
+:is(.dm,.st)[data-chat$="4"],:is(.dm,.st)[data-chat$="9"]{--c1:#4E9C7F;--c2:#245443}
+.dm{background:none;box-shadow:none;border-radius:14px;padding:var(--s-3) var(--s-2);margin:0 calc(-1*var(--s-2)) 2px;align-items:flex-start;gap:var(--s-4)}
+.dm:hover{background:rgb(255 255 255/.035)}
+.dm.un{background:none;box-shadow:none}
+.dm .av,.dm.un .av{box-shadow:none;background:linear-gradient(135deg,var(--c1,#4F7DB5),var(--c2,#243F66))}
+.dm .av .fa{mix-blend-mode:lighten}
+.dm .dmt{padding-top:2px;gap:4px}
+.dm .dmr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px;padding-top:4px;min-width:34px}
+.dm .dmr .ud{margin:0}
+.dm .pv{font-size:var(--t-md)}
+.dm:not(.un) .pv{color:var(--mute)}
+.dm.un .dmt b{color:#fff}
+/* matches strip: evenly spread, one ring color per boxer */
+.story{gap:0;justify-content:flex-start;padding-bottom:var(--s-5)}
+.st{flex:0 0 25%;min-width:76px}
+.ring,.ring.on{background:linear-gradient(135deg,var(--c1,#4F7DB5),var(--c2,#243F66))}
+.ring:not(.on){background:linear-gradient(135deg,color-mix(in srgb,var(--c1,#4F7DB5) 45%,transparent),color-mix(in srgb,var(--c2,#243F66) 45%,transparent))}
+.ring .av{border-color:var(--bg)}
+/* section labels with one divider between them */
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-3);border-top:1px solid var(--line);padding-top:var(--s-5);margin:var(--s-2) 0 var(--s-3)}
+.sh h2.eyebrow{margin:0}
+.shc{font-size:var(--t-sm);color:var(--info-l,var(--mute))}
+#app[data-view^="matches"] header .ibtn{border-radius:50%}
+/* 31. brand pass, stage 1-2: flat orange actions, cool hovers, even chip grids, onboarding with real hierarchy */
+.btn,.actions .ibtn.lg.pri,.chip[aria-pressed="true"],.chip[aria-checked="true"],.sw[aria-checked="true"]{background:#F05A28}
+.btn:hover,.actions .ibtn.lg.pri:hover{background:#F6663A}
+.btn.btn-sec,.btn.btn-sec:hover,.btn-sec:hover{background:var(--surf-grad,var(--surf))}
+.btn.btn-sec:hover,.btn-sec:hover,button.chip:hover{background:var(--surf2);box-shadow:var(--edge-steel,none)}
+.m.me{background:#EE5A26}
+.steps i.on{background:#F05A28}
+/* chip groups: two even columns when there are four or more options, equal widths otherwise */
+.field .chips,.panel .field .chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:var(--s-2)}
+.field .chips:has(.chip:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))}
+.field .chips .chip{width:100%;justify-content:center}
+/* onboarding */
+.onb-body h1,.welcome .onb-body h1{text-transform:none;letter-spacing:0;font-weight:700;line-height:1.02}
+.onb-body h1{font-size:36px}
+.welcome .onb-body h1{font-size:44px}
+.onb-top .mark{width:24px;height:auto;flex:none}
+.onb-top{justify-content:space-between}
+.onb-cta{background:linear-gradient(to bottom,rgb(12 13 15/0),rgb(12 13 15/.97) 38%);padding-top:var(--s-7);margin-top:calc(-1*var(--s-5))}
+.onb.welcome .onb-cta{background:none;padding-top:var(--s-4);margin-top:var(--s-4)}
+.field .chips:has(.chip:nth-child(4)) .chip:last-child:nth-child(odd){grid-column:1/-1}
+.onb:not(.welcome) .onb-body{padding-bottom:var(--s-5)}
+.onb .box{background:none;box-shadow:none;padding:0}
+.onb .box .srow.opt{padding:14px 0;border-bottom:1px solid var(--line);min-height:0}
+.onb .box .srow.opt:last-child{border-bottom:0}
+.onb .box .srow.opt[aria-checked="true"]{color:var(--ink)}
+.onb .box .srow.opt[aria-checked="true"] .chk{color:#F05A28}
+/* 32. brand pass, stage 3: Discover card and boxer profile read as data, not stacked boxes */
+.card{box-shadow:var(--edge-steel,0 0 0 1px var(--line)),var(--edge-inner,none),var(--sh-card,none)}
+#app[data-view="discover"]{--amb:.6;--streak:.18}
+.facts{background:none;box-shadow:none;border-radius:0;border-top:1px solid var(--line);padding:var(--s-3) 0 0}
+.card .info{gap:var(--s-3)}
+.plain{background:none;box-shadow:none;padding:0;border-radius:0}
+.plain .srow{padding-left:0;padding-right:0;border-bottom:1px solid var(--line)}
+.plain .srow:last-child{border-bottom:0}
+.plain .quote{padding-left:var(--s-4);border-left:2px solid var(--info,#6A9BD1);margin:0;color:var(--ink);font-size:var(--t-md);line-height:1.45}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:none;box-shadow:none;border-block:1px solid var(--line);border-radius:0;margin:var(--s-4) 0 var(--s-2)}
+.stats3>div{background:none;box-shadow:none;border-radius:0;padding:var(--s-4) 0;text-align:center}
+.stats3>div+div{border-left:1px solid var(--line)}
+.stats3 b{font:700 30px/1 "Barlow Condensed","Arial Narrow",var(--font);display:block;font-variant-numeric:tabular-nums}
+.stats3 span{display:block;margin-top:6px;color:var(--mute);font-size:var(--t-sm)}
+.fitnote{margin:var(--s-2) 0 var(--s-5);color:var(--ok)}
+.cmpt .crow{grid-template-columns:108px 1fr auto;gap:var(--s-3);padding:12px 0}
+.cmpt .crow b{text-align:right;min-width:52px}
+.cmpt .crow.s-near b{color:var(--gold,var(--warn))}
+.cmpt .crow.s-off b{color:var(--rose,var(--coral))}
+.phero{min-height:200px}
+/* 33. brand pass, stage 4: fewer boxes, one featured meetup, hairline lists, even field heights */
+.box.plain,.box.pad.plain{background:none;box-shadow:none;padding:0;border-radius:0}
+.box.plain .srow{padding-left:0;padding-right:0}
+.panel .box,.panel .box.pad{background:none;box-shadow:none;padding:0;border-radius:0}
+.panel .box .srow{padding-left:0;padding-right:0}
+.panel .box>.srow:not(:last-child){border-bottom:1px solid var(--line)}
+#app[data-view="me"] .box,#app[data-view="me"] .box.pad{background:none;box-shadow:none;padding:0;border-radius:0}
+#app[data-view="me"] .box .srow{padding-left:0;padding-right:0}
+#app[data-view="me"] .box>.srow:not(:last-child){border-bottom:1px solid var(--line)}
+/* meetups: the first event is featured, the rest follow in two columns */
+.mg .mt:first-child{grid-column:1/-1;aspect-ratio:16/9}
+.mg .mt:first-child h3{font-size:var(--t-xl)}
+.mg .mt-new{grid-column:1/-1;aspect-ratio:auto;min-height:0;flex-direction:row;justify-content:center;gap:var(--s-3);padding:var(--s-4);background:none;box-shadow:inset 0 0 0 1px var(--line);border-radius:var(--r-lg)}
+.mg .mt-new p{display:none}
+.gym-row,.box.pad.gym-row{background:none;box-shadow:none;border-radius:0;padding:var(--s-4) 0;margin:0;border-bottom:1px solid var(--line)}
+.gym-row:last-of-type{border-bottom:0}
+input[type="date"].input,input[type="time"].input,select.input,.input{min-height:var(--tap)}
+input[type="date"].input,input[type="time"].input{font-size:15px;padding-left:var(--s-3);padding-right:var(--s-2)}
 </style>
 </head>
 <body>
@@ -1153,7 +1346,7 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
   <div id="toast" role="status" aria-live="polite"></div>
   <div id="modal" class="modal" hidden></div>
 </div>
-<aside class="stage-note" aria-hidden="true"><p class="wordmark">Boxing Buddies</p><h2>Find someone to spar with.</h2><p>This is a phone app prototype. Open the same link on your phone for the real feel.</p></aside>
+<aside class="stage-note" aria-hidden="true"><svg class="mark" viewBox="0 0 527 536" aria-hidden="true"><path fill="#F05A28" fill-rule="evenodd" d="M228 0 L44 106 L26 241 L53 262 L17 285 L0 410 L231 536 L237 513 L236 8Z M143 287 L170 299 L175 309 L170 433 L83 388 L68 373 L81 316Z M171 104 L174 225 L166 233 L143 235 L97 208 L99 148 L107 137Z M293 1 L288 529 L298 536 L515 421 L527 402 L507 284 L469 259 L499 240 L481 106Z M354 104 L421 143 L429 196 L424 211 L368 245 L358 279 L441 315 L451 328 L458 368 L454 382 L356 435 L350 431 L348 223Z"/></svg><h2>Find someone to spar with.</h2><p>This is a phone app prototype. Open the same link on your phone for the real feel.</p></aside>
 <script>
 var D=[
 {id:1,n:"Marcus T.",a:27,w:"Welterweight",exp:"Intermediate",h:"5ft 10",st:"Orthodox",gym:"TITLE Boxing Club Marlborough",d:2,goal:"Technical sparring, light to medium",av:"Tue and Thu evenings",v:1,likes:1,hue:37},
@@ -1224,7 +1417,7 @@ function ini(p){return p.n.split(' ').map(function(x){return x[0]}).join('')}
 function sel(id,opts,val){return '<select id="'+id+'" aria-label="'+(id==='Weight'?'Weight class':'Experience level')+'">'+opts.map(function(o){return '<option value="'+o+'"'+(o===val?' selected':'')+'>'+(o==='All'?(id==='Weight'?'All weights':'All levels'):o)+'</option>'}).join('')+'</select>'}
 function card(p,back){
   var c=compat(p);
-  return '<div class="card'+(back?' back':'')+'" data-id="'+p.id+'"><div class="photo" style="--art:'+col(p)+'">'+fa(p,2)+'<span class="tint s"></span><span class="tint p"></span><span class="fit'+(c.score>=80?' hi':' soft')+'">'+c.label+'</span>'+(p.v?'<span class="ver">Verified &middot; demo</span>':'')+'<span class="stamp s">SPAR</span><span class="stamp p">PASS</span><div class="who"><div class="wh"><h2>'+p.n+' <small>'+p.a+'</small></h2><p>'+p.exp+' &middot; '+p.w+'</p></div></div></div><div class="info"><div class="line"><b>'+p.gym+'</b><span>'+dist(p.d)+'</span></div><div class="fitrow"><span>Compatibility</span><b>'+c.score+'%</b></div><div class="fbar" role="img" aria-label="Compatibility '+c.score+' percent"><i style="width:'+c.score+'%"></i></div>'+cmpStrip(p)+'<p class="quote"><span class="cap">Looking for</span>'+esc(p.goal)+'</p><dl class="facts"><div><dt>Intensity</dt><dd>'+p.int+'</dd></div><div><dt>Free</dt><dd>'+dayStr(p).split(' \u00b7 ')[0]+'</dd></div><div><dt>Time</dt><dd>'+p.tm.join(' / ')+'</dd></div></dl></div></div>';
+  return '<div class="card'+(back?' back':'')+'" data-id="'+p.id+'"><div class="photo" style="--art:'+col(p)+'">'+fa(p,2).replace('<img','<span class="ghost" aria-hidden="true">'+p.n.split(' ').map(function(w){return w.charAt(0)}).join('').slice(0,2)+'</span><img')+'<span class="tint s"></span><span class="tint p"></span><span class="fit'+(c.score>=80?' hi':' soft')+'">'+c.label+'</span>'+(p.v?'<span class="ver">Verified &middot; demo</span>':'')+'<span class="stamp s">SPAR</span><span class="stamp p">PASS</span><div class="who"><div class="wh"><h2>'+p.n+' <small>'+p.a+'</small></h2><p>'+p.exp+' &middot; '+p.w+'</p></div></div></div><div class="info"><div class="line"><b>'+p.gym+'</b><span>'+dist(p.d)+'</span></div><div class="fitrow"><span>Compatibility</span><b>'+c.score+'%</b></div><div class="fbar" role="img" aria-label="Compatibility '+c.score+' percent"><i style="width:'+c.score+'%"></i></div>'+cmpStrip(p)+'<p class="quote"><span class="cap">Looking for</span>'+esc(p.goal)+'</p><dl class="facts"><div><dt>Intensity</dt><dd>'+p.int+'</dd></div><div><dt>Free</dt><dd>'+dayStr(p).split(' \u00b7 ')[0]+'</dd></div><div><dt>Time</dt><dd>'+p.tm.join(' / ')+'</dd></div></dl></div></div>';
 }
 function discover(){
   var q=pool(),h='<div class="disc">';
@@ -1244,10 +1437,10 @@ function fatal(){var m=$('#main');if(!m)return;var h=$('header');if(h)h.hidden=t
 function renderApp(){
   var fk=focusKey(document.activeElement);
   if(tab==='matches'&&openId)delete unread[openId];save();renderSheet();var m=$('#main');
-  document.body.classList.toggle('onb-on',onb>0);document.getElementById('app').dataset.view=onb>0?'onb':tab+(tab==='matches'&&openId?'-chat':'');var hd0=$('header');if(onb>0){if(hd0)hd0.hidden=true;m.innerHTML=onbView();bind();if(fk)restoreFocus(fk);return}
+  document.body.classList.toggle('onb-on',onb>0);var ap=document.getElementById('app'),nv=onb>0?'onb':tab+(tab==='matches'&&openId?'-chat':'');if(ap.dataset.view&&ap.dataset.view!==nv){m.classList.remove('tabin');void m.offsetWidth;m.classList.add('tabin')}ap.dataset.view=nv;var hd0=$('header');if(onb>0){if(hd0)hd0.hidden=true;m.innerHTML=onbView();bind();if(fk)restoreFocus(fk);return}
   m.innerHTML=tab==='discover'?discover():tab==='gyms'?gyms():tab==='me'?meView():tab==='settings'?settingsView():(openId?chatView():matchList());
   $('#nav').innerHTML=[['discover','Discover'],['matches','Messages'],['gyms','Meetups'],['me','Profile']].map(function(t){return '<button data-tab="'+t[0]+'"'+(tab===t[0]?' aria-current="true"':'')+'>'+ICON[t[0]]+'<span>'+t[1]+'</span>'+(t[0]==='matches'&&Object.keys(unread).length?'<i class="dot">'+Object.keys(unread).length+'</i>':'')+'</button>'}).join('');
-  var hd=$('header');if(hd){hd.hidden=(tab==='matches'&&!!openId);$('#ht').textContent={discover:'Discover',matches:'Messages',gyms:'Meetups',me:'Profile'}[tab]||'Settings';var hsb=$('#hs');if(hsb){var np=tab==='discover'?pool().length:0;hsb.textContent=tab==='discover'?(np+(np===1?' boxer':' boxers')+' within '+dist(cfg.maxd)+' of '+locLabel()):''}}
+  var hd=$('header');if(hd){hd.hidden=(tab==='matches'&&!!openId);$('#ht').textContent={discover:'Discover',matches:'Messages',gyms:'Meetups',me:'Profile'}[tab]||'Settings';var hsb=$('#hs');if(hsb){var np=tab==='discover'?pool().length:0;hsb.textContent=tab==='discover'?(np+(np===1?' boxer':' boxers')+' within '+dist(cfg.maxd)+' of '+locLabel()):(tab==='matches'?'Your boxing connections':'')}}
   document.title=(onb>0?'Welcome':({discover:'Discover',matches:'Messages',gyms:'Meetups',me:'Profile'}[tab]||'Settings'))+' | Boxing Buddies';
   bind();
   if(fk&&!(document.activeElement&&document.activeElement!==document.body))restoreFocus(fk);
@@ -1325,7 +1518,7 @@ function chatTools(p){
   +'<div class="chips mt-2"><button class="chip" data-act="safety">Safety tips</button><button class="chip ml-auto" data-act="report">Report</button><button class="chip" data-act="block" style="color:var(--err)">Block</button></div>'}
 function eventsHtml(){
   var all=myEv.map(function(v){return Object.assign({key:v.id,mine:1},v)}).concat(EVENTS.map(function(v,i){return Object.assign({key:'e'+i},v)}));
-  return '<div class="evh"><p class="meta">Group sessions near you</p>'+(evForm?'<button class="btn btn-sec" data-s="evform">Cancel</button>':'')+'</div>'+(evForm?evFormHtml():'')+'<div class="mg">'+all.map(function(v,i){var on=rsvp[v.key],h=(i*67+20)%360,bg=v.cov?'--art:url('+v.cov+')':'--art:linear-gradient(160deg,hsl('+h+' 12% 24%),#0A0A0B 90%)';return '<div class="mt" style="'+bg+'"><span class="tg">'+(v.mine?'Hosting':'Sample')+'</span>'+(v.mine?'<button class="btn btn-sm del" aria-label="Delete meetup '+esc(v.n)+'" data-s="evdel" data-v="'+v.id+'">Delete</button>':'')+'<h3>'+esc(v.n)+'</h3><p>'+esc(v.d)+' &middot; '+(v.c+(on?1:0))+' going</p>'+(v.mine?'<p>'+esc(v.w)+'</p>':'')+'<button class="btn btn-sm'+(on?'':' btn-sec')+'" data-s="rsvp" data-v="'+v.key+'">'+(on?'Going':'RSVP')+'</button></div>'}).join('')+(evForm?'':'<button class="mt-new" data-s="evform"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Host a meetup<span>Pick a gym and a time</span></button>')+'</div>';
+  return '<div class="evh"><p class="meta">Group sessions near you</p>'+(evForm?'<button class="btn btn-sec" data-s="evform">Cancel</button>':'')+'</div>'+(evForm?evFormHtml():'')+'<div class="mg">'+all.map(function(v,i){var on=rsvp[v.key],h=(i*67+20)%360,bg=v.cov?'--art:url('+v.cov+')':'--art:linear-gradient(160deg,hsl('+h+' 12% 24%),#0A0A0B 90%)';return '<div class="mt" style="'+bg+'"><span class="tg">'+(v.mine?'Hosting':'Sample')+'</span>'+(v.mine?'<button class="btn btn-sm del" aria-label="Delete meetup '+esc(v.n)+'" data-s="evdel" data-v="'+v.id+'">Delete</button>':'')+'<h3>'+esc(v.n)+'</h3><p>'+esc(v.d)+' &middot; <span class="going">'+(v.c+(on?1:0))+' going</span></p>'+(v.mine?'<p>'+esc(v.w)+'</p>':'')+'<button class="btn btn-sm'+(on?'':' btn-sec')+'" data-s="rsvp" data-v="'+v.key+'">'+(on?'Going':'RSVP')+'</button></div>'}).join('')+(evForm?'':'<button class="mt-new" data-s="evform"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Host a meetup<span>Pick a gym and a time</span></button>')+'</div>';
 }
 function chipGroup(k,l,o){return '<div class="field"><span class="field-l" id="lb'+k+'">'+l+'</span><div class="chips" role="radiogroup" aria-labelledby="lb'+k+'">'+o.map(function(x){var on=x===me[k];return '<button class="chip" role="radio" aria-checked="'+on+'" data-s="pf" data-k="'+k+'" data-v="'+x+'">'+x+'</button>'}).join('')+'</div></div>'}
 function gymList(){return '<div class="box" role="radiogroup" aria-label="Home gym">'+GYMS.map(function(g){var on=g.n===me.gym;return '<button class="srow opt" role="radio" aria-checked="'+on+'" data-s="pf" data-k="gym" data-v="'+g.n+'"><span>'+g.n+'</span>'+(on?'<span class="chk" aria-hidden="true">&#10003;</span>':'')+'</button>'}).join('')+'</div>'}
@@ -1343,7 +1536,7 @@ function meView(){var p=pct();
   +'<p class="note">Saved on this device only. Real accounts come next.</p>'}
 function markSvg(){return '<svg class="mark" viewBox="0 0 527 536" aria-hidden="true"><path fill="#F05A28" fill-rule="evenodd" d="M228 0 L44 106 L26 241 L53 262 L17 285 L0 410 L231 536 L237 513 L236 8Z M143 287 L170 299 L175 309 L170 433 L83 388 L68 373 L81 316Z M171 104 L174 225 L166 233 L143 235 L97 208 L99 148 L107 137Z M293 1 L288 529 L298 536 L515 421 L527 402 L507 284 L469 259 L499 240 L481 106Z M354 104 L421 143 L429 196 L424 211 L368 245 L358 279 L441 315 L451 328 L458 368 L454 382 L356 435 L350 431 L348 223Z"/></svg>'}
 function onbView(){
-  var st=onb,top=function(back){return '<div class="onb-top">'+(back?'<button class="ibtn" data-s="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':'')+'<span class="wordmark">Boxing Buddies</span><button class="btn btn-ghost btn-sm" data-s="oskip">Skip</button></div><div class="steps" role="img" aria-label="Step '+(st-1)+' of 2"><i class="on"></i><i'+(st>2?' class="on"':'')+'></i></div>'};
+  var st=onb,top=function(back){return '<div class="onb-top">'+(back?'<button class="ibtn" data-s="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':'')+markSvg()+'<button class="btn btn-ghost btn-sm" data-s="oskip">Skip</button></div><div class="steps" role="img" aria-label="Step '+(st-1)+' of 2"><i class="on"></i><i'+(st>2?' class="on"':'')+'></i></div>'};
   if(st===1)return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">'+markSvg()+'<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Find your next sparring partner.</h1><p>Match with boxers near you who train at your level, then book a session at a real gym.</p><p class="fine">Sample boxers and gyms around Marlborough, MA. Set your own location and radius any time.</p></div><div class="onb-cta"><button class="btn btn-block" data-s="onext">Get started</button><button class="btn btn-sec btn-block" data-s="oskip">Look around first</button></div></div>';
   if(st===2)return '<div class="onb">'+top(1)+'<div class="onb-body"><h1>How do you box?</h1><p>We use this to rank partners by fit. You can change it any time.</p>'+fieldHtml('n','Your name')+chipGroup('w','Weight class',W.slice(1))+chipGroup('exp','Experience',E.slice(1))+chipGroup('st','Stance',['Orthodox','Southpaw'])+intGroup()+chipGroup('gl','Main goal',GOALS)+'</div><div class="onb-cta"><button class="btn btn-block" data-s="onext">Continue</button></div></div>';
   return '<div class="onb">'+top(1)+'<div class="onb-body"><h1>Where do you train?</h1><p>Set where you live and how far you will travel, then pick your home gym. Closer boxers rank higher.</p><p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-s="loc"><div><b>'+esc(cfg.loc.name)+'</b><span>Within '+dist(cfg.maxd)+'</span></div></button></div><p class="field-l mt-3">Home gym</p>'+gymList()+schedGroups()+'</div><div class="onb-cta"><button class="btn btn-block" data-s="odone">Start sparring</button></div></div>';
@@ -1425,12 +1618,12 @@ function dist(m){return cfg.units==='km'?Math.round(m*1.609)+' km':m+' mi'}
 function applyTheme(){var r=document.documentElement;if(cfg.theme==='system')delete r.dataset.theme;else r.dataset.theme=cfg.theme}
 function stats(p){var n=6+p.id*5%38,rt=(4.2+(p.id*7%8)/10).toFixed(1);return {n:n,rt:rt}}
 function profileSheet(){var p=pool()[0];if(!p)return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button>';var st=stats(p),c=compat(p),row=function(l,v){return '<div class="srow"><span>'+l+'</span><b>'+v+'</b></div>'};
-  return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button><div class="phero">'+fa(p,2)+'<div class="pwho"><h2 class="big">'+p.n+' <small>'+p.a+'</small></h2><p class="meta">'+p.exp+', '+p.w+(p.v?', Verified (demo)':'')+'</p></div></div><p class="note demo">Demo profile. Sample boxers are not real people.</p>'
+  return '<button class="btn btn-sec btn-sm sheet-done" data-s="close">Done</button><div class="phero">'+fa(p,2).replace('<img','<span class="ghost" aria-hidden="true">'+p.n.split(' ').map(function(w){return w.charAt(0)}).join('').slice(0,2)+'</span><img')+'<div class="pwho"><h2 class="big">'+p.n+' <small>'+p.a+'</small></h2><p class="meta">'+p.exp+', '+p.w+(p.v?', Verified (demo)':'')+'</p></div></div><p class="note demo">Demo profile. Sample boxers are not real people.</p>'
   +'<div class="stats3"><div><b>'+st.n+'</b><span>Sessions</span></div><div><b>'+st.rt+'</b><span>Rating</span></div><div><b>'+c.score+'%</b><span>Compatibility</span></div></div><p class="fitnote">'+c.label+'</p>'
-  +'<p class="eyebrow">Looking for</p><div class="box pad"><p class="quote" style="-webkit-line-clamp:unset">'+esc(p.goal)+'</p></div>'
-  +'<p class="eyebrow">Compatibility with you</p><div class="box cmpt">'+c.rows.map(function(x){return '<div class="crow s-'+x.s+'"><span class="ck"><i aria-hidden="true"></i>'+x.k+'</span><span class="cv">'+esc(x.t)+'</span><b>'+STW[x.s]+'</b></div>'}).join('')+'</div>'
+  +'<p class="eyebrow">Looking for</p><div class="box pad plain"><p class="quote" style="-webkit-line-clamp:unset">'+esc(p.goal)+'</p></div>'
+  +'<p class="eyebrow">Compatibility with you</p><div class="box plain cmpt">'+c.rows.map(function(x){return '<div class="crow s-'+x.s+'"><span class="ck"><i aria-hidden="true"></i>'+x.k+'</span><span class="cv">'+esc(x.t)+'</span><b>'+STW[x.s]+'</b></div>'}).join('')+'</div>'
   +(c.warn?'<p class="warn" role="note"><b>Go easy.</b> You differ a lot in size, experience or preferred intensity. Start with technical rounds and agree on intensity before you begin.</p>':'')
-  +'<p class="eyebrow">Details</p><div class="box">'+row('Home gym',p.gym)+row('Stance',p.st)+row('Height',p.h)+'</div>'
+  +'<p class="eyebrow">Details</p><div class="box plain">'+row('Home gym',p.gym)+row('Stance',p.st)+row('Height',p.h)+'</div>'
   +'<div class="btn-row mt-4"><button class="btn btn-sec" data-s="psp">Pass</button><button class="btn" data-s="pss">Spar</button></div>'
   +'<div class="row-gap mt-3"><button class="chip" data-s="prep">Report</button><button class="chip" data-s="pblock" style="color:var(--err)">Block</button></div>'
   +'<p class="note">'+(p.v?'Verified is a sample badge. Real phone and ID checks need accounts. ':'')+'Ratings and session counts are sample data in this prototype.</p>'}function icsFor(x){var p=D[x.id-1],m=/^(\w{3}) (\d+):(\d+)(am|pm)$/.exec(x.t),days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];if(!m)return '';var d=new Date(),h=+m[2]%12+(m[4]==='pm'?12:0);d.setHours(h,+m[3],0,0);var add=(days.indexOf(m[1])-d.getDay()+7)%7;if(add===0&&d<new Date())add=7;d.setDate(d.getDate()+add);var f2=function(t){return t.getFullYear()+('0'+(t.getMonth()+1)).slice(-2)+('0'+t.getDate()).slice(-2)+'T'+('0'+t.getHours()).slice(-2)+('0'+t.getMinutes()).slice(-2)+'00'},e=new Date(d.getTime()+3600000);return 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Boxing Buddies//EN\r\nBEGIN:VEVENT\r\nUID:bb-'+x.id+'-'+d.getTime()+'@boxingbuddies\r\nDTSTAMP:'+f2(new Date())+'\r\nDTSTART:'+f2(d)+'\r\nDTEND:'+f2(e)+'\r\nSUMMARY:Sparring with '+p.n+'\r\nLOCATION:'+(x.gym||p.gym)+'\r\nEND:VEVENT\r\nEND:VCALENDAR'}
@@ -1508,8 +1701,8 @@ function convoRows(){
   if(!matches.length)return '<div class="empty">'+emptyArt('bag')+'<h2>No messages yet</h2><p>Swipe right on boxers you would train with. When they swipe back, you can message them here.</p><button class="btn" data-tab="discover">Start swiping</button></div>';
   var q=msgQ.trim().toLowerCase();
   var ids=matches.filter(function(id){return !q||D[id-1].n.toLowerCase().indexOf(q)>=0}).sort(function(a,b){return (lastOf(b).ts||0)-(lastOf(a).ts||0)});
-  if(!ids.length)return '<p class="note">No boxers found for '+esc(msgQ)+'.</p>';
-  return ids.map(function(id){var p=D[id-1],l=lastOf(id),un=unread[id];return '<button class="dm'+(un?' un':'')+'" data-chat="'+id+'">'+avt(p)+'<span class="dmt"><b>'+p.n+'</b><span class="sub"><span class="pv">'+(l.me?'You: ':'')+esc(l.t)+'</span><span class="tm">'+ago(l.ts)+'</span></span></span>'+(un?'<i class="ud" aria-label="Unread"></i>':'')+'</button>'}).join('');
+  if(!ids.length)return '<div class="nores"><b>No boxers found for &ldquo;'+esc(msgQ.trim())+'&rdquo;</b><p>Check the spelling, or search another name.</p><button class="btn btn-sec btn-sm" data-msqclear="1">Clear search</button></div>';
+  return ids.map(function(id){var p=D[id-1],l=lastOf(id),un=unread[id];return '<button class="dm'+(un?' un':'')+'" data-chat="'+id+'">'+avt(p)+'<span class="dmt"><b>'+p.n+'</b><span class="pv">'+(l.me?'You: ':'')+esc(l.t)+'</span></span><span class="dmr"><span class="tm">'+ago(l.ts)+'</span>'+(un?'<i class="ud" aria-label="Unread"></i>':'')+'</span>'+'</button>'}).join('');
 }
 function newRow(){
   var ids=matches.filter(function(id){return (chats[id]||[]).every(function(m){return !m.me})});
@@ -1518,7 +1711,7 @@ function newRow(){
 }
 function sessHtml(){if(!sess.length)return '';return '<p class="eyebrow">Planned sessions</p><div class="box">'+sess.map(function(x,i){var p=D[x.id-1];return '<div class="srow col sessr"><div class="sr1"><b>'+p.n+'</b><span class="tagi">'+(x.int||'Light')+'</span></div><p class="meta">'+x.t+' at '+esc(x.gym||p.gym)+'</p>'+(x.note?'<p class="meta">'+esc(x.note)+'</p>':'')+'<div class="row-gap"><button class="btn btn-sm btn-sec" data-s="ics" data-v="'+i+'">Add to calendar</button><button class="btn btn-sm btn-ghost" data-s="scancel" data-v="'+i+'">Cancel</button></div></div>'}).join('')+'</div><p class="note">Plans are proposals. Confirm the time and gym in chat before you go.</p>'}
 function matchList(){
-  return '<label class="sq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="msq" placeholder="Search" aria-label="Search messages" value="'+esc(msgQ).replace(/"/g,'&quot;')+'"></label>'+newRow()+'<div id="mlist">'+convoRows()+'</div>'+sessHtml();
+  return '<label class="sq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="msq" placeholder="Search conversations..." aria-label="Search messages" value="'+esc(msgQ).replace(/"/g,'&quot;')+'"></label><div id="nrow"'+(msgQ.trim()?' hidden':'')+'>'+newRow()+'</div>'+(matches.length?'<div class="sh"><h2 class="eyebrow">Recent messages</h2>'+(function(){var u=matches.filter(function(id){return unread[id]}).length;return u?'<span class="shc">'+u+' unread</span>':''})()+'</div>':'')+'<div id="mlist">'+convoRows()+'</div>'+sessHtml();
 }
 function chatView(){
   var p=D[openId-1],c=chats[openId],lastMe=-1,i;
@@ -1549,7 +1742,8 @@ function seed(){
   S.forEach(function(x){D[x[0]-1].done=1;matches.push(x[0]);chats[x[0]]=x[1];if(x[2])unread[x[0]]=1});
   seeded=true;
 }
-document.addEventListener('input',function(e){if(e.target.id!=='msq')return;msgQ=e.target.value;var l=document.getElementById('mlist');if(l){l.innerHTML=convoRows();bind()}});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-msqclear]');if(!b)return;msgQ='';render();var i=document.getElementById('msq');if(i)i.focus()});
+document.addEventListener('input',function(e){if(e.target.id!=='msq')return;msgQ=e.target.value;var nr=document.getElementById('nrow');if(nr)nr.hidden=!!msgQ.trim();var l=document.getElementById('mlist');if(l){l.innerHTML=convoRows();bind()}});
 document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.id&&/^ev[ndt]$/.test(e.target.id)){var sb=$('#evsaveb');if(sb)sb.click();return}if(tab==='discover'&&onb===0&&!sheet&&$('#modal').hidden&&!$('#txt')&&e.target.tagName!=='SELECT'&&e.target.tagName!=='INPUT'){if(e.key==='ArrowRight')decide(1);if(e.key==='ArrowLeft')decide(-1)}});
 load();recalc();fixMe();seed();applyTheme();
 render();
