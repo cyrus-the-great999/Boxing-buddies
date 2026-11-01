@@ -1006,8 +1006,8 @@ function fieldHtml(k, label, type, ph) {
 }
 function consentFields() {
   return '<label class="srow rad"><input id="age18" type="checkbox"' + (state.agreeAdult ? ' checked' : '') + '><span>I confirm I am 18 or older</span></label>' +
-    '<label class="srow rad"><input id="termsok" type="checkbox"' + (state.agreeTerms ? ' checked' : '') + '><span>I agree to the Terms and the Privacy Policy</span></label>' +
-    '<p class="help"><a href="terms.html">Terms</a> · <a href="privacy.html">Privacy Policy</a>. Draft text for now. Final wording comes later.</p>'
+    '<label class="srow rad"><input id="termsok" type="checkbox"' + (state.agreeTerms ? ' checked' : '') + '><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a></span></label>' +
+    '<p class="help">The Terms say Boxing Buddies is for US residents only. Both documents are drafts and still need a lawyer’s review.</p>'
 }
 function chipGroup(k, label, opts) {
   return '<div class="field"><span class="field-l" id="lb' + k + '">' + label + '</span><div class="chips" role="radiogroup" aria-labelledby="lb' + k + '">' + opts.map(x => {
@@ -1058,7 +1058,7 @@ function onbView() {
       '</div><div class="onb-cta"><button class="btn btn-block" data-act="onext">Continue</button></div></div>'
   }
   if (state.onb === 3) {
-    return '<div class="onb">' + top + '<div class="onb-body"><h1>Before you continue</h1><p>Boxing Buddies is for adults. Confirm your age and agree to the draft terms.</p>' + fieldHtml('a', 'Age', 'number', '18 or older') + consentFields() +
+    return '<div class="onb">' + top + '<div class="onb-body"><h1>Before you continue</h1><p>Boxing Buddies is for US residents who are 18 or older. Confirm your age and agree to the Terms and Privacy Policy.</p>' + fieldHtml('a', 'Age', 'number', '18 or older') + consentFields() +
       '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Continue</button></div></div>'
   }
   return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p>Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p>' + consentFields() + '<p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
@@ -1151,7 +1151,7 @@ function settingsView() {
     '<p class="eyebrow">Safety</p><div class="box"><button class="srow link" data-act="safety"><div><b>Safety guide</b><span>Gym, gear, and tell someone before a first session</span></div></button></div>' +
     (state.blocks.length ? '<p class="eyebrow">Blocked (' + state.blocks.length + ')</p><div class="box">' + state.blocks.map(b => '<div class="srow"><span>' + esc(b.name) + '</span><button class="btn btn-sm btn-sec" data-act="unblock" data-v="' + b.id + '">Unblock</button></div>').join('') + '</div>' : '') +
     '<p class="eyebrow">Your data</p><div class="box"><button class="srow link" data-act="export">Download my profile</button><button class="srow link" data-act="delete-account" style="color:var(--err)">Delete account</button></div>' +
-    '<p class="eyebrow">Legal</p><div class="box"><a class="srow link" href="privacy.html">Privacy policy</a><a class="srow link" href="terms.html">Terms of use</a></div>' +
+    '<p class="eyebrow">Legal</p><div class="box"><a class="srow link" href="privacy.html">Privacy Policy</a><a class="srow link" href="terms.html">Terms of Service</a></div><p class="help">The Terms say Boxing Buddies is for US residents only. Both pages are drafts pending a lawyer’s review.</p>' +
     '<p class="eyebrow">Account</p><div class="box"><div class="srow"><div><b>Signed in</b><span>' + esc(email) + '</span></div></div><button class="srow link" data-act="signout">Sign out</button></div>' +
     '<p class="eyebrow">About</p><div class="box"><div class="srow"><b>Version</b><span>1.1 beta</span></div><div class="srow"><div><b>Nationwide</b><span>Search any US city or ZIP. Gyms you add stay private until they are approved or confirmed.</span></div></div></div>'
 }

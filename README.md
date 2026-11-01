@@ -50,7 +50,7 @@ node --test test/logic.test.mjs
 
 - [ ] Site URL and redirect allow list include `https://boxingbuddies.vercel.app`.
 - [ ] Magic-link email and Google sign-in both complete on the production URL.
-- [ ] Replace the draft copy on `privacy.html` and `terms.html`.
+- [ ] Have a lawyer review `privacy.html` and `terms.html`, then remove the draft callout and the `noindex` tag. The Terms limit the app to US residents.
 - [ ] Confirm `20261101020000_launch_safety.sql` is applied (it is, on the current project).
 - [ ] Decide who can set `profiles.verified`.
 - [ ] Plan a gym import that already has coordinates. Do not bulk-geocode through Nominatim.
