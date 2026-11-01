@@ -1,7 +1,7 @@
 // Network first so you always get the newest version; the shell cache is the offline fallback.
 // The hero is a real file (img/hero.jpg) so the service worker can store it. Precache it
 // on install so the welcome art and meetup covers still paint with no network.
-const C='bb-shell-8';
+const C='bb-shell-9';
 const SHELL=['./','./index.html','./app.js','./logic.mjs','./manifest.json','./img/hero.jpg'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(C).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting()));
