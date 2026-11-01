@@ -1,7 +1,7 @@
 {
  "name": "Boxing Buddies",
  "short_name": "Boxing Buddies",
- "description": "Find sparring partners near Marlborough, MA",
+ "description": "Find sparring partners anywhere in the United States",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",

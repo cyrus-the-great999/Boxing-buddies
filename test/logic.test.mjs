@@ -1,0 +1,93 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import {
+  STATES, milesBetween, searchCities, nearestCity, findCity, compat, filterDeck,
+  parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED
+} from '../logic.mjs'
+
+const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
+
+test('city list covers every state and Washington DC', () => {
+  const have = new Set(cities.map(c => c[1]))
+  for (const [code] of STATES) assert.equal(have.has(code), true, code)
+  assert.equal(have.has('PR'), false)
+  assert.equal(STATES.filter(([code]) => code !== 'DC').length, 50)
+})
+
+test('distance from Marlborough to Boston is a short drive', () => {
+  const miles = milesBetween(42.3459, -71.5523, 42.3601, -71.0589)
+  assert.ok(miles > 20 && miles < 35, miles)
+  assert.ok(Math.abs(milesBetween(30, -97, 30, -97)) < 0.001)
+})
+
+test('city search finds Austin, TX and ignores ZIP-shaped queries', () => {
+  const rows = searchCities(cities, 'austin, tx', 10)
+  assert.ok(rows.some(c => c[0] === 'Austin' && c[1] === 'TX'))
+  assert.equal(searchCities(cities, '78701').length, 0)
+  assert.equal(isZip('01752'), true)
+  assert.equal(isZip('0175'), false)
+})
+
+test('nearest city to downtown Austin is in Texas', () => {
+  const near = nearestCity(cities, 30.2713, -97.7426)
+  assert.equal(near.state, 'TX')
+  assert.ok(near.miles < 15, near.miles)
+  const hit = findCity(cities, 'Honolulu', 'HI')
+  assert.ok(hit)
+  assert.ok(hit.lat > 21 && hit.lat < 22)
+})
+
+test('deck drops self, swipes, blocks, and people outside the radius', () => {
+  const me = { w: 'Welterweight', exp: 'Intermediate', st: 'Orthodox', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'] }
+  const people = [
+    { id: 'me', n: 'Me', w: 'Welterweight', exp: 'Intermediate', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'], d: 2, v: false },
+    { id: 'near', n: 'Near', w: 'Welterweight', exp: 'Intermediate', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'], d: 4, v: true },
+    { id: 'far', n: 'Far', w: 'Welterweight', exp: 'Intermediate', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'], d: 80, v: false },
+    { id: 'seen', n: 'Seen', w: 'Welterweight', exp: 'Intermediate', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'], d: 3, v: false },
+    { id: 'blocked', n: 'Blocked', w: 'Welterweight', exp: 'Intermediate', int: 'Light', gl: 'Technical work', dy: ['Tue'], tm: ['Evening'], d: 3, v: false },
+    { id: 'other', n: 'Other', w: 'Heavyweight', exp: 'Beginner', int: 'Hard', gl: 'Fight prep', dy: ['Sun'], tm: ['Morning'], d: 12, v: false }
+  ]
+  const deck = filterDeck(people, {
+    selfId: 'me', me, maxMiles: 40, sort: 'fit',
+    swiped: new Set(['seen']), blocked: new Set(['blocked']),
+    filters: { w: 'All', e: 'All', i: 'All', g: 'All', dy: [], verified: false }
+  })
+  assert.deepEqual(deck.map(p => p.id), ['near', 'other'])
+  const verified = filterDeck(people, {
+    selfId: 'me', me, maxMiles: 40, sort: 'near',
+    swiped: new Set(), blocked: new Set(),
+    filters: { verified: true }
+  })
+  assert.deepEqual(verified.map(p => p.id), ['near'])
+})
+
+test('same weight and intensity scores higher than a mismatch', () => {
+  const me = { w: 'Lightweight', exp: 'Intermediate', int: 'Light', gl: 'Fitness', dy: ['Sat'], tm: ['Morning'] }
+  const twin = { w: 'Lightweight', exp: 'Intermediate', int: 'Light', gl: 'Fitness', dy: ['Sat'], tm: ['Morning'], d: 5 }
+  const far = { w: 'Heavyweight', exp: 'Beginner', int: 'Hard', gl: 'Fight prep', dy: ['Mon'], tm: ['Evening'], d: 40 }
+  assert.ok(compat(me, twin).score > compat(me, far).score)
+  assert.equal(compat(me, far).warn, true)
+})
+
+test('session slots land in the next week', () => {
+  const slot = parseSlot('Tue 7:00pm')
+  assert.deepEqual(slot, { day: 'Tue', hour: 19, minute: 0 })
+  const now = new Date('2026-11-01T15:00:00')
+  const next = nextOccurrence(slot.day, slot.hour, slot.minute, now)
+  assert.ok(next > now)
+  assert.ok(next - now < 8 * 24 * 3600 * 1000)
+  assert.equal(next.getDay(), 2)
+  assert.equal(next.getHours(), 19)
+  assert.equal(parseSlot('nope'), null)
+})
+
+test('match pair ordering and gym visibility', () => {
+  assert.deepEqual(orderedPair('b', 'a'), ['a', 'b'])
+  assert.equal(gymVisibleTo({ status: 'approved', submitted_by: null }, 'someone'), true)
+  assert.equal(gymVisibleTo({ status: 'pending', submitted_by: 'owner' }, 'owner'), true)
+  assert.equal(gymVisibleTo({ status: 'pending', submitted_by: 'owner' }, 'other'), false)
+  assert.equal(CONFIRMATIONS_REQUIRED, 3)
+  assert.equal(safeHttps('https://example.com/gym'), 'https://example.com/gym')
+  assert.equal(safeHttps('javascript:alert(1)'), '')
+})

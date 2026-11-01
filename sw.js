@@ -1,5 +1,5 @@
 // Network first so you always get the newest version; cache is only an offline fallback.
-const C='bb-shell-1';
+const C='bb-shell-2';
 self.addEventListener('install',e=>{self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
