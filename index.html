@@ -3,8 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Boxing Buddies</title>
-<meta name="theme-color" content="#0D0E10"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Boxing Buddies — find a sparring partner</title>
+<meta name="description" content="Find a sparring partner anywhere in the United States. Match with boxers near you and plan a session at a real gym.">
+<link rel="canonical" href="https://boxingbuddies.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Boxing Buddies">
+<meta property="og:title" content="Boxing Buddies — find a sparring partner">
+<meta property="og:description" content="Match with boxers near you and plan a session at a real gym. Anywhere in the US.">
+<meta property="og:url" content="https://boxingbuddies.vercel.app/">
+<meta property="og:image" content="https://boxingbuddies.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boxing Buddies — find a sparring partner">
+<meta name="twitter:description" content="Match with boxers near you and plan a session at a real gym. Anywhere in the US.">
+<meta name="twitter:image" content="https://boxingbuddies.vercel.app/og.png">
+<meta name="theme-color" content="#0D0E10">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="icon-512.png" sizes="512x512">
+<link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
 <style>
@@ -871,7 +889,7 @@ header h1{font-size:28px;line-height:1.1}header h1::after{display:none}
 
 /* 19. photographic welcome + mockup cues */
 .onb.welcome{padding-bottom:var(--s-4)}
-.onb-art.hero{height:420px;margin-bottom:0;border:0;background:linear-gradient(180deg,rgba(17,15,14,.55) 0%,rgba(17,15,14,0) 28%,rgba(17,15,14,.25) 55%,#110F0E 100%),url(hero.jpg) center 20%/cover no-repeat,var(--hero-data) 62% 30%/cover no-repeat,#171412}
+.onb-art.hero{height:420px;margin-bottom:0;border:0;background:linear-gradient(180deg,rgba(17,15,14,.55) 0%,rgba(17,15,14,0) 28%,rgba(17,15,14,.25) 55%,#110F0E 100%),var(--hero-data) 62% 30%/cover no-repeat,#171412}
 .onb-art.hero::after{display:none}
 .hero .brand{position:absolute;left:var(--gutter);top:calc(var(--s-6) + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:var(--s-2);z-index:2}
 .hero .mark{width:56px;height:auto}
@@ -919,7 +937,7 @@ nav button[aria-current="true"]::before{box-shadow:0 3px 12px rgba(240,90,40,.7)
 .stats3 b{color:var(--ink)}.stats3>div:nth-child(2) b{color:#F3B35E}.stats3>div:nth-child(3) b{color:#8CCBB2}
 .stats3>div{background:linear-gradient(180deg,#26211F,#202125)}
 .photo::after{background:linear-gradient(180deg,rgba(17,15,14,.4) 0%,transparent 26%,transparent 46%,rgba(18,14,13,.9) 100%)}
-.onb-art.hero{background:linear-gradient(180deg,rgba(17,15,14,.5) 0%,rgba(17,15,14,0) 28%,rgba(17,15,14,.2) 50%,#110F0E 100%),url(hero.jpg) center 20%/cover no-repeat,var(--hero-data) 62% 30%/cover no-repeat,#171412}
+.onb-art.hero{background:linear-gradient(180deg,rgba(17,15,14,.5) 0%,rgba(17,15,14,0) 28%,rgba(17,15,14,.2) 50%,#110F0E 100%),var(--hero-data) 62% 30%/cover no-repeat,#171412}
 .mt::before{background:linear-gradient(180deg,rgba(240,90,40,.2),transparent 40%,rgba(17,15,14,.85))}
 .sw[aria-checked="true"]{background:linear-gradient(180deg,#F8672F,#EC5121)}
 .bar i,.steps i.on{background:linear-gradient(90deg,#F8672F,#FF8A4C)}
@@ -1038,8 +1056,8 @@ header h1::after{display:none}
 .fbar i{background:linear-gradient(90deg,#70B49A,#9AD0BA)}
 .av{background:linear-gradient(160deg,#3B3531,#26221F)}
 /* photography: the hero image appears where it is brand, not on profiles */
-.onb-art.hero{background:linear-gradient(180deg,rgba(17,15,14,.45) 0%,rgba(17,15,14,0) 30%,rgba(17,15,14,.15) 52%,#110F0E 100%),url(hero.jpg) center 20%/cover no-repeat,var(--hero-data) 62% 30%/cover no-repeat,#171412}
-.mbanner{position:relative;height:132px;margin:calc(-1*var(--s-6)) calc(-1*var(--s-6)) var(--s-4);background:linear-gradient(180deg,rgba(17,15,14,.25),rgba(45,40,37,.2) 55%,#2D2825 100%),url(hero.jpg) center 28%/cover no-repeat,var(--hero-data) 58% 26%/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--s-2)}
+.onb-art.hero{background:linear-gradient(180deg,rgba(17,15,14,.45) 0%,rgba(17,15,14,0) 30%,rgba(17,15,14,.15) 52%,#110F0E 100%),var(--hero-data) 62% 30%/cover no-repeat,#171412}
+.mbanner{position:relative;height:132px;margin:calc(-1*var(--s-6)) calc(-1*var(--s-6)) var(--s-4);background:linear-gradient(180deg,rgba(17,15,14,.25),rgba(45,40,37,.2) 55%,#2D2825 100%),var(--hero-data) 58% 26%/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;padding-bottom:var(--s-2)}
 .mbanner .mark{width:44px;height:auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}
 .mt:not([style*="url("]){background:linear-gradient(180deg,rgba(17,15,14,.25) 0%,rgba(17,15,14,.82) 100%),var(--hero-data) 62% 30%/cover no-repeat,#1C1917}
 .mt:not([style*="url("]):nth-child(2){background-position:0 0,18% 42%}
@@ -1134,7 +1152,7 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 .modal:has(.dialog.match){background:radial-gradient(90% 46% at 100% 0%,rgb(var(--ember-rgb,240 90 40)/.55),transparent 70%),radial-gradient(80% 40% at 0% 100%,rgb(var(--ember-rgb,240 90 40)/.4),transparent 70%),radial-gradient(40% 70% at 0% 40%,rgb(var(--steel-rgb,104 138 180)/.2),transparent 70%),rgba(7,8,10,.9)}
 .modal:has(.dialog.match)::before{content:"";position:absolute;inset:0;pointer-events:none;background:var(--lit-streaks,none);-webkit-mask-image:var(--lit-streak-mask,none);mask-image:var(--lit-streak-mask,none);opacity:.9}
 .dialog{position:relative;z-index:1}
-.dialog.match .mbanner{background:linear-gradient(180deg,rgba(13,14,16,.2),var(--surf) 100%),radial-gradient(80% 90% at 100% 0%,rgb(var(--ember-rgb,240 90 40)/.45),transparent 70%),url(hero.jpg) center 28%/cover no-repeat,var(--hero-data) 58% 26%/cover no-repeat}
+.dialog.match .mbanner{background:linear-gradient(180deg,rgba(13,14,16,.2),var(--surf) 100%),radial-gradient(80% 90% at 100% 0%,rgb(var(--ember-rgb,240 90 40)/.45),transparent 70%),var(--hero-data) 58% 26%/cover no-repeat}
 .onb-cta{background:transparent}
 .onb-art.hero{-webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent)}
 .btn.btn-sec,.dialog .btn.btn-sec{background:var(--surf-grad,var(--card));box-shadow:var(--edge-steel,0 0 0 1px var(--line)),var(--edge-inner,none)}
@@ -1334,17 +1352,21 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 .gym-row,.box.pad.gym-row{background:none;box-shadow:none;border-radius:0;padding:var(--s-4) 0;margin:0;border-bottom:1px solid var(--line)}
 .gym-row:last-of-type{border-bottom:0}
 input[type="date"].input,input[type="time"].input,select.input,.input{min-height:var(--tap)}
-input[type="date"].input,input[type="time"].input{font-size:15px;padding-left:var(--s-3);padding-right:var(--s-2)}
+input[type="date"].input,input[type="time"].input{font-size:16px;padding-left:var(--s-3);padding-right:var(--s-2)}
 .banner{margin:0 0 var(--s-3);padding:var(--s-3) var(--s-4);background:var(--surf);border-radius:var(--r-md);font-size:var(--t-sm)}
 .tag-pending{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--warn,#FFB341);font-weight:700}
 .fitnote{margin:0 0 var(--s-2);color:var(--mute);font-size:var(--t-sm)}
 .phero .ghost{position:absolute;left:0;right:0;top:18%;text-align:center;font:700 72px/1 var(--font-d);color:rgba(255,255,255,.16);z-index:0}
 .phero .pwho{position:absolute;z-index:2;left:var(--s-5);right:var(--s-5);bottom:var(--s-4);color:#fff}
 .phero .pwho .big,.phero .pwho .meta{color:#fff}
+button.chip,.qf .chip{min-height:44px}
+.help a,.note a,a.srow{color:var(--acc)}
+#offline{margin:0 var(--gutter) var(--s-3)}
 </style>
 </head>
 <body>
 <div id="app">
+  <p id="offline" class="banner" role="status" hidden>You’re offline. You can look around. Swipes and messages need a connection.</p>
   <header><div class="ht"><h1 id="ht">Discover</h1><p id="hs" class="hs"></p></div><button class="ibtn" data-act="open" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></header>
   <main id="main"></main>
   <nav><div id="nav"></div></nav>

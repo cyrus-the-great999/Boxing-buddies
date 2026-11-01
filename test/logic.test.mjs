@@ -3,7 +3,8 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
   STATES, milesBetween, searchCities, nearestCity, findCity, compat, filterDeck,
-  parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED
+  parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED,
+  messageProblem, MESSAGE_MAX
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -80,6 +81,14 @@ test('session slots land in the next week', () => {
   assert.equal(next.getDay(), 2)
   assert.equal(next.getHours(), 19)
   assert.equal(parseSlot('nope'), null)
+})
+
+test('messages block spam, extra links, profanity, and overrun length', () => {
+  assert.equal(messageProblem('Thursday at the gym?'), '')
+  assert.match(messageProblem('see https://a.com https://b.com https://c.com'), /links/i)
+  assert.match(messageProblem('join t.me/spam'), /spam/i)
+  assert.match(messageProblem('this is shit'), /clean/i)
+  assert.match(messageProblem('x'.repeat(MESSAGE_MAX + 1)), /long/i)
 })
 
 test('match pair ordering and gym visibility', () => {

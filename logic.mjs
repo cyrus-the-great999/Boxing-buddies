@@ -7,6 +7,24 @@ export const GOALS = ['Learn basics', 'Technical work', 'Fitness', 'Fight prep']
 export const W = ['All', 'Featherweight', 'Lightweight', 'Welterweight', 'Middleweight', 'Heavyweight']
 export const E = ['All', 'Beginner', 'Intermediate', 'Advanced']
 export const CONFIRMATIONS_REQUIRED = 3
+export const BIO_MAX = 500
+export const MESSAGE_MAX = 2000
+
+const SPAM_PHRASES = ['telegram.me', 't.me/', 'wa.me/', 'crypto airdrop', 'buy followers', 'free btc', 'whatsapp me']
+const PROFANITY = /\b(fuck|shit|bitch|asshole|cunt)\b/i
+
+/** Same rules as private.reject_spam. Returns an error string, or ''. */
+export function messageProblem(text) {
+  const value = String(text || '')
+  if (!value.trim()) return 'Write a message first.'
+  if (value.length > MESSAGE_MAX) return 'That message is too long.'
+  const links = value.match(/https?:\/\/|www\./gi)
+  if (links && links.length > 2) return 'Too many links. Keep it to a couple.'
+  const lowered = value.toLowerCase()
+  if (SPAM_PHRASES.some(phrase => lowered.includes(phrase))) return 'That looks like spam.'
+  if (PROFANITY.test(value)) return 'Keep it clean. No strong profanity.'
+  return ''
+}
 
 export const STATES = [
   ['AL', 'Alabama'], ['AK', 'Alaska'], ['AZ', 'Arizona'], ['AR', 'Arkansas'], ['CA', 'California'],

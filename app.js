@@ -2,7 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import {
   DAYS, TIMES, INT, GOALS, W, E, STATES, CONFIRMATIONS_REQUIRED,
   milesBetween, formatDist, hueFromId, isZip, safeHttps, searchCities, nearestCity, findCity,
-  compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair
+  compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -21,12 +21,12 @@ const INTHELP = {
 }
 const REASONS = ['Aggressive or unsafe behavior', 'Harassment or inappropriate messages', 'Fake or misleading profile', 'Spam or selling something', 'Something else']
 const SAFE = [
-  'Meet at a gym with a coach or staff nearby. Do not spar at a home or park for a first session.',
-  'Agree on intensity before round one: technical, light, moderate or hard. Say it again at the gym.',
-  'Wear headgear, a mouthguard and 14 to 16 oz gloves. Ask the gym about its gear rules.',
-  'Pick a stop word. Either of you can end a round at any time, no questions.',
-  'Tell a friend where you are going and when. Keep your phone on you.',
-  'Skip sparring when sick, injured or after a head injury. Rest is part of training.',
+  'Spar at a gym with a coach or staff nearby. Do not meet at a home or park for a first session.',
+  'Wear your gear: headgear, a mouthguard, and 14 to 16 oz gloves.',
+  'Tell someone where you are going and when you expect to be back.',
+  'Agree on intensity before round one, and say it again at the gym.',
+  'Pick a stop word. Either of you can end a round at any time.',
+  'Skip sparring when sick, injured, or after a head injury.',
   'Keep your address and personal details private until you trust each other.'
 ]
 const STW = { match: 'Match', near: 'Close', off: 'Different', unset: 'Not set' }
@@ -80,6 +80,8 @@ const state = {
   gymBusy: false,
   gymMsg: '',
   saving: false,
+  agreeAdult: false,
+  agreeTerms: false,
   channel: null,
   poll: 0
 }
@@ -218,8 +220,12 @@ function fromProfile(row) {
     bio: row.bio || '',
     avatar_url: row.avatar_url || '',
     town: row.town || '',
-    lat: row.lat, lng: row.lng, v: !!row.verified
+    lat: row.lat, lng: row.lng, v: !!row.verified,
+    adultConfirmed: !!row.adult_confirmed,
+    termsAcceptedAt: row.terms_accepted_at || null,
+    safetyAt: row.safety_acknowledged_at || null
   }
+  if (row.safety_acknowledged_at) state.cfg.ack = true
   if (row.lat != null && row.lng != null) {
     state.cfg.loc = { name: row.town || 'Your location', lat: row.lat, lng: row.lng, src: 'profile' }
   }
@@ -268,14 +274,20 @@ function payload() {
     availability_times: (me.tm || []).filter(t => TIMES.includes(t)),
     home_gym_id: me.gymId ? Number(me.gymId) : null,
     bio: me.bio ? String(me.bio).slice(0, 500) : null,
-    avatar_url: me.avatar_url || null
+    avatar_url: me.avatar_url || null,
+    adult_confirmed: !!me.adultConfirmed,
+    terms_accepted_at: me.termsAcceptedAt || null,
+    safety_acknowledged_at: me.safetyAt || null
   }
 }
 function validateProfile(p, strict) {
   if (p.display_name.length < 1 || p.display_name.length > 60) return 'Enter your name, up to 60 characters.'
-  if (strict && (p.age == null || p.age < 16 || p.age > 100)) return 'Enter an age from 16 to 100.'
-  if (p.age != null && (p.age < 16 || p.age > 100)) return 'Enter an age from 16 to 100.'
+  if (p.bio && messageProblem(p.bio)) return messageProblem(p.bio)
+  if (strict && (p.age == null || p.age < 18 || p.age > 100)) return 'Boxing Buddies is for adults 18 to 100.'
+  if (p.age != null && (p.age < 18 || p.age > 100)) return 'Boxing Buddies is for adults 18 to 100.'
   if (strict && (typeof p.lat !== 'number' || typeof p.lng !== 'number')) return 'Set a US location before you start.'
+  if (strict && !p.adult_confirmed) return 'Confirm that you are 18 or older.'
+  if (strict && !p.terms_accepted_at) return 'Agree to the Terms and Privacy Policy to continue.'
   return ''
 }
 
@@ -376,7 +388,7 @@ async function loadAll() {
   if (row) {
     fromProfile(row)
     state.hasProfile = true
-    state.onb = 0
+    state.onb = row.adult_confirmed && row.terms_accepted_at ? 0 : 3
   } else {
     state.me = blankMe()
     state.hasProfile = false
@@ -650,9 +662,11 @@ async function decide(dir) {
 
 async function sendMessage() {
   const input = $('#txt')
-  const body = (input ? input.value : state.msgDraft).trim()
+  const body = (input ? input.value : state.msgDraft).trim().slice(0, 2000)
   const match = matchById(state.openMatch)
   if (!body || !match) return
+  const problem = messageProblem(body)
+  if (problem) { toast(problem, 'err'); return }
   if (input) input.value = ''
   state.msgDraft = ''
   const { data, error } = await supabase.from('messages').insert({ match_id: match.id, sender_id: uid(), body }).select('id,match_id,sender_id,body,created_at').single()
@@ -686,11 +700,13 @@ async function proposeSession() {
     if (sent.data) addMessage(sent.data)
     state.sheet = false
     state.cfg.ack = true
+    state.me.safetyAt = state.me.safetyAt || new Date().toISOString()
     savePrefs()
+    if (state.hasProfile) supabase.from('profiles').update({ safety_acknowledged_at: state.me.safetyAt }).eq('id', uid()).then(() => {})
     render()
     toast('Plan sent. Confirm the details in chat.')
   }
-  if (!state.cfg.ack) safetyDlg(go)
+  if (!state.cfg.ack && !state.me.safetyAt) safetyDlg(go)
   else go()
 }
 async function setSessionStatus(id, status) {
@@ -839,6 +855,38 @@ async function removePhoto() {
   if (ok) toast('Photo removed')
   render()
 }
+async function exportProfile() {
+  const { data, error } = await supabase.from('profiles').select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,adult_confirmed,terms_accepted_at,safety_acknowledged_at,created_at,updated_at').eq('id', uid()).single()
+  if (error) { toast(errText(error), 'err'); return }
+  const file = { exported_at: new Date().toISOString(), email: (state.session.user && state.session.user.email) || null, profile: data }
+  const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = 'boxing-buddies-profile.json'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  toast('Profile download started')
+}
+async function deleteAccount() {
+  const id = uid()
+  const listed = await supabase.storage.from('avatars').list(id)
+  if (listed.error) { toast(errText(listed.error), 'err'); return }
+  const paths = (listed.data || []).filter(f => f.name && f.id).map(f => id + '/' + f.name)
+  if (paths.length) {
+    const removed = await supabase.storage.from('avatars').remove(paths)
+    if (removed.error) { toast(errText(removed.error), 'err'); return }
+  }
+  const { error } = await supabase.rpc('delete_own_account')
+  if (error) { toast(errText(error), 'err'); return }
+  try { await supabase.auth.signOut() } catch (e) {}
+  resetUser()
+  state.session = null
+  state.booting = false
+  render()
+  toast('Account deleted')
+}
 async function invite() {
   const url = location.origin + location.pathname
   const text = 'Find a sparring partner on Boxing Buddies'
@@ -850,6 +898,10 @@ async function invite() {
 }
 async function finishOnboarding() {
   if (state.saving) return
+  if (!state.agreeAdult) { toast('Confirm that you are 18 or older.', 'err'); return }
+  if (!state.agreeTerms) { toast('Agree to the Terms and Privacy Policy to continue.', 'err'); return }
+  state.me.adultConfirmed = true
+  state.me.termsAcceptedAt = new Date().toISOString()
   const problem = validateProfile(payload(), true)
   if (problem) { toast(problem, 'err'); return }
   state.saving = true
@@ -949,7 +1001,13 @@ function sessionCards() {
 }
 function fieldHtml(k, label, type, ph) {
   const val = state.me[k] == null ? '' : state.me[k]
-  return '<label class="field">' + label + '<input class="input" data-f="' + k + '" value="' + esc(val) + '" type="' + (type || 'text') + '" placeholder="' + esc(ph || label) + '"></label>'
+  const extra = k === 'bio' ? ' maxlength="500"' : k === 'n' ? ' maxlength="60"' : k === 'a' ? ' min="18" max="100" inputmode="numeric"' : ''
+  return '<label class="field">' + label + '<input class="input" data-f="' + k + '" value="' + esc(val) + '" type="' + (type || 'text') + '" placeholder="' + esc(ph || label) + '"' + extra + '></label>'
+}
+function consentFields() {
+  return '<label class="srow rad"><input id="age18" type="checkbox"' + (state.agreeAdult ? ' checked' : '') + '><span>I confirm I am 18 or older</span></label>' +
+    '<label class="srow rad"><input id="termsok" type="checkbox"' + (state.agreeTerms ? ' checked' : '') + '><span>I agree to the Terms and the Privacy Policy</span></label>' +
+    '<p class="help"><a href="terms.html">Terms</a> · <a href="privacy.html">Privacy Policy</a>. Draft text for now. Final wording comes later.</p>'
 }
 function chipGroup(k, label, opts) {
   return '<div class="field"><span class="field-l" id="lb' + k + '">' + label + '</span><div class="chips" role="radiogroup" aria-labelledby="lb' + k + '">' + opts.map(x => {
@@ -993,13 +1051,17 @@ function meView() {
 }
 function onbView() {
   const email = state.session.user.email || ''
-  const top = '<div class="onb-top"><button class="ibtn" data-act="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' + markSvg() + '<button class="btn btn-ghost btn-sm" data-act="signout">Sign out</button></div><div class="steps" role="img" aria-label="Step ' + state.onb + ' of 2"><i class="' + (state.onb >= 1 ? 'on' : '') + '"></i><i class="' + (state.onb >= 2 ? 'on' : '') + '"></i></div>'
+  const top = '<div class="onb-top"><button class="ibtn" data-act="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' + markSvg() + '<button class="btn btn-ghost btn-sm" data-act="signout">Sign out</button></div><div class="steps" role="img" aria-label="Step ' + Math.min(state.onb, 2) + ' of 2"><i class="' + (state.onb >= 1 ? 'on' : '') + '"></i><i class="' + (state.onb >= 2 ? 'on' : '') + '"></i></div>'
   if (state.onb === 1) {
     return '<div class="onb">' + top + '<div class="onb-body"><h1>How do you box?</h1><p>Signed in as ' + esc(email) + '. This is how partners see you. You can change it any time.</p>' +
-      fieldHtml('n', 'Your name') + fieldHtml('a', 'Age', 'number', '16 or older') + chipGroup('w', 'Weight class', W.slice(1)) + chipGroup('exp', 'Experience', E.slice(1)) + chipGroup('st', 'Stance', ['Orthodox', 'Southpaw']) + chipGroup('int', 'Sparring intensity', INT) + '<p class="help">' + INTHELP[state.me.int] + '</p>' + chipGroup('gl', 'Main goal', GOALS) +
+      fieldHtml('n', 'Your name') + fieldHtml('a', 'Age', 'number', '18 or older') + chipGroup('w', 'Weight class', W.slice(1)) + chipGroup('exp', 'Experience', E.slice(1)) + chipGroup('st', 'Stance', ['Orthodox', 'Southpaw']) + chipGroup('int', 'Sparring intensity', INT) + '<p class="help">' + INTHELP[state.me.int] + '</p>' + chipGroup('gl', 'Main goal', GOALS) +
       '</div><div class="onb-cta"><button class="btn btn-block" data-act="onext">Continue</button></div></div>'
   }
-  return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p>Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p><p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
+  if (state.onb === 3) {
+    return '<div class="onb">' + top + '<div class="onb-body"><h1>Before you continue</h1><p>Boxing Buddies is for adults. Confirm your age and agree to the draft terms.</p>' + fieldHtml('a', 'Age', 'number', '18 or older') + consentFields() +
+      '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Continue</button></div></div>'
+  }
+  return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p>Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p>' + consentFields() + '<p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
     '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Start sparring</button></div></div>'
 }
 function authView() {
@@ -1054,7 +1116,8 @@ function chatView() {
   if (!m) return matchList()
   const p = m.partner
   const list = msgs(m.id)
-  let html = '<div class="ch"><button class="ibtn" data-act="back" aria-label="Back to messages"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' + avHtml(p, 'sm') + '<span class="cht"><b>' + esc(p.n) + '</b><span>' + esc(p.gym) + '</span></span><button class="ibtn" data-act="plan" aria-label="Plan a session"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button></div>'
+  let html = '<div class="ch"><button class="ibtn" data-act="back" aria-label="Back to messages"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' + avHtml(p, 'sm') + '<span class="cht"><b>' + esc(p.n) + '</b><span>' + esc(p.gym) + '</span></span><button class="ibtn" data-act="plan" aria-label="Plan a session"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button></div>' +
+    '<div class="btn-row mb-2"><button class="btn btn-sec" data-act="report" data-v="' + esc(p.id) + '">Report</button><button class="btn btn-danger" data-act="block" data-v="' + esc(p.id) + '">Block</button></div>'
   html += '<div class="chat"><div class="msgs" id="msgs">'
   list.forEach((msg, i) => {
     const prev = list[i - 1]
@@ -1085,10 +1148,12 @@ function settingsView() {
     tog('verified', 'Verified boxers only', 'Hide profiles that are not verified') + '<div class="srow col"><b>Distance units</b>' + seg('units', [['mi', 'Miles'], ['km', 'Kilometers']]) + '</div><div class="srow col"><b>Sort discover</b>' + seg('sort', [['fit', 'Best fit'], ['near', 'Nearest']]) + '</div></div>' +
     '<p class="eyebrow">Appearance</p><div class="box"><div class="srow col"><b>Theme</b>' + seg('theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']]) + '</div></div>' +
     '<p class="eyebrow">Notifications</p><div class="box">' + tog('nMatch', 'Match pop-ups', 'Show a pop-up when someone matches you') + tog('nMsg', 'Message toasts', 'A short note when a new message arrives') + '</div>' +
-    '<p class="eyebrow">Safety</p><div class="box"><button class="srow link" data-act="safety"><div><b>Safety guide</b><span>Seven checks before you spar someone new</span></div></button></div>' +
+    '<p class="eyebrow">Safety</p><div class="box"><button class="srow link" data-act="safety"><div><b>Safety guide</b><span>Gym, gear, and tell someone before a first session</span></div></button></div>' +
     (state.blocks.length ? '<p class="eyebrow">Blocked (' + state.blocks.length + ')</p><div class="box">' + state.blocks.map(b => '<div class="srow"><span>' + esc(b.name) + '</span><button class="btn btn-sm btn-sec" data-act="unblock" data-v="' + b.id + '">Unblock</button></div>').join('') + '</div>' : '') +
+    '<p class="eyebrow">Your data</p><div class="box"><button class="srow link" data-act="export">Download my profile</button><button class="srow link" data-act="delete-account" style="color:var(--err)">Delete account</button></div>' +
+    '<p class="eyebrow">Legal</p><div class="box"><a class="srow link" href="privacy.html">Privacy policy</a><a class="srow link" href="terms.html">Terms of use</a></div>' +
     '<p class="eyebrow">Account</p><div class="box"><div class="srow"><div><b>Signed in</b><span>' + esc(email) + '</span></div></div><button class="srow link" data-act="signout">Sign out</button></div>' +
-    '<p class="eyebrow">About</p><div class="box"><div class="srow"><b>Version</b><span>1.0 beta</span></div><div class="srow"><div><b>Nationwide</b><span>Search any US city or ZIP. Gyms you add stay private until they are approved or confirmed.</span></div></div></div>'
+    '<p class="eyebrow">About</p><div class="box"><div class="srow"><b>Version</b><span>1.1 beta</span></div><div class="srow"><div><b>Nationwide</b><span>Search any US city or ZIP. Gyms you add stay private until they are approved or confirmed.</span></div></div></div>'
 }
 function locationView() {
   return '<button class="btn btn-sec btn-sm sheet-done" data-act="locback">Done</button><h2 class="big">Location</h2><p class="meta mt-2">Current: <b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</b></p>' +
@@ -1157,7 +1222,7 @@ function profileSheet() {
     (c.warn ? '<p class="warn" role="note"><b>Go easy.</b> You differ a lot in size, experience, or intensity. Start technical and agree before the first round.</p>' : '') +
     '<p class="eyebrow">Details</p><div class="box plain"><div class="srow"><span>Home gym</span><b>' + esc(p.gym) + '</b></div><div class="srow"><span>Stance</span><b>' + esc(p.st || '—') + '</b></div><div class="srow"><span>Height</span><b>' + esc(p.h || '—') + '</b></div><div class="srow"><span>Town</span><b>' + esc(p.town || '—') + '</b></div></div>' +
     '<div class="btn-row mt-4"><button class="btn btn-sec" data-act="pass">Pass</button><button class="btn" data-act="spar">Spar</button></div>' +
-    '<div class="row-gap mt-3"><button class="chip" data-act="report" data-v="' + p.id + '">Report</button><button class="chip" data-act="block" data-v="' + p.id + '" style="color:var(--err)">Block</button></div>'
+    '<div class="btn-row mt-3"><button class="btn btn-sec" data-act="report" data-v="' + esc(p.id) + '">Report</button><button class="btn btn-danger" data-act="block" data-v="' + esc(p.id) + '">Block</button></div>'
 }
 function personById(id) {
   return state.profiles.find(p => p.id === id) || (state.matches.map(m => m.partner).find(p => p.id === id)) || pool()[0]
@@ -1203,7 +1268,8 @@ function renderApp() {
   $('#ht').textContent = titles[state.tab] || 'Boxing Buddies'
   const sub = $('#hs')
   if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (n + (n === 1 ? ' boxer' : ' boxers') + ' within ' + dist(state.cfg.maxd) + ' of ' + locLabel()) : (state.tab === 'matches' ? 'Your boxing connections' : '')
-  if (state.offline) main.insertAdjacentHTML('afterbegin', '<p class="banner">You are offline. You can look around, but swipes and messages need a connection.</p>')
+  const off = document.getElementById('offline')
+  if (off) off.hidden = !state.offline
   document.title = (titles[state.tab] || 'Boxing Buddies') + ' | Boxing Buddies'
   bindCards()
   const ms = $('#msgs')
@@ -1271,10 +1337,17 @@ function confirmDlg(o) {
   $('#cno').focus()
 }
 function safetyDlg(fn) {
-  modalOpen('<div class="dialog scroll" role="dialog" aria-modal="true" aria-labelledby="dt"><h2 id="dt">Before you spar</h2><p class="meta">Meeting someone new for contact training takes some care.</p><ol class="safe">' + SAFE.map(t => '<li>' + t + '</li>').join('') + '</ol><div class="stack-v">' + (fn ? '<button class="btn btn-block" id="sgo">I understand, continue</button>' : '') + '<button class="btn btn-sec btn-block" id="cno">' + (fn ? 'Not now' : 'Close') + '</button></div></div>')
+  modalOpen('<div class="dialog scroll" role="dialog" aria-modal="true" aria-labelledby="dt"><h2 id="dt">Before your first session</h2><p class="meta">Spar at a gym, wear your gear, and tell someone.</p><ol class="safe">' + SAFE.map(t => '<li>' + t + '</li>').join('') + '</ol><div class="stack-v">' + (fn ? '<button class="btn btn-block" id="sgo">I understand, continue</button>' : '') + '<button class="btn btn-sec btn-block" id="cno">' + (fn ? 'Not now' : 'Close') + '</button></div></div>')
   $('#cno').onclick = closeModal
   const g = $('#sgo')
-  if (g) g.onclick = () => { closeModal(); state.cfg.ack = true; savePrefs(); fn() }
+  if (g) g.onclick = () => {
+    closeModal()
+    state.cfg.ack = true
+    state.me.safetyAt = new Date().toISOString()
+    savePrefs()
+    if (state.hasProfile) supabase.from('profiles').update({ safety_acknowledged_at: state.me.safetyAt }).eq('id', uid()).then(() => {})
+    if (fn) fn()
+  }
 }
 function reportDlg(person) {
   if (!person) return
@@ -1354,10 +1427,16 @@ async function onClick(b) {
   if (act === 'google') await google()
   if (act === 'auth-reset') { state.authSent = false; state.authMsg = ''; state.authErr = false; render(); return }
   if (act === 'signout') { await signOut(); return }
+  if (act === 'export') { await exportProfile(); return }
+  if (act === 'delete-account') {
+    confirmDlg({ title: 'Delete your account?', body: 'This removes your profile, swipes, messages you sent, and photos. You will be signed out. This cannot be undone.', yes: 'Delete account', danger: true, fn: () => { deleteAccount().catch(err => toast(errText(err), 'err')) } })
+    return
+  }
   if (act === 'onext') {
     const problem = validateProfile(payload(), false)
     if (!state.me.n.trim()) { toast('Enter your name.', 'err'); return }
-    if (problem && /age/i.test(problem)) { toast(problem, 'err'); return }
+    if (state.me.a === '' || state.me.a == null) { toast('Enter your age. Boxing Buddies is for adults 18 or older.', 'err'); return }
+    if (problem && /age|adult|clean|spam|long/i.test(problem)) { toast(problem, 'err'); return }
     state.onb = 2
     render()
     $('#main').scrollTop = 0
@@ -1495,6 +1574,8 @@ document.addEventListener('input', (e) => {
   if (k) { state.me[k] = e.target.value; scheduleSave() }
 })
 document.addEventListener('change', (e) => {
+  if (e.target.id === 'age18') state.agreeAdult = e.target.checked
+  if (e.target.id === 'termsok') state.agreeTerms = e.target.checked
   if (e.target.id === 'pic') onPhoto(e.target.files && e.target.files[0])
   if (e.target.id === 'gstate') state.gymDraft.state = e.target.value
   if (e.target.dataset && e.target.dataset.act === 'maxd') onRadius(e.target.value)
@@ -1512,6 +1593,15 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') decide(1)
     if (e.key === 'ArrowLeft') decide(-1)
   }
+})
+window.addEventListener('error', (e) => {
+  if (e.target && e.target !== window) return
+  console.error(e.error || e.message)
+  toast('Something went wrong. Your account is fine. Reload if this keeps happening.', 'err')
+})
+window.addEventListener('unhandledrejection', (e) => {
+  console.error(e.reason)
+  toast('Something went wrong. Your account is fine. Reload if this keeps happening.', 'err')
 })
 window.addEventListener('offline', () => { state.offline = true; toast('You are offline. New swipes and messages need a connection.', 'err'); render() })
 window.addEventListener('online', () => {
