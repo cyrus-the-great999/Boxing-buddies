@@ -5,7 +5,8 @@ import {
   STATES, milesBetween, searchCities, nearestCity, findCity, compat, filterDeck,
   parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED,
   messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
-  authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE
+  authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE,
+  choiceSnapshot, restoreChoices
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -120,6 +121,22 @@ test('resend code waits 60 seconds', () => {
   assert.equal(resendWaitSec(t0, t0 + 1000), 59)
   assert.equal(resendWaitSec(t0, t0 + 59999), 1)
   assert.equal(resendWaitSec(t0, t0 + 60000), 0)
+})
+
+test('a failed save can put chip choices back', () => {
+  const me = { w: 'Lightweight', exp: 'Beginner', st: 'Orthodox', int: 'Light', gl: 'Fitness', dy: ['Tue'], tm: ['Evening'], gymId: 4, gym: 'Title' }
+  const saved = choiceSnapshot(me)
+  me.exp = 'Intermediate'
+  me.dy.push('Thu')
+  me.gymId = 9
+  assert.deepEqual(saved, { w: 'Lightweight', exp: 'Beginner', st: 'Orthodox', int: 'Light', gl: 'Fitness', dy: ['Tue'], tm: ['Evening'], gymId: 4, gym: 'Title' })
+  restoreChoices(me, saved)
+  assert.equal(me.exp, 'Beginner')
+  assert.deepEqual(me.dy, ['Tue'])
+  assert.equal(me.gymId, 4)
+  me.dy.push('Sat')
+  assert.deepEqual(saved.dy, ['Tue'])
+  assert.equal(restoreChoices(me, null), me)
 })
 
 test('match pair ordering and gym visibility', () => {
