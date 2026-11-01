@@ -316,6 +316,17 @@ export function choiceSnapshot(me) {
   }
 }
 
+/** Nearest rows first. Rows without coordinates sort last. Does not mutate the input. */
+export function sortByDistance(rows, lat, lng) {
+  const originLat = Number(lat)
+  const originLng = Number(lng)
+  return (rows || []).slice().sort((a, b) => {
+    const da = a == null || a.lat == null || a.lng == null ? Infinity : milesBetween(originLat, originLng, a.lat, a.lng)
+    const db = b == null || b.lat == null || b.lng == null ? Infinity : milesBetween(originLat, originLng, b.lat, b.lng)
+    return da - db
+  })
+}
+
 /** Put the last saved choices back. No-op when there is nothing to restore. */
 export function restoreChoices(me, snap) {
   if (!me || !snap) return me

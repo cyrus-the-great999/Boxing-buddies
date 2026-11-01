@@ -2,6 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import {
   DAYS, TIMES, INT, GOALS, W, E, STATES, CONFIRMATIONS_REQUIRED,
   milesBetween, formatDist, hueFromId, isZip, safeHttps, searchCities, nearestCity, findCity,
+  sortByDistance,
   compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
   emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec,
   choiceSnapshot, restoreChoices
@@ -15,6 +16,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true }
 })
 
+const MAX_MILES = 100
 const INTHELP = {
   Technical: 'No hard shots, work on skills',
   Light: 'Controlled, around 50 to 60 percent',
@@ -102,7 +104,7 @@ function loadPrefs() {
     const s = JSON.parse(localStorage.getItem('bb-prefs') || '{}')
     return {
       theme: ['system', 'light', 'dark'].includes(s.theme) ? s.theme : 'dark',
-      maxd: Math.min(200, Math.max(5, Number(s.maxd) || 50)),
+      maxd: Math.min(MAX_MILES, Math.max(5, Number(s.maxd) || 50)),
       units: s.units === 'km' ? 'km' : 'mi',
       verified: !!s.verified,
       nMatch: s.nMatch !== false,
@@ -343,7 +345,7 @@ async function loadGyms() {
       const box = ['lat.gte.' + (loc.lat - pad).toFixed(5), 'lat.lte.' + (loc.lat + pad).toFixed(5), 'lng.gte.' + (loc.lng - padLng).toFixed(5), 'lng.lte.' + (loc.lng + padLng).toFixed(5)].join(',')
       q = q.or('and(' + box + '),submitted_by.eq.' + uid())
     }
-    return q.limit(400)
+    return q.limit(1000)
   }
   let res = await run(state.gymMigration ? full : base)
   if (res.error && /column|schema cache/i.test(res.error.message || '')) {
@@ -351,7 +353,9 @@ async function loadGyms() {
     res = await run(base)
   }
   if (res.error) throw res.error
-  state.gyms = res.data || []
+  const loc = state.cfg.loc
+  const rows = res.data || []
+  state.gyms = loc ? sortByDistance(rows, loc.lat, loc.lng) : rows
 }
 async function loadDeck() {
   state.loadingDeck = true
@@ -1242,7 +1246,7 @@ function filtersView() {
   const n = pool().length
   return '<button class="btn btn-sec btn-sm sheet-done" data-act="close">Done</button><h2 class="big">Filters</h2><p class="eyebrow">Weight class</p><div class="box"><div class="srow col">' + chips('fw', W, state.filters.w, 'All weights') + '</div></div><p class="eyebrow">Experience</p><div class="box"><div class="srow col">' + chips('fe', E, state.filters.e, 'All levels') + '</div></div><p class="eyebrow">Intensity</p><div class="box"><div class="srow col">' + chips('fi', ['All'].concat(INT), state.filters.i, 'Any intensity') + '</div></div><p class="eyebrow">Goal</p><div class="box"><div class="srow col">' + chips('fg', ['All'].concat(GOALS), state.filters.g, 'Any goal') + '</div></div><p class="eyebrow">Available on</p><div class="box"><div class="srow col"><div class="chips">' + DAYS.map(d => '<button class="chip" data-act="fd" data-v="' + d + '" aria-pressed="' + (state.filters.dy.indexOf(d) >= 0) + '">' + d + '</button>').join('') + '</div></div></div>' +
     '<p class="eyebrow">Location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div>' +
-    '<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="200" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div></div>' +
+    '<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="100" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div></div>' +
     '<button class="btn btn-sec btn-block mt-4" data-act="fclear">Clear filters</button><button class="btn btn-block mt-2" data-act="close">' + (n ? 'Show ' + n + ' boxer' + (n === 1 ? '' : 's') : 'No boxers match') + '</button>'
 }
 function settingsView() {
@@ -1250,7 +1254,7 @@ function settingsView() {
   const tog = (k, label, sub) => '<div class="srow"><div><b>' + label + '</b><span>' + sub + '</span></div><button class="sw" role="switch" aria-checked="' + !!state.cfg[k] + '" aria-label="' + label + '" data-act="toggle" data-k="' + k + '"></button></div>'
   const email = state.session.user.email || ''
   return '<button class="btn btn-sec btn-sm sheet-done" data-act="close">Done</button><h2 class="big">Settings</h2><div class="box mt-3"><button class="srow link" data-act="edit"><span class="who-row">' + meAv(true) + esc(state.me.n || 'Set up your profile') + '</span></button></div>' +
-    '<p class="eyebrow">Discovery</p><div class="box"><button class="srow link" data-act="loc"><div><b>Location</b><span>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</span></div></button><div class="srow col"><b>Radius: <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="200" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div>' +
+    '<p class="eyebrow">Discovery</p><div class="box"><button class="srow link" data-act="loc"><div><b>Location</b><span>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</span></div></button><div class="srow col"><b>Radius: <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="100" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div>' +
     tog('verified', 'Verified boxers only', 'Hide profiles that are not verified') + '<div class="srow col"><b>Distance units</b>' + seg('units', [['mi', 'Miles'], ['km', 'Kilometers']]) + '</div><div class="srow col"><b>Sort discover</b>' + seg('sort', [['fit', 'Best fit'], ['near', 'Nearest']]) + '</div></div>' +
     '<p class="eyebrow">Appearance</p><div class="box"><div class="srow col"><b>Theme</b>' + seg('theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']]) + '</div></div>' +
     '<p class="eyebrow">Notifications</p><div class="box">' + tog('nMatch', 'Match pop-ups', 'Show a pop-up when someone matches you') + tog('nMsg', 'Message toasts', 'A short note when a new message arrives') + '</div>' +
@@ -1265,7 +1269,7 @@ function locationView() {
   return '<button class="btn btn-sec btn-sm sheet-done" data-act="locback">Done</button><h2 class="big">Location</h2><p class="meta mt-2">Current: <b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</b></p>' +
     '<button class="btn btn-sec btn-block mt-3' + (state.locBusy ? ' is-loading' : '') + '" data-act="locgps"' + (state.locBusy ? ' disabled' : '') + '>' + (state.locBusy ? 'Finding you' : 'Use my current location') + '</button>' +
     '<p class="' + (state.locMsgErr ? 'field-err' : 'help') + '" role="status">' + esc(state.locMsg) + '</p>' +
-    '<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="200" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div></div>' +
+    '<p class="eyebrow">Radius</p><div class="box"><div class="srow col"><b>Within <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="100" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div></div>' +
     '<p class="eyebrow">City or ZIP</p><label class="sq"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="locq" placeholder="Austin, TX or 78701" aria-label="Search a US city or ZIP" autocomplete="off" value="' + esc(state.locQ) + '"></label>' +
     '<div class="box" id="loclist" role="listbox">' + (state.locQ ? '<p class="note">Searching…</p>' : '<p class="note">All 50 states and Washington, DC. ZIP codes need a connection.</p>') + '</div>' +
     '<p class="note">Distances are straight-line miles from the point you pick. City coordinates are stored on this device. ZIP lookup uses Zippopotam.</p>'
@@ -1541,7 +1545,8 @@ async function persistChoices(seq) {
 }
 let radiusTimer = 0
 function onRadius(value) {
-  state.cfg.maxd = Number(value)
+  const n = Number(value)
+  state.cfg.maxd = Math.min(MAX_MILES, Math.max(5, Number.isFinite(n) ? n : 50))
   const label = document.getElementById('dv')
   if (label) label.textContent = dist(state.cfg.maxd)
   savePrefs()
