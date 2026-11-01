@@ -299,3 +299,34 @@ export function resendWaitSec(sentAt, now = Date.now()) {
   if (leftMs <= 0) return 0
   return Math.ceil(leftMs / 1000)
 }
+
+/** Profile choices that a chip tap can change. Copied so a later edit cannot mutate the saved copy. */
+export function choiceSnapshot(me) {
+  const src = me || {}
+  return {
+    w: src.w,
+    exp: src.exp,
+    st: src.st,
+    int: src.int,
+    gl: src.gl,
+    dy: Array.isArray(src.dy) ? src.dy.slice() : [],
+    tm: Array.isArray(src.tm) ? src.tm.slice() : [],
+    gymId: src.gymId == null ? null : src.gymId,
+    gym: src.gym || ''
+  }
+}
+
+/** Put the last saved choices back. No-op when there is nothing to restore. */
+export function restoreChoices(me, snap) {
+  if (!me || !snap) return me
+  me.w = snap.w
+  me.exp = snap.exp
+  me.st = snap.st
+  me.int = snap.int
+  me.gl = snap.gl
+  me.dy = snap.dy.slice()
+  me.tm = snap.tm.slice()
+  me.gymId = snap.gymId
+  me.gym = snap.gym
+  return me
+}

@@ -162,7 +162,7 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:40px;backgrou
 .row-gap>select.input{margin-top:0}
 input[type=file].input{padding:var(--s-2);font-size:var(--t-sm)}
 input[type=file]::file-selector-button{font:var(--w-strong) var(--t-cap) var(--font);border:0;border-radius:var(--r-sm);padding:var(--s-2) var(--s-3);margin-right:var(--s-3);background:var(--surf2);color:var(--ink);cursor:pointer}
-.input:focus,.input:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--focus)}
+.input:focus-visible{outline:0;box-shadow:inset 0 0 0 2px var(--focus)}
 .input[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--err)}
 .input:disabled{opacity:.5}
 .field-err{color:var(--err);font-size:var(--t-sm);font-weight:var(--w-strong);margin:var(--s-2) var(--s-1) 0}
@@ -518,7 +518,7 @@ nav button,.cmp,.crow b,.tk-ok,.tk-no,.tagi,.fit,.nw,.ver{font-size:12px}
 .chip.badge-grad{background:var(--surf2);color:var(--ink)}
 .ibtn.lg:not(.pri){background:var(--surf);box-shadow:none}
 .input,.sq{box-shadow:none;background:var(--surf)}
-.input:focus,.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--focus)}
+.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--focus)}
 .mt-new{border:0;background:var(--surf)}
 .box{border:0;box-shadow:none}
 .srow,.srow:last-child,.crow,.crow:last-child{border-bottom:0}
@@ -554,7 +554,7 @@ body,button,input,select,textarea{font-family:var(--font)}
 .seg button{border-radius:var(--r-sm)}
 .btn.btn-sm{border-radius:10px}
 .input,.sq,select.input{border-radius:var(--r-md);background-color:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
-.input:focus,.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc)}
+.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc)}
 .input[aria-invalid="true"]{box-shadow:inset 0 0 0 2px var(--err)}
 .chip{border-radius:var(--r-sm);background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
 button.chip:hover{background:var(--surf);box-shadow:inset 0 0 0 1px var(--field)}
@@ -591,7 +591,7 @@ input[type=range]{accent-color:var(--acc)}
 .box.pad{padding:var(--s-4) var(--s-5)}
 .box .srow{padding-left:var(--s-5);padding-right:var(--s-5)}
 .input,.sq,select.input{background-color:var(--surf);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-.input:focus,.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc),0 0 0 4px rgba(229,31,31,.18)}
+.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc),0 0 0 4px rgba(229,31,31,.18)}
 .chip{background:var(--surf);box-shadow:none}
 button.chip:hover{background:var(--surf2);box-shadow:none}
 .chip[aria-pressed="true"],.chip[aria-checked="true"]{background:var(--grad);color:#0A0C13;box-shadow:0 6px 16px -8px rgba(229,31,31,.7)}
@@ -759,7 +759,7 @@ header h1::after{content:"";display:block;width:36px;height:4px;margin-top:6px;b
 .card.back{filter:brightness(.7)}
 .box,.box.pad{background:var(--card);border-radius:14px;box-shadow:0 0 0 1px rgba(255,255,255,.05);border:0}
 .input,.sq,select.input{background-color:var(--surf);border-radius:var(--r-md);box-shadow:inset 0 0 0 1px var(--line)}
-.input:focus,.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc)}
+.input:focus-visible,.sq:focus-within{box-shadow:inset 0 0 0 2px var(--acc)}
 .chip{background:var(--surf);border-radius:var(--r-sm);box-shadow:inset 0 0 0 1px var(--line);font-size:14px;font-weight:500}
 button.chip:hover{background:var(--surf2);box-shadow:inset 0 0 0 1px var(--field)}
 .chip[aria-pressed="true"],.chip[aria-checked="true"]{background:var(--acc);color:#110F0E;box-shadow:none;font-weight:600}
@@ -1245,7 +1245,7 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 /* search */
 .sq{transition:box-shadow .15s ease,background-color .15s ease}
 .sq:focus-within{background:var(--surf2);box-shadow:0 0 0 1px rgb(214 40 40/.6),0 0 0 4px rgb(214 40 40/.14)}
-.sq input:focus,.sq input:focus-visible{outline:0;box-shadow:none}
+.sq input:focus-visible{outline:0;box-shadow:none}
 .nores{text-align:center;padding:var(--s-7) var(--s-4);display:flex;flex-direction:column;align-items:center;gap:var(--s-2)}
 .nores b{font-weight:500;font-size:var(--t-lg);overflow-wrap:anywhere}
 .nores p{margin:0 0 var(--s-3);color:var(--mute)}
@@ -1257,7 +1257,7 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 .m .td{background:var(--mute)}
 .send{align-items:center;gap:var(--s-2);background:var(--surf);border-radius:999px;padding:6px 6px 6px var(--s-4);box-shadow:var(--edge-steel,inset 0 0 0 1px var(--line));transition:box-shadow .15s ease,background-color .15s ease}
 .send:focus-within{background:var(--surf2);box-shadow:0 0 0 1px rgb(214 40 40/.6),0 0 0 4px rgb(214 40 40/.14)}
-.send .input,.send .input:focus,.send .input:focus-visible{background:none;box-shadow:none;border:0;outline:0;padding:var(--s-2) 0;min-height:40px}
+.send .input,.send .input:focus-visible{background:none;box-shadow:none;border:0;outline:0;padding:var(--s-2) 0;min-height:40px}
 .send .btn{border-radius:999px;min-height:40px;padding:0 var(--s-5)}
 .send .btn:disabled{background:var(--surf2);color:var(--mute);box-shadow:none;opacity:1}
 .quick .chip{border-radius:999px;box-shadow:var(--edge-steel,inset 0 0 0 1px var(--line))}
@@ -1293,7 +1293,7 @@ nav{background:var(--lit-hair,none) top/100% 1px no-repeat,rgba(13,14,16,.9);bor
 .btn,.actions .ibtn.lg.pri,.chip[aria-pressed="true"],.chip[aria-checked="true"],.sw[aria-checked="true"]{background:#D62828}
 .btn:hover,.actions .ibtn.lg.pri:hover{background:#DE3636}
 .btn.btn-sec,.btn.btn-sec:hover,.btn-sec:hover{background:var(--surf-grad,var(--surf))}
-.btn.btn-sec:hover,.btn-sec:hover,button.chip:hover{background:var(--surf2);box-shadow:var(--edge-steel,none)}
+.btn.btn-sec:hover,.btn-sec:hover{background:var(--surf2);box-shadow:var(--edge-steel,none)}
 .m.me{background:#D22929}
 .steps i.on{background:#D62828}
 /* chip groups: two even columns when there are four or more options, equal widths otherwise */
@@ -1366,6 +1366,30 @@ button.chip,.qf .chip{min-height:44px}
 .onb .onb-cta>.btn:not(.btn-sec):not(.btn-ghost){color:#fff}
 .onb .onb-cta>.btn:not(.btn-sec):not(.btn-ghost).is-loading::after{border-color:#fff;border-right-color:transparent}
 .input.code{letter-spacing:.42em;font-weight:700;font-variant-numeric:tabular-nums;text-align:center}
+/* A phone tap leaves :hover stuck on the button. That grey hover rule was stronger
+   than the red selected rule, so the new choice looked dimmed. Hover only applies
+   on devices that hover, and a selected chip stays red through hover, press, and focus. */
+button,a,label,.chip,.seg button,.srow,.ibtn{-webkit-tap-highlight-color:transparent}
+@media (prefers-reduced-motion:no-preference){button.chip,.seg button{transition:transform .12s ease}}
+@media (prefers-reduced-motion:reduce){button.chip,.seg button{transition:none}}
+button.chip:focus,.seg button:focus{outline:none}
+button.chip:focus-visible,.seg button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+button.chip[aria-pressed="true"],button.chip[aria-checked="true"],
+button.chip[aria-pressed="true"]:hover,button.chip[aria-checked="true"]:hover,
+button.chip[aria-pressed="true"]:active,button.chip[aria-checked="true"]:active,
+button.chip[aria-pressed="true"]:focus,button.chip[aria-checked="true"]:focus,
+.seg button[aria-pressed="true"],
+.seg button[aria-pressed="true"]:hover,.seg button[aria-pressed="true"]:active,.seg button[aria-pressed="true"]:focus{
+  background:#D62828;color:#110F0E;box-shadow:none}
+@media (hover:hover){
+  button.chip:hover:not([aria-pressed="true"]):not([aria-checked="true"]),
+  .seg button:hover:not([aria-pressed="true"]){background:var(--surf2)}
+}
+@media (hover:none){
+  button.chip:hover:not([aria-pressed="true"]):not([aria-checked="true"]),
+  .seg button:hover:not([aria-pressed="true"]){background:var(--surf);color:var(--ink);box-shadow:none;filter:none}
+  .btn:hover,.btn-sec:hover,.ibtn:hover,button.srow:hover,.dm:hover,.mt-new:hover{filter:none}
+}
 </style>
 </head>
 <body>

@@ -3,7 +3,8 @@ import {
   DAYS, TIMES, INT, GOALS, W, E, STATES, CONFIRMATIONS_REQUIRED,
   milesBetween, formatDist, hueFromId, isZip, safeHttps, searchCities, nearestCity, findCity,
   compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
-  emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec
+  emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec,
+  choiceSnapshot, restoreChoices
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -233,6 +234,7 @@ function fromProfile(row) {
   if (row.lat != null && row.lng != null) {
     state.cfg.loc = { name: row.town || 'Your location', lat: row.lat, lng: row.lng, src: 'profile' }
   }
+  noteChoiceBaseline()
 }
 function pool() {
   return filterDeck(state.profiles, {
@@ -295,13 +297,23 @@ function validateProfile(p, strict) {
   return ''
 }
 
+let lastSaveMessage = ''
 async function saveProfile(opts) {
   const quiet = opts && opts.quiet
+  lastSaveMessage = ''
   const p = payload()
   const problem = validateProfile(p, false)
-  if (problem) { if (!quiet) toast(problem, 'err'); return false }
+  if (problem) {
+    lastSaveMessage = problem
+    if (!quiet) toast(problem, 'err')
+    return false
+  }
   const { data, error } = await supabase.from('profiles').upsert(p).select('*, home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').single()
-  if (error) { if (!quiet) toast(errText(error), 'err'); return false }
+  if (error) {
+    lastSaveMessage = errText(error)
+    if (!quiet) toast(lastSaveMessage, 'err')
+    return false
+  }
   if (!(opts && opts.keepLocal)) fromProfile(data)
   state.hasProfile = true
   return true
@@ -1498,10 +1510,34 @@ async function locRows(q) {
   return rows.map(c => locButton({ name: c[0] + ', ' + c[1], city: c[0], state: c[1], lat: c[2], lng: c[3] })).join('')
 }
 let saveTimer = 0
+let saveSeq = 0
+let choiceBaseline = null
+function noteChoiceBaseline() {
+  choiceBaseline = choiceSnapshot(state.me)
+}
 function scheduleSave() {
   if (!state.hasProfile || state.onb > 0) return
+  const seq = ++saveSeq
   clearTimeout(saveTimer)
-  saveTimer = setTimeout(() => { saveProfile({ quiet: true, keepLocal: true }).catch(e => toast(errText(e), 'err')) }, 500)
+  // The chip already shows the new choice. This write happens after, and only a failure puts the old choice back.
+  saveTimer = setTimeout(() => { persistChoices(seq) }, 500)
+}
+async function persistChoices(seq) {
+  try {
+    const ok = await saveProfile({ quiet: true, keepLocal: true })
+    if (seq !== saveSeq) return
+    if (ok) {
+      noteChoiceBaseline()
+      return
+    }
+  } catch (e) {
+    if (seq !== saveSeq) return
+    lastSaveMessage = errText(e)
+  }
+  if (seq !== saveSeq) return
+  restoreChoices(state.me, choiceBaseline)
+  toast(lastSaveMessage || 'That choice did not save. It was changed back.', 'err')
+  render()
 }
 let radiusTimer = 0
 function onRadius(value) {
@@ -1581,6 +1617,7 @@ async function onClick(b) {
     const i = state.filters.dy.indexOf(v)
     if (i < 0) state.filters.dy.push(v); else state.filters.dy.splice(i, 1)
   }
+  // Optimistic: the tapped chip is selected in memory before the profile write.
   if (act === 'pf') { state.me[b.dataset.k] = v; scheduleSave() }
   if (act === 'pd' || act === 'pt') {
     const arr = act === 'pd' ? state.me.dy : state.me.tm
