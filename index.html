@@ -1366,6 +1366,13 @@ button.chip,.qf .chip{min-height:44px}
 .onb .onb-cta>.btn:not(.btn-sec):not(.btn-ghost){color:#fff}
 .onb .onb-cta>.btn:not(.btn-sec):not(.btn-ghost).is-loading::after{border-color:#fff;border-right-color:transparent}
 .input.code{letter-spacing:.42em;font-weight:700;font-variant-numeric:tabular-nums;text-align:center}
+/* Sign-in and the code screen share .onb.welcome. The button row was sticky,
+   so on a short Safari window it sat on top of the helper text. Keep the
+   buttons in normal flow, size the screen to the small viewport (toolbars
+   visible), and let main scroll when the hero and form do not fit. */
+body.onb-on #app{height:100svh}
+body.onb-on main{padding-bottom:calc(var(--s-4) + env(safe-area-inset-bottom,0px))}
+.onb.welcome .onb-cta{position:static;background:none;margin-top:var(--s-4);padding-top:var(--s-3);padding-bottom:calc(var(--s-2) + env(safe-area-inset-bottom,0px))}
 /* A phone tap leaves :hover stuck on the button. That grey hover rule was stronger
    than the red selected rule, so the new choice looked dimmed. Hover only applies
    on devices that hover, and a selected chip stays red through hover, press, and focus. */
