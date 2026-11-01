@@ -237,3 +237,65 @@ export function gymVisibleTo(gym, uid) {
   if (gym.status === 'approved' || gym.status == null) return true
   return !!uid && gym.submitted_by === uid
 }
+
+export const EMAIL_RATE_LIMIT_MESSAGE = 'Too many sign-in emails were sent recently. Wait a few minutes and try again, or use Google.'
+export const RESEND_COOLDOWN_MS = 60000
+
+export function emailLooksValid(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim())
+}
+
+/** Digits only, capped at the 6-digit email code. */
+export function normalizeEmailCode(raw) {
+  return String(raw || '').replace(/\D/g, '').slice(0, 6)
+}
+
+/** Empty string when the code is ready to send to Supabase. */
+export function emailCodeProblem(raw) {
+  const code = normalizeEmailCode(raw)
+  if (!code) return 'Enter the 6-digit code from the email.'
+  if (code.length !== 6) return 'Enter all 6 digits from the email.'
+  return ''
+}
+
+/**
+ * Friendly copy for a failed auth call. A thrown Error, a Supabase error
+ * object, or a plain { status, code, message } all work.
+ */
+export function authProblem(error) {
+  if (!error) return ''
+  const status = Number(error.status || error.statusCode || 0)
+  const code = String(error.code || error.error_code || '')
+  const msg = String(error.message || error.error_description || error.msg || (typeof error === 'string' ? error : ''))
+  const blob = (code + ' ' + msg).toLowerCase()
+  if (status === 429 || /over_email_send_rate_limit|over_request_rate_limit|rate limit|too many requests/.test(blob)) {
+    return EMAIL_RATE_LIMIT_MESSAGE
+  }
+  if (/provider is not enabled|unsupported provider/.test(blob)) {
+    return 'Google sign-in is not switched on yet. Use your email for now.'
+  }
+  if (code === 'otp_expired' || /token has expired|invalid otp|otp has expired|email link is invalid or has expired/.test(blob)) {
+    return 'That code did not work. Check the 6 digits, or resend the email.'
+  }
+  if (/failed to fetch|networkerror|load failed|network request failed/.test(blob)) {
+    return 'You are offline or the server did not answer.'
+  }
+  if (status >= 500) return 'Sign-in is having trouble right now. Try again in a minute, or use Google.'
+  if (msg.trim()) return msg.trim()
+  return 'Something went wrong. Try again.'
+}
+
+/** Success screen only when the email request itself succeeded. */
+export function signInEmailResult(error) {
+  if (error) return { ok: false, message: authProblem(error) }
+  return { ok: true, message: '' }
+}
+
+/** Whole seconds left before another sign-in email can be requested. */
+export function resendWaitSec(sentAt, now = Date.now()) {
+  const sent = Number(sentAt)
+  if (!sent) return 0
+  const leftMs = RESEND_COOLDOWN_MS - (now - sent)
+  if (leftMs <= 0) return 0
+  return Math.ceil(leftMs / 1000)
+}

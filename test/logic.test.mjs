@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs'
 import {
   STATES, milesBetween, searchCities, nearestCity, findCity, compat, filterDeck,
   parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED,
-  messageProblem, MESSAGE_MAX
+  messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
+  authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -89,6 +90,36 @@ test('messages block spam, extra links, profanity, and overrun length', () => {
   assert.match(messageProblem('join t.me/spam'), /spam/i)
   assert.match(messageProblem('this is shit'), /clean/i)
   assert.match(messageProblem('x'.repeat(MESSAGE_MAX + 1)), /long/i)
+})
+
+test('email sign-in errors stay on screen and a rate limit is readable', () => {
+  assert.equal(emailLooksValid('boxer@example.com'), true)
+  assert.equal(emailLooksValid('not-an-email'), false)
+  assert.equal(normalizeEmailCode('12 34-56'), '123456')
+  assert.equal(normalizeEmailCode('code 1234567'), '123456')
+  assert.match(emailCodeProblem(''), /6-digit/)
+  assert.match(emailCodeProblem('123'), /all 6/)
+  assert.equal(emailCodeProblem('123 456'), '')
+
+  const limited = { status: 429, code: 'over_email_send_rate_limit', message: 'email rate limit exceeded' }
+  assert.equal(authProblem(limited), EMAIL_RATE_LIMIT_MESSAGE)
+  assert.equal(authProblem({ message: 'For security purposes, you can only request this after 60 seconds.', status: 429 }), EMAIL_RATE_LIMIT_MESSAGE)
+  assert.match(authProblem({ code: 'otp_expired', message: 'Token has expired or is invalid' }), /did not work/)
+  assert.match(authProblem({ message: 'Failed to fetch' }), /offline/)
+  assert.equal(authProblem({ status: 500, message: '' }), 'Sign-in is having trouble right now. Try again in a minute, or use Google.')
+  assert.equal(authProblem(null), '')
+
+  assert.deepEqual(signInEmailResult(null), { ok: true, message: '' })
+  assert.deepEqual(signInEmailResult(limited), { ok: false, message: EMAIL_RATE_LIMIT_MESSAGE })
+})
+
+test('resend code waits 60 seconds', () => {
+  const t0 = 1700000000000
+  assert.equal(resendWaitSec(0, t0), 0)
+  assert.equal(resendWaitSec(t0, t0), 60)
+  assert.equal(resendWaitSec(t0, t0 + 1000), 59)
+  assert.equal(resendWaitSec(t0, t0 + 59999), 1)
+  assert.equal(resendWaitSec(t0, t0 + 60000), 0)
 })
 
 test('match pair ordering and gym visibility', () => {

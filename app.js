@@ -2,7 +2,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import {
   DAYS, TIMES, INT, GOALS, W, E, STATES, CONFIRMATIONS_REQUIRED,
   milesBetween, formatDist, hueFromId, isZip, safeHttps, searchCities, nearestCity, findCity,
-  compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem
+  compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
+  emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -62,9 +63,12 @@ const state = {
   unread: {},
   authEmail: '',
   authSent: false,
+  authCode: '',
+  authSentAt: 0,
   authMsg: '',
   authErr: false,
   authBusy: false,
+  authBusyAct: '',
   loadingDeck: false,
   offline: typeof navigator !== 'undefined' && navigator.onLine === false,
   locBusy: false,
@@ -468,7 +472,12 @@ function resetUser() {
   state.sheet = false
   state.unread = {}
   state.authSent = false
+  state.authCode = ''
+  state.authSentAt = 0
   state.authMsg = ''
+  state.authErr = false
+  state.authBusy = false
+  state.authBusyAct = ''
 }
 async function handleAuth(event, session) {
   if (event === 'TOKEN_REFRESHED') { state.session = session; return }
@@ -586,40 +595,118 @@ function useGps() {
   }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 })
 }
 
-async function sendMagic() {
+let resendTimer = 0
+function armResendTick() {
+  clearTimeout(resendTimer)
+  const tick = () => {
+    if (!state.authSent || state.session) return
+    const left = resendWaitSec(state.authSentAt)
+    const btn = document.querySelector('[data-act="resend"]')
+    if (btn) {
+      btn.disabled = state.authBusy || left > 0
+      if (!state.authBusy) btn.textContent = left > 0 ? 'Resend code (' + left + 's)' : 'Resend code'
+    }
+    if (left > 0) {
+      const delay = 1000 - ((Date.now() - state.authSentAt) % 1000) || 1000
+      resendTimer = setTimeout(tick, delay)
+    }
+  }
+  const left = resendWaitSec(state.authSentAt)
+  if (left > 0) {
+    const delay = 1000 - ((Date.now() - state.authSentAt) % 1000) || 1000
+    resendTimer = setTimeout(tick, delay)
+  }
+}
+function failAuth(error) {
+  state.authBusy = false
+  state.authBusyAct = ''
+  state.authErr = true
+  state.authMsg = authProblem(error)
+  render()
+}
+async function sendMagic(resend) {
+  if (state.authBusy) return
+  if (resend && resendWaitSec(state.authSentAt) > 0) return
   const email = state.authEmail.trim()
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { state.authErr = true; state.authMsg = 'Enter a valid email address.'; render(); return }
+  if (!emailLooksValid(email)) {
+    state.authErr = true
+    state.authMsg = 'Enter a valid email address.'
+    state.authSent = false
+    render()
+    return
+  }
   state.authBusy = true
+  state.authBusyAct = resend ? 'resend' : 'magic'
   state.authErr = false
   state.authMsg = ''
   render()
-  const redirect = location.origin + location.pathname
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirect, shouldCreateUser: true } })
-  state.authBusy = false
-  if (error) { state.authErr = true; state.authMsg = errText(error); render(); return }
-  state.authSent = true
-  state.authMsg = ''
-  render()
+  try {
+    const redirect = location.origin + location.pathname
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirect, shouldCreateUser: true } })
+    const outcome = signInEmailResult(error)
+    state.authBusy = false
+    state.authBusyAct = ''
+    if (!outcome.ok) {
+      state.authErr = true
+      state.authMsg = outcome.message
+      if (!resend) state.authSent = false
+      render()
+      return
+    }
+    state.authSent = true
+    state.authErr = false
+    state.authSentAt = Date.now()
+    if (!resend) state.authCode = ''
+    state.authMsg = resend ? 'We sent another code.' : ''
+    render()
+  } catch (e) {
+    if (!resend) state.authSent = false
+    failAuth(e)
+  }
 }
 async function verifyCode() {
-  const token = ($('#code') && $('#code').value || '').trim()
-  if (!token) { state.authErr = true; state.authMsg = 'Enter the code from the email.'; render(); return }
+  if (state.authBusy) return
+  const token = normalizeEmailCode(($('#code') && $('#code').value) || state.authCode)
+  state.authCode = token
+  const problem = emailCodeProblem(token)
+  if (problem) { state.authErr = true; state.authMsg = problem; render(); return }
   state.authBusy = true
-  render()
-  const { error } = await supabase.auth.verifyOtp({ email: state.authEmail.trim(), token, type: 'email' })
-  state.authBusy = false
-  if (error) { state.authErr = true; state.authMsg = errText(error); render() }
-}
-async function google() {
-  state.authBusy = true
+  state.authBusyAct = 'verify'
   state.authErr = false
   state.authMsg = ''
   render()
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: location.origin + location.pathname }
-  })
-  if (error) { state.authBusy = false; state.authErr = true; state.authMsg = errText(error); render() }
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({ email: state.authEmail.trim(), token, type: 'email' })
+    if (error || !data || !data.session) {
+      failAuth(error || { message: 'That code did not sign you in. Request a new one and try again.' })
+      return
+    }
+    state.authBusy = false
+    state.authBusyAct = ''
+    state.authErr = false
+    state.authMsg = ''
+  } catch (e) {
+    failAuth(e)
+  }
+}
+async function google() {
+  if (state.authBusy) return
+  state.authBusy = true
+  state.authBusyAct = 'google'
+  state.authErr = false
+  state.authMsg = ''
+  render()
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: location.origin + location.pathname }
+    })
+    if (error || !data || !data.url) {
+      failAuth(error || { message: 'Google sign-in did not start. Try again, or use your email.' })
+    }
+  } catch (e) {
+    failAuth(e)
+  }
 }
 async function signOut() {
   await supabase.auth.signOut()
@@ -1066,14 +1153,21 @@ function onbView() {
 }
 function authView() {
   const urlErr = authErrorFromUrl()
+  const busy = (act) => state.authBusy && state.authBusyAct === act ? ' is-loading' : ''
+  const lock = state.authBusy ? ' disabled' : ''
   if (state.authSent) {
-    return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Check your email.</h1><p>We sent a sign-in link to <b>' + esc(state.authEmail) + '</b>. Open it on this device.</p><label class="field">Email code<input id="code" class="input" inputmode="numeric" autocomplete="one-time-code" placeholder="If the email has a code"></label>' +
-      (state.authMsg ? '<p class="' + (state.authErr ? 'field-err' : 'help') + '" role="status">' + esc(state.authMsg) + '</p>' : '<p class="help">The link signs you in. A code works too, when the email includes one.</p>') +
-      '</div><div class="onb-cta"><button class="btn btn-block' + (state.authBusy ? ' is-loading' : '') + '" data-act="verify">Continue</button><button class="btn btn-sec btn-block" data-act="auth-reset">Use a different email</button></div></div>'
+    const left = resendWaitSec(state.authSentAt)
+    const note = state.authMsg
+      ? '<p class="' + (state.authErr ? 'field-err' : 'help') + '" role="' + (state.authErr ? 'alert' : 'status') + '">' + esc(state.authMsg) + '</p>'
+      : '<p class="help">The link in the email still works in a normal browser tab. On an iPhone home-screen app it opens in Safari, so enter the code here.</p>'
+    return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Enter your code.</h1><p>We sent a 6-digit code to <b>' + esc(state.authEmail) + '</b>. Type it below to sign in.</p><label class="field">6-digit code<input id="code" class="input code" inputmode="numeric" autocomplete="one-time-code" enterkeyhint="done" maxlength="12" placeholder="••••••" aria-label="6-digit sign-in code" value="' + esc(state.authCode) + '"' + (state.authErr ? ' aria-invalid="true"' : '') + '></label>' +
+      note +
+      '</div><div class="onb-cta"><button class="btn btn-block' + busy('verify') + '" data-act="verify"' + lock + '>Sign in</button><button class="btn btn-sec btn-block' + busy('resend') + '" data-act="resend"' + (state.authBusy || left > 0 ? ' disabled' : '') + '>' + (left > 0 ? 'Resend code (' + left + 's)' : 'Resend code') + '</button><button class="btn btn-sec btn-block" data-act="auth-reset"' + lock + '>Use a different email</button></div></div>'
   }
-  return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Find your next sparring partner.</h1><p>Match with boxers near you, then plan a session at a real gym. Anywhere in the US.</p><label class="field">Email<input id="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" value="' + esc(state.authEmail) + '"></label>' +
-    ((state.authMsg || urlErr) ? '<p class="field-err" role="alert">' + esc(state.authMsg || urlErr) + '</p>' : '<p class="fine">We email you a sign-in link. No password to remember.</p>') +
-    '</div><div class="onb-cta"><button class="btn btn-block' + (state.authBusy ? ' is-loading' : '') + '" data-act="magic">Email me a link</button><button class="btn btn-sec btn-block" data-act="google">Continue with Google</button></div></div>'
+  const formErr = state.authMsg || urlErr
+  return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Find your next sparring partner.</h1><p>Match with boxers near you, then plan a session at a real gym. Anywhere in the US.</p><label class="field">Email<input id="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" value="' + esc(state.authEmail) + '"' + (formErr ? ' aria-invalid="true"' : '') + '></label>' +
+    (formErr ? '<p class="field-err" role="alert">' + esc(formErr) + '</p>' : '<p class="fine">We email you a 6-digit code and a sign-in link. No password to remember.</p>') +
+    '</div><div class="onb-cta"><button class="btn btn-block' + busy('magic') + '" data-act="magic"' + lock + '>Send email</button><button class="btn btn-sec btn-block' + busy('google') + '" data-act="google"' + lock + '>Continue with Google</button></div></div>'
 }
 function authErrorFromUrl() {
   const q = new URLSearchParams(location.search)
@@ -1258,7 +1352,17 @@ function renderApp() {
   renderSheet()
   const main = $('#main')
   if (state.booting) { main.innerHTML = '<div class="empty"><div class="spinner" role="status" aria-label="Loading"></div><p>Loading Boxing Buddies</p></div>'; return }
-  if (!state.session) { main.innerHTML = authView(); document.title = 'Sign in | Boxing Buddies'; bindCards(); return }
+  if (!state.session) {
+    main.innerHTML = authView()
+    document.title = 'Sign in | Boxing Buddies'
+    bindCards()
+    if (state.authSent) {
+      armResendTick()
+      const code = $('#code')
+      if (code && !state.authBusy) code.focus()
+    }
+    return
+  }
   if (state.onb > 0) { main.innerHTML = onbView(); document.title = 'Welcome | Boxing Buddies'; bindCards(); return }
   const titles = { discover: 'Discover', matches: 'Messages', gyms: 'Meetups', me: 'Profile' }
   main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
@@ -1422,10 +1526,20 @@ async function onClick(b) {
     render()
     return
   }
-  if (act === 'magic') { state.authEmail = ($('#email') && $('#email').value) || state.authEmail; await sendMagic(); return }
-  if (act === 'verify') await verifyCode()
-  if (act === 'google') await google()
-  if (act === 'auth-reset') { state.authSent = false; state.authMsg = ''; state.authErr = false; render(); return }
+  if (act === 'magic') { state.authEmail = ($('#email') && $('#email').value) || state.authEmail; await sendMagic(false); return }
+  if (act === 'resend') { await sendMagic(true); return }
+  if (act === 'verify') { await verifyCode(); return }
+  if (act === 'google') { await google(); return }
+  if (act === 'auth-reset') {
+    state.authSent = false
+    state.authCode = ''
+    state.authSentAt = 0
+    state.authMsg = ''
+    state.authErr = false
+    clearTimeout(resendTimer)
+    render()
+    return
+  }
   if (act === 'signout') { await signOut(); return }
   if (act === 'export') { await exportProfile(); return }
   if (act === 'delete-account') {
@@ -1547,6 +1661,11 @@ document.addEventListener('click', (e) => {
 })
 document.addEventListener('input', (e) => {
   if (e.target.id === 'email') state.authEmail = e.target.value
+  if (e.target.id === 'code') {
+    const next = normalizeEmailCode(e.target.value)
+    if (e.target.value !== next) e.target.value = next
+    state.authCode = next
+  }
   if (e.target.id === 'locq') {
     state.locQ = e.target.value
     const q = e.target.value
@@ -1589,6 +1708,7 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.key === 'Enter' && e.target.id === 'txt') { e.preventDefault(); sendMessage().catch(err => toast(errText(err), 'err')) }
   if (e.key === 'Enter' && e.target.id === 'email') { e.preventDefault(); onClick(e.target.closest('.onb').querySelector('[data-act="magic"]')).catch(() => {}) }
+  if (e.key === 'Enter' && e.target.id === 'code') { e.preventDefault(); onClick(e.target.closest('.onb').querySelector('[data-act="verify"]')).catch(() => {}) }
   if (state.tab === 'discover' && state.session && state.onb === 0 && !state.sheet && mo && mo.hidden && !['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) {
     if (e.key === 'ArrowRight') decide(1)
     if (e.key === 'ArrowLeft') decide(-1)
