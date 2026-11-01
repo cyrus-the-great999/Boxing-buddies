@@ -6,7 +6,7 @@ import {
   parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED,
   messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
   authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE,
-  choiceSnapshot, restoreChoices
+  choiceSnapshot, restoreChoices, sortByDistance
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -137,6 +137,18 @@ test('a failed save can put chip choices back', () => {
   me.dy.push('Sat')
   assert.deepEqual(saved.dy, ['Tue'])
   assert.equal(restoreChoices(me, null), me)
+})
+
+test('gyms sort nearest first so a wide search keeps the close ones', () => {
+  const rows = [
+    { id: 'far', lat: 41.5, lng: -74.0 },
+    { id: 'none' },
+    { id: 'near', lat: 40.75, lng: -73.99 },
+    { id: 'mid', lat: 40.9, lng: -74.1 }
+  ]
+  const sorted = sortByDistance(rows, 40.7128, -74.006)
+  assert.deepEqual(sorted.map(r => r.id), ['near', 'mid', 'far', 'none'])
+  assert.deepEqual(rows.map(r => r.id), ['far', 'none', 'near', 'mid'])
 })
 
 test('match pair ordering and gym visibility', () => {
