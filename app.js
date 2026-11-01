@@ -1080,7 +1080,7 @@ function gymsView() {
     (state.cfg.loc ? '' : '<p class="help">Set a location to sort gyms by distance.</p>') +
     (shown.length ? cards : '<div class="box pad"><p class="meta">No gyms within ' + dist(state.cfg.maxd) + ' of ' + esc(locLabel()) + ' yet.</p><p class="help">Add the gym where you train. You will see it immediately. Everyone else sees it after the owner approves it or ' + CONFIRMATIONS_REQUIRED + ' other boxers confirm the same gym.</p></div>') +
     (mine.length ? '' : '') +
-    '<p class="note">Check with each gym for sparring rules and class times. Address lookup for new gyms uses OpenStreetMap.</p>'
+    '<p class="note">Check with each gym for sparring rules and class times. Gym listings and address lookup \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>.</p>'
 }
 function sessionCards() {
   const rows = state.sessions.filter(s => s.status === 'proposed' || s.status === 'accepted')
