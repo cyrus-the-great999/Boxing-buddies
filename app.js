@@ -320,6 +320,19 @@ async function saveProfile(opts) {
     return false
   }
   let body = p
+  const rpc = await supabase.rpc('save_my_profile', { p: body })
+  if (!rpc.error) {
+    if (!(opts && opts.keepLocal) && rpc.data) fromProfile(rpc.data)
+    state.hasProfile = true
+    return true
+  }
+  if (!missingRpc(rpc.error)) {
+    lastSaveMessage = errText(rpc.error)
+    if (!quiet) toast(lastSaveMessage, 'err')
+    return false
+  }
+  // Only before save_my_profile exists. After the follow-up migration this
+  // upsert is rejected, because it needs SELECT on lat/lng.
   let { error } = await supabase.from('profiles').upsert(body).select('id').single()
   if (error && /waiver_accepted_at|waiver_version/i.test(error.message || '')) {
     state.waiverSaveUnsupported = true
@@ -386,7 +399,7 @@ async function loadOwnProfile() {
   const rpc = await supabase.rpc('my_profile')
   if (!rpc.error) return rpc.data || null
   if (!missingRpc(rpc.error)) throw rpc.error
-  const { data, error } = await supabase.from('profiles').select('*, home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').eq('id', uid()).maybeSingle()
+  const { data, error } = await supabase.from('profiles').select('id,display_name,age,height,town,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,created_at,updated_at,adult_confirmed,terms_accepted_at,safety_acknowledged_at,waiver_accepted_at,waiver_version,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').eq('id', uid()).maybeSingle()
   if (error) throw error
   return data
 }
@@ -405,16 +418,11 @@ async function loadDeck() {
     return
   }
   if (!missingRpc(rpc.error)) { state.loadingDeck = false; throw rpc.error }
-  const pad = state.cfg.maxd / 69
-  const cos = Math.max(0.2, Math.abs(Math.cos(loc.lat * Math.PI / 180)))
-  const padLng = state.cfg.maxd / (69 * cos)
   const { data, error } = await supabase.from('profiles')
-    .select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,adult_confirmed,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)')
+    .select('id,display_name,age,height,town,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,adult_confirmed,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)')
     .neq('id', uid())
     .eq('adult_confirmed', true)
     .gte('age', 18)
-    .gte('lat', loc.lat - pad).lte('lat', loc.lat + pad)
-    .gte('lng', loc.lng - padLng).lte('lng', loc.lng + padLng)
     .limit(200)
   state.loadingDeck = false
   if (error) throw error
@@ -856,7 +864,7 @@ async function proposeSession() {
     state.cfg.ack = true
     state.me.safetyAt = state.me.safetyAt || new Date().toISOString()
     savePrefs()
-    if (state.hasProfile) supabase.from('profiles').update({ safety_acknowledged_at: state.me.safetyAt }).eq('id', uid()).then(() => {})
+    if (state.hasProfile) saveProfile({ quiet: true, keepLocal: true }).catch(() => {})
     render()
     toast('Plan sent. Confirm the details in chat.')
   }
@@ -1527,7 +1535,7 @@ function safetyDlg(fn) {
     state.cfg.ack = true
     state.me.safetyAt = new Date().toISOString()
     savePrefs()
-    if (state.hasProfile) supabase.from('profiles').update({ safety_acknowledged_at: state.me.safetyAt }).eq('id', uid()).then(() => {})
+    if (state.hasProfile) saveProfile({ quiet: true, keepLocal: true }).catch(() => {})
     if (fn) fn()
   }
 }
