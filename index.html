@@ -1372,7 +1372,7 @@ button.chip,.qf .chip{min-height:44px}
    visible), and let main scroll when the hero and form do not fit. */
 body.onb-on #app{height:100svh}
 body.onb-on main{padding-bottom:calc(var(--s-4) + env(safe-area-inset-bottom,0px))}
-.onb.welcome .onb-cta{position:static;background:none;margin-top:var(--s-4);padding-top:var(--s-3);padding-bottom:calc(var(--s-2) + env(safe-area-inset-bottom,0px))}
+.onb.welcome .onb-cta,.onb.waiver .onb-cta{position:static;background:var(--bg);margin-top:var(--s-4);padding-top:var(--s-3);padding-bottom:calc(var(--s-2) + env(safe-area-inset-bottom,0px))}
 /* The tab icons are the 28px SVGs above each label. Keep the bar tall enough
    for that icon, the label, and the home-indicator inset, and do not clip them. */
 nav{position:fixed;bottom:0;left:0;right:0;height:auto;min-height:calc(56px + env(safe-area-inset-bottom,0px));overflow:visible;padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -1417,6 +1417,5 @@ button.chip[aria-pressed="true"]:focus,button.chip[aria-checked="true"]:focus,
 </div>
 <aside class="stage-note" aria-hidden="true"><svg class="mark" viewBox="0 0 527 536" aria-hidden="true"><path fill="#D62828" fill-rule="evenodd" d="M228 0 L44 106 L26 241 L53 262 L17 285 L0 410 L231 536 L237 513 L236 8Z M143 287 L170 299 L175 309 L170 433 L83 388 L68 373 L81 316Z M171 104 L174 225 L166 233 L143 235 L97 208 L99 148 L107 137Z M293 1 L288 529 L298 536 L515 421 L527 402 L507 284 L469 259 L499 240 L481 106Z M354 104 L421 143 L429 196 L424 211 L368 245 L358 279 L441 315 L451 328 L458 368 L454 382 L356 435 L350 431 L348 223Z"/></svg><h2>Find someone to spar with.</h2><p>Open the same link on your phone. It works anywhere in the US.</p></aside>
 <script type="module" src="app.js"></script>
-<script>if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 </body>
 </html>
