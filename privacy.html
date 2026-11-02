@@ -41,7 +41,7 @@ footer{color:var(--muted);font-size:.85rem;margin-top:3rem;border-top:1px solid 
 <li>We collect what we need to run a sparring-partner matching app: your account login, your boxing profile, your approximate location, your swipes and matches, your messages, and sparring sessions you set up.</li>
 <li>Other users see your profile and your <strong>approximate distance</strong> from them. They do <strong>not</strong> see your exact GPS coordinates.</li>
 <li>We do <strong>not</strong> sell your personal information, we do <strong>not</strong> show ads, and we do <strong>not</strong> take payments.</li>
-<li>We use a small number of service providers (Supabase, Vercel, Google sign-in, and OpenStreetMap Nominatim) to run the Service.</li>
+<li>We use a small number of service providers (Supabase, Vercel, Google sign-in, Google Fonts, jsDelivr, and OpenStreetMap Nominatim) to run the Service.</li>
 <li>You can delete your account, and you can ask us to delete your data, at any time.</li>
 <li>Boxing Buddies is only for people <strong>18 and older</strong>.</li>
 </ul>
@@ -75,11 +75,11 @@ footer{color:var(--muted);font-size:.85rem;margin-top:3rem;border-top:1px solid 
 <h3 id="s3">3.2 Location information</h3>
 <p>Location is central to how Boxing Buddies works, because it lets us show you sparring partners nearby.</p>
 <ul>
-<li><strong>GPS location (optional).</strong> If you allow it in your browser or device, we collect your device's latitude and longitude at the time you set or update your location.</li>
+<li><strong>GPS location (optional).</strong> If you allow it in your browser or device, we receive your device's latitude and longitude at the time you set or update your location. We store only the rounded point described below, not the more precise reading.</li>
 <li><strong>Typed location.</strong> Instead of GPS, you can type a city or ZIP code. We convert ("geocode") it into an approximate latitude and longitude.</li>
 <li><strong>Geocoding.</strong> To convert a typed city or ZIP code into coordinates, or coordinates into a town name, we send that location text or those coordinates to OpenStreetMap's Nominatim service (see Section 6).</li>
-<li><strong>What we store.</strong> We store your town or approximate area and a latitude/longitude point.</li>
-<li><strong>What other users see.</strong> Other users see your town or general area and your <strong>approximate distance</strong> from them. We do not show your exact coordinates to other users.</li>
+<li><strong>What we store.</strong> We store your town or approximate area and a latitude/longitude point that is rounded to about one kilometer (two decimal degrees). We do not keep the more precise reading from your device.</li>
+<li><strong>What other users see.</strong> Other users see your town or general area and your <strong>approximate distance</strong> in miles. They cannot read your latitude or longitude. The app asks the database for the distance only.</li>
 </ul>
 <p>We do not continuously track your location in the background. Your location is updated only when you set or refresh it. You can change your location to a typed city or ZIP code at any time, or turn off location permission in your browser or device settings.</p>
 <h3 id="s3">3.3 Information collected automatically</h3>
@@ -113,6 +113,8 @@ footer{color:var(--muted);font-size:.85rem;margin-top:3rem;border-top:1px solid 
 <li><strong>Vercel</strong> – website and app hosting and content delivery. Vercel processes technical data such as IP addresses and request logs when you load the Service.</li>
 <li><strong>Google</strong> – if you choose "Sign in with Google," Google authenticates you and shares basic account information with us. Google's use of your information is governed by Google's privacy policy.</li>
 <li><strong>OpenStreetMap Nominatim</strong> – geocoding. When you type a city or ZIP code, or when we look up the town for a set of coordinates, that location text or those coordinates (along with technical information such as the server's IP address and request details) are sent to Nominatim. We do not send your name or email to Nominatim.</li>
+<li><strong>Google Fonts</strong> – the app loads typefaces from fonts.googleapis.com and font files from fonts.gstatic.com. Google receives the usual technical request data, such as your IP address. We do not send your name, email, or messages to Google Fonts.</li>
+<li><strong>jsDelivr</strong> – the app loads the Supabase client library from cdn.jsdelivr.net. jsDelivr receives the usual technical request data, such as your IP address. We do not send your name, email, or messages to jsDelivr.</li>
 </ul>
 <p><strong>Legal and safety reasons.</strong> We may disclose information if we believe in good faith that it is reasonably necessary to: comply with a law, regulation, subpoena, court order, or other legal process; protect the safety of any person, including in connection with a report of violence or a threat of harm; investigate or prevent fraud, abuse, or security issues; or protect the rights or property of Boxing Buddies, our users, or the public.</p>
 <p><strong>Business changes.</strong> If Boxing Buddies is transferred to a company we form, or is involved in a merger, acquisition, sale of assets, or similar transaction, your information may be transferred as part of that transaction. We will require the recipient to honor this Privacy Policy or give you notice of any material change.</p>
@@ -122,7 +124,7 @@ footer{color:var(--muted);font-size:.85rem;margin-top:3rem;border-top:1px solid 
 <p>We keep personal information only as long as reasonably needed for the purposes described in this policy:</p>
 <ul>
 <li><strong>Account and profile data</strong> – while your account is active. When you delete your account, we delete or de-identify your profile, photo, and location data within 30 days.</li>
-<li><strong>Swipes, matches, messages, and sessions</strong> – while your account is active. When you delete your account, these are deleted or de-identified within 30 days. Messages you sent may remain visible to the people you sent them to after your account is deleted; they will be shown as coming from a deleted user.</li>
+<li><strong>Swipes, matches, messages, and sessions</strong> – while your account is active. When you delete your account, your profile is removed and your matches are removed with it. The messages in those matches are deleted with the match. They are not kept on screen as messages from a deleted user.</li>
 <li><strong>Reports and blocks</strong> – we may keep records of reports, blocks, and enforcement actions for up to 2 years after an account is deleted, to protect the community (for example, to prevent someone who was removed for misconduct from simply rejoining).</li>
 <li><strong>Gym listings</strong> – approved gym listings are public information about a business and may remain on the Service after the submitting user deletes their account. They are not linked to your identity publicly.</li>
 <li><strong>Backups and logs</strong> – data in routine backups and server logs maintained by our providers is deleted on their normal schedules, within 30 days.</li>

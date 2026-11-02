@@ -5,7 +5,7 @@ import {
   sortByDistance,
   compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
   emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec,
-  choiceSnapshot, restoreChoices
+  choiceSnapshot, restoreChoices, approxCoord, waiverDue, avatarProblem, missingRpc, WAIVER_VERSION
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -24,7 +24,11 @@ const INTHELP = {
   Hard: 'Fight pace, experienced boxers only'
 }
 const REASONS = ['Aggressive or unsafe behavior', 'Harassment or inappropriate messages', 'Fake or misleading profile', 'Spam or selling something', 'Something else']
+// LAWYER REVIEW: this screen repeats the Assumption of Risk and Release in terms.html
+// Section 4. It is not a substitute for review by a Massachusetts lawyer. Venue stays
+// Middlesex County, Massachusetts, as in the Terms.
 const SAFE = [
+  'If someone is badly hurt, call 911.',
   'Spar at a gym with a coach or staff nearby. Do not meet at a home or park for a first session.',
   'Wear your gear: headgear, a mouthguard, and 14 to 16 oz gloves.',
   'Tell someone where you are going and when you expect to be back.',
@@ -185,7 +189,8 @@ function toCard(row) {
   const gym = linked && !Array.isArray(linked) ? linked : null
   const loc = state.cfg.loc
   let d = null
-  if (loc && row.lat != null && row.lng != null) d = Math.max(1, Math.round(milesBetween(loc.lat, loc.lng, row.lat, row.lng)))
+  if (row.distance_miles != null && row.distance_miles !== '') d = Math.max(1, Math.round(Number(row.distance_miles)))
+  else if (loc && row.lat != null && row.lng != null) d = Math.max(1, Math.round(milesBetween(loc.lat, loc.lng, row.lat, row.lng)))
   return {
     id: row.id,
     n: row.display_name || 'Boxer',
@@ -230,7 +235,9 @@ function fromProfile(row) {
     lat: row.lat, lng: row.lng, v: !!row.verified,
     adultConfirmed: !!row.adult_confirmed,
     termsAcceptedAt: row.terms_accepted_at || null,
-    safetyAt: row.safety_acknowledged_at || null
+    safetyAt: row.safety_acknowledged_at || null,
+    waiverAcceptedAt: row.waiver_accepted_at || null,
+    waiverVersion: row.waiver_version || ''
   }
   if (row.safety_acknowledged_at) state.cfg.ack = true
   if (row.lat != null && row.lng != null) {
@@ -270,8 +277,8 @@ function payload() {
     age: Number.isInteger(age) ? age : null,
     height: me.h ? String(me.h).slice(0, 20) : null,
     town: loc ? loc.name : (me.town || null),
-    lat: loc ? loc.lat : me.lat,
-    lng: loc ? loc.lng : me.lng,
+    lat: loc ? approxCoord(loc.lat) : approxCoord(me.lat),
+    lng: loc ? approxCoord(loc.lng) : approxCoord(me.lng),
     weight_class: me.w,
     experience: me.exp,
     stance: me.st,
@@ -285,7 +292,9 @@ function payload() {
     avatar_url: me.avatar_url || null,
     adult_confirmed: !!me.adultConfirmed,
     terms_accepted_at: me.termsAcceptedAt || null,
-    safety_acknowledged_at: me.safetyAt || null
+    safety_acknowledged_at: me.safetyAt || null,
+    waiver_accepted_at: me.waiverAcceptedAt || null,
+    waiver_version: me.waiverVersion || null
   }
 }
 function validateProfile(p, strict) {
@@ -310,13 +319,25 @@ async function saveProfile(opts) {
     if (!quiet) toast(problem, 'err')
     return false
   }
-  const { data, error } = await supabase.from('profiles').upsert(p).select('*, home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').single()
+  let body = p
+  let { error } = await supabase.from('profiles').upsert(body).select('id').single()
+  if (error && /waiver_accepted_at|waiver_version/i.test(error.message || '')) {
+    state.waiverSaveUnsupported = true
+    body = Object.assign({}, p)
+    delete body.waiver_accepted_at
+    delete body.waiver_version
+    const retry = await supabase.from('profiles').upsert(body).select('id').single()
+    error = retry.error
+  }
   if (error) {
     lastSaveMessage = errText(error)
     if (!quiet) toast(lastSaveMessage, 'err')
     return false
   }
-  if (!(opts && opts.keepLocal)) fromProfile(data)
+  if (!(opts && opts.keepLocal)) {
+    const own = await loadOwnProfile()
+    if (own) fromProfile(own)
+  }
   state.hasProfile = true
   return true
 }
@@ -357,16 +378,41 @@ async function loadGyms() {
   const rows = res.data || []
   state.gyms = loc ? sortByDistance(rows, loc.lat, loc.lng) : rows
 }
+function withGym(row) {
+  if (!row || row.home_gym || row.gyms || !row.home_gym_name) return row
+  return Object.assign({}, row, { home_gym: { id: row.home_gym_id, name: row.home_gym_name, town: row.home_gym_town, state: row.home_gym_state } })
+}
+async function loadOwnProfile() {
+  const rpc = await supabase.rpc('my_profile')
+  if (!rpc.error) return rpc.data || null
+  if (!missingRpc(rpc.error)) throw rpc.error
+  const { data, error } = await supabase.from('profiles').select('*, home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').eq('id', uid()).maybeSingle()
+  if (error) throw error
+  return data
+}
 async function loadDeck() {
   state.loadingDeck = true
   const loc = state.cfg.loc
   if (!loc) { state.profiles = []; state.loadingDeck = false; return }
+  const rpc = await supabase.rpc('discover_profiles', {
+    origin_lat: loc.lat,
+    origin_lng: loc.lng,
+    radius_miles: state.cfg.maxd
+  })
+  if (!rpc.error) {
+    state.loadingDeck = false
+    state.profiles = (rpc.data || []).map(row => toCard(withGym(row)))
+    return
+  }
+  if (!missingRpc(rpc.error)) { state.loadingDeck = false; throw rpc.error }
   const pad = state.cfg.maxd / 69
   const cos = Math.max(0.2, Math.abs(Math.cos(loc.lat * Math.PI / 180)))
   const padLng = state.cfg.maxd / (69 * cos)
   const { data, error } = await supabase.from('profiles')
-    .select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)')
+    .select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,adult_confirmed,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)')
     .neq('id', uid())
+    .eq('adult_confirmed', true)
+    .gte('age', 18)
     .gte('lat', loc.lat - pad).lte('lat', loc.lat + pad)
     .gte('lng', loc.lng - padLng).lte('lng', loc.lng + padLng)
     .limit(200)
@@ -380,9 +426,14 @@ async function loadMatches() {
   const ids = [...new Set((rows || []).flatMap(r => [r.user_a, r.user_b]).filter(id => id !== uid()))]
   let people = []
   if (ids.length) {
-    const { data, error: e2 } = await supabase.from('profiles').select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').in('id', ids)
-    if (e2) throw e2
-    people = data || []
+    const rpc = await supabase.rpc('partner_profiles', { profile_ids: ids })
+    if (!rpc.error) people = (rpc.data || []).map(withGym)
+    else if (!missingRpc(rpc.error)) throw rpc.error
+    else {
+      const { data, error: e2 } = await supabase.from('profiles').select('id,display_name,age,height,town,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,verified,adult_confirmed,home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').in('id', ids).eq('adult_confirmed', true).gte('age', 18)
+      if (e2) throw e2
+      people = data || []
+    }
   }
   const byId = Object.fromEntries(people.map(p => [p.id, toCard(p)]))
   state.matches = (rows || []).map(r => {
@@ -403,9 +454,9 @@ async function loadMatches() {
   state.sessions = sessions || []
 }
 async function loadAll() {
-  const { data: row, error } = await supabase.from('profiles').select('*, home_gym:gyms!profiles_home_gym_id_fkey(id,name,town,state)').eq('id', uid()).maybeSingle()
-  if (error) throw error
+  const row = await loadOwnProfile()
   if (row) {
+    state.waiverKnown = Object.prototype.hasOwnProperty.call(row, 'waiver_accepted_at')
     fromProfile(row)
     state.hasProfile = true
     state.onb = row.adult_confirmed && row.terms_accepted_at ? 0 : 3
@@ -905,8 +956,8 @@ async function submitGym() {
 }
 async function onPhoto(file) {
   if (!file) return
-  if (file.type && file.type.indexOf('image/') !== 0) { state.picErr = 'Choose a JPG or PNG.'; render(); return }
-  if (file.size > 8e6) { state.picErr = 'That photo is over 8 MB. Choose a smaller one.'; render(); return }
+  const photoProblem = avatarProblem(file)
+  if (photoProblem) { state.picErr = photoProblem; render(); return }
   state.picBusy = true
   state.picErr = ''
   render()
@@ -959,8 +1010,9 @@ async function removePhoto() {
   render()
 }
 async function exportProfile() {
-  const { data, error } = await supabase.from('profiles').select('id,display_name,age,height,town,lat,lng,weight_class,experience,stance,intensity,goal,gloves,availability_days,availability_times,home_gym_id,bio,avatar_url,adult_confirmed,terms_accepted_at,safety_acknowledged_at,created_at,updated_at').eq('id', uid()).single()
-  if (error) { toast(errText(error), 'err'); return }
+  let data
+  try { data = await loadOwnProfile() } catch (error) { toast(errText(error), 'err'); return }
+  if (!data) { toast('No profile to download yet.', 'err'); return }
   const file = { exported_at: new Date().toISOString(), email: (state.session.user && state.session.user.email) || null, profile: data }
   const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' })
   const a = document.createElement('a')
@@ -1003,6 +1055,7 @@ async function finishOnboarding() {
   if (state.saving) return
   if (!state.agreeAdult) { toast('Confirm that you are 18 or older.', 'err'); return }
   if (!state.agreeTerms) { toast('Agree to the Terms and Privacy Policy to continue.', 'err'); return }
+  if (waiverDue(state.me.waiverAcceptedAt, state.me.waiverVersion)) { state.onb = 4; render(); return }
   state.me.adultConfirmed = true
   state.me.termsAcceptedAt = new Date().toISOString()
   const problem = validateProfile(payload(), true)
@@ -1166,6 +1219,9 @@ function onbView() {
   }
   return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p>Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p>' + consentFields() + '<p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
     '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Start sparring</button></div></div>'
+}
+function waiverView() {
+  return '<div class="onb waiver"><div class="onb-top">' + markSvg() + '<span class="wordmark">Boxing Buddies</span></div><div class="onb-body"><h1>Assumption of risk and release</h1><p>This is separate from the Terms checkbox. Read it before you use Boxing Buddies. Sparring can cause serious injury or death.</p><div class="box pad"><p><b>You take part on purpose, at your own risk.</b> You assume the risks of boxing, sparring, training, and meeting people you do not know, including serious injury, permanent disability, and death.</p><p><b>You release Boxing Buddies and Cyrus Justin</b> (the Released Parties) from claims arising out of sparring, meetings, gyms, or use of the service, including claims based on ordinary negligence, to the fullest extent the law allows. This does not cover gross negligence or intentional misconduct where the law does not allow a waiver.</p><p>You are responsible for your own health and for who you spar with. Boxing Buddies does not provide insurance. Gyms may ask you to sign their own waiver.</p><p>This binds you and, where the law allows, your heirs. These terms are governed by Massachusetts law. Disputes are brought in the state or federal courts in Middlesex County, Massachusetts.</p><p class="help">Version ' + esc(WAIVER_VERSION) + '. A lawyer still needs to review this screen. The same release is in the Terms, section 4.</p></div></div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="waiver-accept"' + (state.saving ? ' disabled' : '') + '>I accept the release</button></div></div>'
 }
 function authView() {
   const urlErr = authErrorFromUrl()
@@ -1360,8 +1416,13 @@ function fatal(msg) {
   m.innerHTML = '<div class="fatal"><h2>Something went wrong</h2><p>' + esc(msg || 'The app hit an unexpected error.') + '</p><button class="btn btn-block" id="fre">Reload</button></div>'
   $('#fre').onclick = () => location.reload()
 }
+function needsWaiver() {
+  if (state.waiverSaveUnsupported) return false
+  if (state.onb === 4) return true
+  return !!(state.hasProfile && state.waiverKnown && waiverDue(state.me.waiverAcceptedAt, state.me.waiverVersion))
+}
 function renderApp() {
-  const gate = state.booting || !state.session || state.onb > 0
+  const gate = state.booting || !state.session || state.onb > 0 || needsWaiver()
   document.body.classList.toggle('onb-on', gate)
   const header = document.querySelector('header')
   if (header) header.hidden = gate
@@ -1379,6 +1440,7 @@ function renderApp() {
     }
     return
   }
+  if (needsWaiver()) { main.innerHTML = waiverView(); document.title = 'Assumption of risk | Boxing Buddies'; bindCards(); return }
   if (state.onb > 0) { main.innerHTML = onbView(); document.title = 'Welcome | Boxing Buddies'; bindCards(); return }
   const titles = { discover: 'Discover', matches: 'Messages', gyms: 'Meetups', me: 'Profile' }
   main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
@@ -1599,6 +1661,19 @@ async function onClick(b) {
   }
   if (act === 'oback') { state.onb = 1; render(); return }
   if (act === 'odone') { await finishOnboarding(); return }
+  if (act === 'waiver-accept') {
+    state.me.waiverAcceptedAt = new Date().toISOString()
+    state.me.waiverVersion = WAIVER_VERSION
+    state.onb = 0
+    if (!state.hasProfile) { await finishOnboarding(); return }
+    const ok = await saveProfile()
+    if (!ok && !state.waiverSaveUnsupported) {
+      state.me.waiverAcceptedAt = null
+      state.me.waiverVersion = ''
+    }
+    render()
+    return
+  }
   if (act === 'edit') { state.sheet = false; state.tab = 'me'; state.onb = state.hasProfile ? 0 : 1; render(); return }
   if (act === 'open' || act === 'settings') { state.sheet = state.sheet === 'settings' ? false : 'settings'; render(); return }
   if (act === 'close') { state.sheet = false; render(); return }
@@ -1777,3 +1852,6 @@ applyTheme()
 const bootErr = authErrorFromUrl()
 if (bootErr) { state.authErr = true; state.authMsg = bootErr.replace(/\+/g, ' ') }
 supabase.auth.onAuthStateChange((event, session) => { setTimeout(() => handleAuth(event, session), 0) })
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}) })
+}

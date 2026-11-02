@@ -327,6 +327,44 @@ export function sortByDistance(rows, lat, lng) {
   })
 }
 
+/** About 1 km. Matches private.round_coord in the security migration. */
+export function approxCoord(value) {
+  if (value == null || value === '') return null
+  const n = Number(value)
+  if (!Number.isFinite(n)) return null
+  return Math.round(n * 100) / 100
+}
+
+export const WAIVER_VERSION = '2026-11-02'
+
+/** True when the boxer still needs to accept the current waiver. */
+export function waiverDue(acceptedAt, version) {
+  return !acceptedAt || version !== WAIVER_VERSION
+}
+
+/** A profile other people may see. Age and the 18+ flag both have to be set. */
+export function profileIsAdult(profile) {
+  return !!(profile && profile.adult_confirmed && Number(profile.age) >= 18)
+}
+
+export const AVATAR_MAX_BYTES = 5 * 1024 * 1024
+export const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
+
+/** Empty string when the file can be uploaded. */
+export function avatarProblem(file) {
+  if (!file) return 'Choose a photo.'
+  const type = String(file.type || '').toLowerCase()
+  if (!AVATAR_TYPES.includes(type)) return 'Use a JPG, PNG, WEBP, or HEIC photo.'
+  if (file.size > AVATAR_MAX_BYTES) return 'That photo is over 5 MB. Choose a smaller one.'
+  return ''
+}
+
+/** True when PostgREST says a function from the security migration is not installed yet. */
+export function missingRpc(error) {
+  const msg = String((error && (error.message || error.details)) || '') + ' ' + String((error && error.code) || '')
+  return /PGRST202|Could not find the function|schema cache/i.test(msg)
+}
+
 /** Put the last saved choices back. No-op when there is nothing to restore. */
 export function restoreChoices(me, snap) {
   if (!me || !snap) return me

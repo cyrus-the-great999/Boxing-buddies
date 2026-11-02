@@ -6,7 +6,8 @@ import {
   parseSlot, nextOccurrence, orderedPair, gymVisibleTo, isZip, safeHttps, CONFIRMATIONS_REQUIRED,
   messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
   authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE,
-  choiceSnapshot, restoreChoices, sortByDistance
+  choiceSnapshot, restoreChoices, sortByDistance,
+  approxCoord, waiverDue, profileIsAdult, avatarProblem, missingRpc, WAIVER_VERSION, AVATAR_MAX_BYTES
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -149,6 +150,23 @@ test('gyms sort nearest first so a wide search keeps the close ones', () => {
   const sorted = sortByDistance(rows, 40.7128, -74.006)
   assert.deepEqual(sorted.map(r => r.id), ['near', 'mid', 'far', 'none'])
   assert.deepEqual(rows.map(r => r.id), ['far', 'none', 'near', 'mid'])
+})
+
+test('coordinates round to about a kilometer and only adults are listable', () => {
+  assert.equal(approxCoord(42.34591), 42.35)
+  assert.equal(approxCoord(-71.55234), -71.55)
+  assert.equal(approxCoord(null), null)
+  assert.equal(profileIsAdult({ adult_confirmed: true, age: 18 }), true)
+  assert.equal(profileIsAdult({ adult_confirmed: true, age: 17 }), false)
+  assert.equal(profileIsAdult({ adult_confirmed: false, age: 30 }), false)
+  assert.equal(waiverDue(null, null), true)
+  assert.equal(waiverDue('2026-11-02T00:00:00Z', 'old'), true)
+  assert.equal(waiverDue('2026-11-02T00:00:00Z', WAIVER_VERSION), false)
+  assert.equal(avatarProblem({ type: 'image/jpeg', size: 1000 }), '')
+  assert.match(avatarProblem({ type: 'image/gif', size: 1000 }), /JPG/)
+  assert.match(avatarProblem({ type: 'image/png', size: AVATAR_MAX_BYTES + 1 }), /5 MB/)
+  assert.equal(missingRpc({ code: 'PGRST202', message: 'Could not find the function public.discover_profiles' }), true)
+  assert.equal(missingRpc({ message: 'permission denied' }), false)
 })
 
 test('match pair ordering and gym visibility', () => {
