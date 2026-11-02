@@ -1373,6 +1373,12 @@ button.chip,.qf .chip{min-height:44px}
 body.onb-on #app{height:100svh}
 body.onb-on main{padding-bottom:calc(var(--s-4) + env(safe-area-inset-bottom,0px))}
 .onb.welcome .onb-cta{position:static;background:none;margin-top:var(--s-4);padding-top:var(--s-3);padding-bottom:calc(var(--s-2) + env(safe-area-inset-bottom,0px))}
+/* The tab icons are the 28px SVGs above each label. Keep the bar tall enough
+   for that icon, the label, and the home-indicator inset, and do not clip them. */
+nav{position:fixed;bottom:0;left:0;right:0;height:auto;min-height:calc(56px + env(safe-area-inset-bottom,0px));overflow:visible;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{overflow:visible}
+nav button svg{display:block;flex:none;width:28px;height:28px;overflow:visible}
+@media (min-width:720px){nav{position:absolute;bottom:0;left:0;right:0}}
 /* A phone tap leaves :hover stuck on the button. That grey hover rule was stronger
    than the red selected rule, so the new choice looked dimmed. Hover only applies
    on devices that hover, and a selected chip stays red through hover, press, and focus. */
