@@ -5,7 +5,7 @@ import {
   sortByDistance,
   compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
   emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec,
-  choiceSnapshot, restoreChoices, approxCoord, waiverDue, avatarProblem, missingRpc, WAIVER_VERSION
+  choiceSnapshot, restoreChoices, approxCoord, waiverDue, avatarProblem, missingRpc, meetupProblem, meetupTableMissing, WAIVER_VERSION
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -41,7 +41,8 @@ const STW = { match: 'Match', near: 'Close', off: 'Different', unset: 'Not set' 
 const ICON = {
   discover: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 15h6"/></svg>',
   matches: '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></svg>',
-  gyms: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+  meetups: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+  gyms: '<svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
   me: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'
 }
 
@@ -62,6 +63,12 @@ const state = {
   matches: [],
   messages: {},
   sessions: [],
+  meetups: [],
+  meetupJoins: [],
+  meetupsLive: null,
+  meetupDraft: { gymId: '', when: '', rules: '' },
+  meetupMsg: '',
+  meetupBusy: false,
   openMatch: null,
   filters: { w: 'All', e: 'All', i: 'All', g: 'All', dy: [] },
   cfg: loadPrefs(),
@@ -165,9 +172,8 @@ function locLabel() {
   return state.cfg.loc.name === 'Current location' ? 'your location' : state.cfg.loc.name
 }
 function applyTheme() {
-  const r = document.documentElement
-  if (state.cfg.theme === 'system') delete r.dataset.theme
-  else r.dataset.theme = state.cfg.theme
+  document.documentElement.dataset.theme = 'dark'
+  state.cfg.theme = 'dark'
 }
 function ini(p) {
   return String(p.n || '?').split(/\s+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -182,7 +188,7 @@ function gloveArt() {
 function bagArt() {
   return '<svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M100 8v26M84 34h32" stroke="#7E7E87"/><rect x="68" y="42" width="64" height="132" rx="8" fill="#1b1b1e"/><path d="M68 70h64M68 148h64M76 54v112" stroke="#3a3a40" stroke-width="2"/><rect x="68" y="96" width="64" height="26" fill="currentColor" stroke="none"/></svg>'
 }
-function emptyArt(k) { return '<div class="empty-art" style="color:var(--mute)">' + (k === 'bag' ? bagArt() : gloveArt()) + '</div>' }
+function emptyArt(k) { return k === 'bag' ? '<div class="empty-art" style="color:var(--mute)">' + bagArt() + '</div>' : '' }
 
 function toCard(row) {
   const linked = row.home_gym || row.gyms
@@ -475,7 +481,7 @@ async function loadAll() {
   }
   state.unread = loadUnread()
   await Promise.all([loadSwipes(), loadBlocks(), loadGyms()])
-  await Promise.all([loadDeck(), state.hasProfile ? loadMatches() : Promise.resolve()])
+  await Promise.all([loadDeck(), state.hasProfile ? loadMatches() : Promise.resolve(), loadMeetups()])
   ensureCities().catch(() => {})
 }
 function subscribe() {
@@ -1128,6 +1134,116 @@ function discover() {
     '</div><div class="seg" role="group" aria-label="Sort"><button data-act="sort" data-v="fit" aria-pressed="' + (state.cfg.sort !== 'near') + '">Best fit</button><button data-act="sort" data-v="near" aria-pressed="' + (state.cfg.sort === 'near') + '">Nearest</button></div>' +
     '<div class="stack">' + (q[1] ? card(q[1], true) : '') + card(q[0]) + '</div><div class="actions"><button class="ibtn lg" data-act="pass" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Pass</span></button><button class="ibtn lg pri" data-act="spar" aria-label="Spar"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Spar</span></button></div></div>'
 }
+function meetupUnavailable(error) {
+  return meetupTableMissing(error)
+}
+async function loadMeetups() {
+  const listed = await supabase.from('meetups').select('id,host_id,gym_id,starts_at,rules,created_at,gyms(name,town,state),host:profiles!meetups_host_id_fkey(display_name)').order('starts_at', { ascending: true })
+  if (listed.error) {
+    if (meetupUnavailable(listed.error)) { state.meetupsLive = false; state.meetups = []; state.meetupJoins = []; return }
+    state.meetupsLive = true
+    state.meetupMsg = errText(listed.error)
+    return
+  }
+  state.meetupsLive = true
+  state.meetups = listed.data || []
+  const ids = state.meetups.map(row => row.id)
+  if (!ids.length) { state.meetupJoins = []; return }
+  const joins = await supabase.from('meetup_joins').select('meetup_id,user_id').in('meetup_id', ids)
+  if (joins.error) {
+    if (!meetupUnavailable(joins.error)) state.meetupMsg = errText(joins.error)
+    state.meetupJoins = []
+    return
+  }
+  state.meetupJoins = joins.data || []
+}
+function hostableGyms() {
+  return state.gyms.filter(g => g.status === 'approved' || g.status == null || g.submitted_by === uid())
+}
+async function hostMeetup() {
+  if (state.meetupBusy) return
+  const draft = {
+    gymId: ($('#mugym') && $('#mugym').value) || state.meetupDraft.gymId,
+    startsAt: ($('#muwhen') && $('#muwhen').value) || state.meetupDraft.when,
+    rules: ($('#murules') && $('#murules').value) || state.meetupDraft.rules
+  }
+  state.meetupDraft = { gymId: draft.gymId, when: draft.startsAt, rules: draft.rules }
+  const problem = meetupProblem({ gymId: draft.gymId, startsAt: draft.startsAt, rules: draft.rules })
+  if (problem) { state.meetupMsg = problem; render(); return }
+  if (state.meetupsLive === false) {
+    state.meetupMsg = 'Meetup hosting is not saved yet. The database update has not been applied, so nothing was stored.'
+    render()
+    return
+  }
+  state.meetupBusy = true
+  state.meetupMsg = ''
+  render()
+  const { error } = await supabase.from('meetups').insert({
+    host_id: uid(),
+    gym_id: Number(draft.gymId),
+    starts_at: new Date(draft.startsAt).toISOString(),
+    rules: String(draft.rules).trim()
+  })
+  state.meetupBusy = false
+  if (error) {
+    if (meetupUnavailable(error)) {
+      state.meetupsLive = false
+      state.meetupMsg = 'Meetup hosting is not saved yet. The database update has not been applied, so nothing was stored.'
+    } else state.meetupMsg = errText(error)
+    render()
+    return
+  }
+  state.meetupDraft = { gymId: '', when: '', rules: '' }
+  await loadMeetups()
+  toast('Meetup saved')
+  render()
+}
+async function joinMeetup(id, leave) {
+  const meetupId = Number(id)
+  if (!meetupId) return
+  if (state.meetupsLive === false) { toast('Joining is not saved until the database update is applied.', 'err'); return }
+  const query = leave
+    ? supabase.from('meetup_joins').delete().eq('meetup_id', meetupId).eq('user_id', uid())
+    : supabase.from('meetup_joins').insert({ meetup_id: meetupId, user_id: uid() })
+  const { error } = await query
+  if (error) {
+    if (meetupUnavailable(error)) { state.meetupsLive = false; toast('Joining is not saved until the database update is applied.', 'err'); render(); return }
+    toast(errText(error), 'err')
+    return
+  }
+  await loadMeetups()
+  toast(leave ? 'You left the meetup' : 'You joined the meetup')
+  render()
+}
+function meetupsView() {
+  const gyms = hostableGyms()
+  const draft = state.meetupDraft
+  const mineId = uid()
+  const joinCount = (id) => state.meetupJoins.filter(row => String(row.meetup_id) === String(id)).length
+  const joined = (id) => state.meetupJoins.some(row => String(row.meetup_id) === String(id) && row.user_id === mineId)
+  const cards = state.meetups.map(row => {
+    const gym = row.gyms || {}
+    const place = [gym.name, gym.town, gym.state].filter(Boolean).join(', ') || 'Gym'
+    const hostName = row.host && row.host.display_name ? row.host.display_name : 'A boxer'
+    const when = new Date(row.starts_at).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+    const mine = row.host_id === mineId
+    const action = mine
+      ? '<button class="btn btn-sm btn-danger" data-act="cancel-meetup" data-v="' + row.id + '">Cancel meetup</button>'
+      : (joined(row.id)
+        ? '<button class="btn btn-sm btn-sec" data-act="leave-meetup" data-v="' + row.id + '">Leave</button>'
+        : '<button class="btn btn-sm" data-act="join-meetup" data-v="' + row.id + '">Join</button>')
+    return '<article class="box pad meetup"><h3>' + esc(place) + '</h3><p class="meta">' + esc(when) + ' · ' + esc(mine ? 'You are hosting' : hostName) + '</p><p class="meta">' + joinCount(row.id) + (joinCount(row.id) === 1 ? ' boxer joined' : ' boxers joined') + '</p><p>' + esc(row.rules) + '</p><div class="pbtns">' + action + '</div></article>'
+  }).join('')
+  const gymOptions = gyms.map(g => '<option value="' + g.id + '"' + (String(draft.gymId) === String(g.id) ? ' selected' : '') + '>' + esc(g.name) + '</option>').join('')
+  const unavailable = state.meetupsLive === false
+    ? '<p class="field-err" role="alert">Meetup hosting is not saved yet. Apply supabase/migrations/20261110230000_gym_meetups.sql before a meetup can be stored. Nothing you submit is kept.</p>'
+    : ''
+  const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><label class="field">When<input id="muwhen" class="input" type="datetime-local" value="' + esc(draft.when) + '"></label><label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
+    (state.meetupMsg ? '<p class="field-err" role="alert">' + esc(state.meetupMsg) + '</p>' : '') +
+    '<button class="btn btn-block mt-3' + (state.meetupBusy ? ' is-loading' : '') + '" data-act="host-meetup"' + (state.meetupBusy || !gyms.length ? ' disabled' : '') + '>Host meetup</button></div>'
+  return sessionCards() + unavailable + form +
+    (cards ? '<p class="eyebrow">Upcoming</p>' + cards : '<p class="meta">No gym meetups yet.</p>')
+}
 function gymsView() {
   const list = nearbyGyms().filter(g => g.mi == null || g.mi <= state.cfg.maxd || g.submitted_by === uid())
   const mine = list.filter(g => g.submitted_by === uid() && g.status !== 'approved')
@@ -1141,7 +1257,7 @@ function gymsView() {
       (site ? '<a class="btn btn-sec btn-sm" target="_blank" rel="noopener" href="' + esc(site) + '">Website</a>' : '') +
       '</div></div>'
   }).join('')
-  return sessionCards() + '<div class="evh"><p class="meta">Gyms near ' + esc(locLabel()) + '</p><button class="btn btn-sm" data-act="addgym">Add a gym</button></div>' +
+  return '<div class="evh"><p class="meta">Gyms near ' + esc(locLabel()) + '</p><button class="btn btn-sm" data-act="addgym">Add a gym</button></div>' +
     (state.cfg.loc ? '' : '<p class="help">Set a location to sort gyms by distance.</p>') +
     (shown.length ? cards : '<div class="box pad"><p class="meta">No gyms within ' + dist(state.cfg.maxd) + ' of ' + esc(locLabel()) + ' yet.</p><p class="help">Add the gym where you train. You will see it immediately. Everyone else sees it after the owner approves it or ' + CONFIRMATIONS_REQUIRED + ' other boxers confirm the same gym.</p></div>') +
     (mine.length ? '' : '') +
@@ -1203,8 +1319,7 @@ function gymPicker() {
 function meView() {
   const bits = [state.me.n, state.me.a, state.me.avatar_url, state.me.bio, (state.me.dy || []).length]
   const p = bits.filter(Boolean).length * 20
-  return '<div class="psum">' + meAv() + '<div><h2>' + esc(state.me.n || 'Your profile') + (state.me.v ? ' <span class="ver">Verified</span>' : '') + '</h2><p class="meta">' + esc(state.me.w) + ' · ' + esc(state.me.exp) + ' · ' + esc(state.me.st) + '</p><div class="pbtns"><label class="btn btn-sm btn-sec filebtn">' + (state.me.avatar_url ? 'Change photo' : 'Add photo') + '<input type="file" id="pic" accept="image/*" aria-label="Choose a profile photo"></label>' +
-    (state.me.avatar_url ? '<button class="btn btn-sm btn-ghost" data-act="rmpic">Remove</button>' : '') + '</div></div></div>' +
+  return '<div class="psum">' + meAv() + '<div><h2>' + esc(state.me.n || 'Your profile') + (state.me.v ? ' <span class="ver">Verified</span>' : '') + '</h2><p class="meta">' + esc(state.me.w) + ' · ' + esc(state.me.exp) + ' · ' + esc(state.me.st) + '</p><div class="pbtns"><button type="button" class="btn btn-sm btn-sec" data-act="picmenu">' + (state.me.avatar_url ? 'Change photo' : 'Add photo') + '</button><input type="file" id="pic" accept="image/*" hidden aria-label="Choose a profile photo"></div></div></div>' +
     (state.picErr ? '<p class="field-err" role="alert">' + esc(state.picErr) + '</p>' : '') +
     '<div class="meter"><p class="meta"><b>' + (p < 100 ? p + '% complete' : 'Profile complete') + '</b></p><div class="bar" style="--p:' + p + '%"><i></i></div></div>' +
     '<p class="eyebrow">About you</p><div class="box pad">' + fieldHtml('n', 'Name') + fieldHtml('a', 'Age', 'number') + fieldHtml('h', 'Height', 'text', 'e.g. 5 ft 10') + '</div>' +
@@ -1316,11 +1431,10 @@ function filtersView() {
 function settingsView() {
   const seg = (k, opts) => '<div class="seg">' + opts.map(x => '<button data-act="cfg" data-k="' + k + '" data-v="' + x[0] + '"' + (String(state.cfg[k]) === x[0] ? ' aria-pressed="true"' : '') + '>' + x[1] + '</button>').join('') + '</div>'
   const tog = (k, label, sub) => '<div class="srow"><div><b>' + label + '</b><span>' + sub + '</span></div><button class="sw" role="switch" aria-checked="' + !!state.cfg[k] + '" aria-label="' + label + '" data-act="toggle" data-k="' + k + '"></button></div>'
-  const email = state.session.user.email || ''
+  const email = (state.session && state.session.user && state.session.user.email) || ''
   return '<button class="btn btn-sec btn-sm sheet-done" data-act="close">Done</button><h2 class="big">Settings</h2><div class="box mt-3"><button class="srow link" data-act="edit"><span class="who-row">' + meAv(true) + esc(state.me.n || 'Set up your profile') + '</span></button></div>' +
     '<p class="eyebrow">Discovery</p><div class="box"><button class="srow link" data-act="loc"><div><b>Location</b><span>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Not set') + '</span></div></button><div class="srow col"><b>Radius: <em id="dv">' + dist(state.cfg.maxd) + '</em></b><input type="range" min="5" max="100" step="5" value="' + state.cfg.maxd + '" data-act="maxd" aria-label="Search radius"></div>' +
     tog('verified', 'Verified boxers only', 'Hide profiles that are not verified') + '<div class="srow col"><b>Distance units</b>' + seg('units', [['mi', 'Miles'], ['km', 'Kilometers']]) + '</div><div class="srow col"><b>Sort discover</b>' + seg('sort', [['fit', 'Best fit'], ['near', 'Nearest']]) + '</div></div>' +
-    '<p class="eyebrow">Appearance</p><div class="box"><div class="srow col"><b>Theme</b>' + seg('theme', [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']]) + '</div></div>' +
     '<p class="eyebrow">Notifications</p><div class="box">' + tog('nMatch', 'Match pop-ups', 'Show a pop-up when someone matches you') + tog('nMsg', 'Message toasts', 'A short note when a new message arrives') + '</div>' +
     '<p class="eyebrow">Safety</p><div class="box"><button class="srow link" data-act="safety"><div><b>Safety guide</b><span>Gym, gear, and tell someone before a first session</span></div></button></div>' +
     (state.blocks.length ? '<p class="eyebrow">Blocked (' + state.blocks.length + ')</p><div class="box">' + state.blocks.map(b => '<div class="srow"><span>' + esc(b.name) + '</span><button class="btn btn-sm btn-sec" data-act="unblock" data-v="' + b.id + '">Unblock</button></div>').join('') + '</div>' : '') +
@@ -1402,14 +1516,32 @@ function personById(id) {
   return state.profiles.find(p => p.id === id) || (state.matches.map(m => m.partner).find(p => p.id === id)) || pool()[0]
 }
 
+function focusKey(el) {
+  if (!el || !el.getAttribute) return ''
+  if (el.id) return '#' + el.id
+  const act = el.getAttribute('data-act')
+  if (!act) return ''
+  return act + '|' + (el.getAttribute('data-k') || '') + '|' + (el.getAttribute('data-v') || '')
+}
 function renderSheet() {
   const sh = $('#sheet')
   if (!sh) return
-  if (!state.sheet) { sh.hidden = true; sh.innerHTML = ''; return }
+  if (!state.sheet) { sh.hidden = true; sh.innerHTML = ''; delete sh.dataset.kind; return }
+  const panel = sh.querySelector('.panel')
+  const same = !sh.hidden && sh.dataset.kind === state.sheet && !!panel
+  const scroll = same ? panel.scrollTop : 0
+  const key = same ? focusKey(document.activeElement) : ''
   const labels = { f: 'Filters', p: 'Boxer profile', l: 'Location', plan: 'Plan a session', gym: 'Add a gym', settings: 'Settings' }
   const body = state.sheet === 'f' ? filtersView() : state.sheet === 'p' ? profileSheet() : state.sheet === 'l' ? locationView() : state.sheet === 'plan' ? planView() : state.sheet === 'gym' ? addGymView() : settingsView()
+  sh.dataset.kind = state.sheet
   sh.hidden = false
-  sh.innerHTML = '<div class="scrim" data-act="close"></div><div class="panel in" role="dialog" aria-modal="true" aria-label="' + (labels[state.sheet] || 'Settings') + '">' + body + '</div>'
+  sh.innerHTML = '<div class="scrim" data-act="close"></div><div class="panel' + (same ? '' : ' in') + (state.sheet === 'f' ? ' filters' : '') + '" role="dialog" aria-modal="true" aria-label="' + (labels[state.sheet] || 'Settings') + '">' + body + '</div>'
+  const next = sh.querySelector('.panel')
+  if (key && next) {
+    const again = key.charAt(0) === '#' ? next.querySelector(key) : [...next.querySelectorAll('[data-act]')].find(el => focusKey(el) === key)
+    if (again) again.focus({ preventScroll: true })
+  }
+  if (next && same) next.scrollTop = scroll
   if (state.sheet === 'l' && state.locQ) locRows(state.locQ).then(html => { const box = $('#loclist'); if (box) box.innerHTML = html })
 }
 function render() {
@@ -1450,13 +1582,15 @@ function renderApp() {
   }
   if (needsWaiver()) { main.innerHTML = waiverView(); document.title = 'Assumption of risk | Boxing Buddies'; bindCards(); return }
   if (state.onb > 0) { main.innerHTML = onbView(); document.title = 'Welcome | Boxing Buddies'; bindCards(); return }
-  const titles = { discover: 'Discover', matches: 'Messages', gyms: 'Meetups', me: 'Profile' }
-  main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
+  const titles = { discover: 'Discover', matches: 'Messages', meetups: 'Meetups', gyms: 'Gyms', me: 'Profile' }
+  const appEl = $('#app')
+  if (appEl) appEl.dataset.view = state.tab === 'matches' && state.openMatch ? 'matches-chat' : (state.tab || 'discover')
+  main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'meetups' ? meetupsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
   const n = state.tab === 'discover' ? pool().length : 0
   const unreadN = Object.keys(state.unread).filter(k => state.unread[k]).length
   const tabBtn = (id, label) => '<button class="nav-tab" data-act="tab" data-v="' + id + '"' + (state.tab === id ? ' aria-current="true"' : '') + '>' + ICON[id] + '<span>' + label + '</span>' + (id === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>'
   const logo = '<button class="nav-logo' + (state.tab === 'discover' ? ' is-on' : '') + '" data-act="tab" data-v="discover" aria-label="Discover">' + markSvg() + '</button>'
-  $('#nav').innerHTML = tabBtn('discover', 'Discover') + tabBtn('matches', 'Messages') + logo + tabBtn('gyms', 'Meetups') + tabBtn('me', 'Profile')
+  $('#nav').innerHTML = tabBtn('meetups', 'Meetups') + tabBtn('matches', 'Messages') + logo + tabBtn('gyms', 'Gyms') + tabBtn('me', 'Profile')
   $('#ht').textContent = titles[state.tab] || 'Boxing Buddies'
   const sub = $('#hs')
   if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (n + (n === 1 ? ' boxer' : ' boxers') + ' within ' + dist(state.cfg.maxd) + ' of ' + locLabel()) : (state.tab === 'matches' ? 'Your boxing connections' : '')
@@ -1722,8 +1856,8 @@ async function onClick(b) {
     scheduleSave()
   }
   if (act === 'cfg') {
+    if (b.dataset.k === 'theme') return
     state.cfg[b.dataset.k] = v
-    if (b.dataset.k === 'theme') applyTheme()
     savePrefs()
   }
   if (act === 'toggle') { state.cfg[b.dataset.k] = !state.cfg[b.dataset.k]; savePrefs() }
@@ -1776,7 +1910,32 @@ async function onClick(b) {
     return
   }
   if (act === 'gymsave') { await submitGym(); return }
-  if (act === 'rmpic') { await removePhoto(); return }
+  if (act === 'picmenu') {
+    const remove = state.me.avatar_url ? '<button class="btn btn-danger btn-block" data-act="rmpic-ask">Remove photo</button>' : ''
+    modalOpen('<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="pt"><h2 id="pt">' + (state.me.avatar_url ? 'Change photo' : 'Add photo') + '</h2><div class="stack-v"><button class="btn btn-block" data-act="picpick">' + (state.me.avatar_url ? 'Change photo' : 'Choose a photo') + '</button>' + remove + '<button class="btn btn-sec btn-block" data-act="pic-cancel">Cancel</button></div></div>')
+    return
+  }
+  if (act === 'picpick') { closeModal(); const input = $('#pic'); if (input) input.click(); return }
+  if (act === 'pic-cancel') { closeModal(); return }
+  if (act === 'rmpic-ask') {
+    closeModal()
+    confirmDlg({ title: 'Remove this photo?', body: 'Your profile goes back to your initial. This is saved to your account.', yes: 'Remove photo', danger: true, fn: () => { removePhoto().catch(err => toast(errText(err), 'err')) } })
+    return
+  }
+  if (act === 'host-meetup') { await hostMeetup(); return }
+  if (act === 'join-meetup') { await joinMeetup(v, false); return }
+  if (act === 'leave-meetup') { await joinMeetup(v, true); return }
+  if (act === 'cancel-meetup') {
+    confirmDlg({ title: 'Cancel this meetup?', body: 'People who joined will no longer see it. This cannot be undone.', yes: 'Cancel meetup', danger: true, fn: () => {
+      supabase.from('meetups').delete().eq('id', Number(v)).eq('host_id', uid()).then(async ({ error }) => {
+        if (error) { toast(errText(error), 'err'); return }
+        await loadMeetups()
+        toast('Meetup cancelled')
+        render()
+      }).catch(err => toast(errText(err), 'err'))
+    } })
+    return
+  }
   if (act === 'invite') { await invite(); return }
   if (['fw', 'fe', 'fi', 'fg', 'fd', 'pf', 'pd', 'pt', 'gym', 'cfg', 'toggle', 'fclear', 'sort'].includes(act)) render()
 }

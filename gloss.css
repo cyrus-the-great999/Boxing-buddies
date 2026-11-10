@@ -72,27 +72,32 @@ header h1::after { display: none !important; }
 .meta, .help, .fine, .note { color: #A8A4A4; letter-spacing: 0; text-transform: none; font-weight: 400; font-size: 14px; }
 
 .btn {
-  min-height: 56px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #E8303C 0%, #B3141F 100%);
+  min-height: 48px;
+  border-radius: 10px;
+  padding: 0 16px;
+  background: linear-gradient(180deg, #DE2A36 0%, #C01A26 100%);
   color: #F3F2F2;
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 0 0 1px rgba(255, 120, 120, .35), 0 10px 30px rgba(215, 33, 47, .38);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.01em;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), inset 0 0 0 1px rgba(255, 255, 255, .06), 0 0 0 1px rgba(90, 6, 12, .9), 0 1px 2px rgba(0, 0, 0, .5), 0 4px 14px -4px rgba(215, 33, 47, .45);
   filter: none;
 }
-.btn:active { transform: scale(.98); }
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); filter: brightness(.94); }
 .btn-sec {
-  min-height: 54px;
-  background: rgba(255, 255, 255, .05);
+  min-height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .03));
   color: #F3F2F2;
-  border: 1px solid rgba(255, 255, 255, .12);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
-  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 1px 2px rgba(0, 0, 0, .4);
+  backdrop-filter: none;
 }
+.btn-sec:hover { background: linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .05)); border-color: rgba(255, 255, 255, .16); filter: none; }
 .btn-ghost { background: none; box-shadow: none; color: #C9C7C7; border: 0; }
-.btn-danger { background: none; color: #FF5A5F; box-shadow: inset 0 0 0 1px rgba(255, 90, 95, .45); border-radius: 999px; }
-.btn-sm { min-height: 40px; font-size: 13px; }
+.btn-danger { background: none; color: #FF5A5F; box-shadow: inset 0 0 0 1px rgba(255, 90, 95, .45); border-radius: 10px; }
+.btn-sm { min-height: 44px; font-size: 14px; border-radius: 10px; }
 .btn .gmark {
   width: 20px; height: 20px; border-radius: 50%; background: #F3F2F2; color: #0B0A0A;
   display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;
@@ -147,9 +152,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
   background: #151313;
   box-shadow: 0 0 0 1px rgba(215, 33, 47, .25), 0 0 50px rgba(215, 33, 47, .18);
 }
-.photo img, .ph, .pav img, .av img, .onb-art.hero {
-  filter: grayscale(1) contrast(1.13);
-}
+.photo img, .ph, .pav img, .av img { filter: none; }
 .fit {
   border-radius: 999px;
   background: rgba(11, 10, 10, .6);
@@ -188,14 +191,30 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 
 .mt { border-radius: 28px; }
 .gym-row, .box.pad.gym-row {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
   background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .015));
   border: 1px solid rgba(255, 255, 255, .08);
-  border-radius: 24px;
+  border-radius: 16px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
-  margin-bottom: 10px;
+  padding: 20px 16px;
+  margin: 0 0 16px;
 }
-.gym-row h3, .gym-row .meta, .gym-row .btn { visibility: visible; }
+.gym-row .pbtns { margin-top: 4px; }
+.gym-row h3 { margin: 0 0 6px; }
+.gym-row .meta { margin: 0 0 4px; line-height: 1.45; }
+.meetup { margin: 0 0 14px; }
+.meetup p { margin: 8px 0 0; line-height: 1.5; white-space: pre-wrap; }
+.meetup-form { margin: 12px 0 18px; }
+#sheet .panel.filters {
+  background: #121110;
+  background-image: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  opacity: 1;
+}
 .dialog.match { border-radius: 28px; }
 
 /* Profile completion stays a black-to-red fill. The track is lighter so the
@@ -379,6 +398,14 @@ nav button .dot { top: 4px; left: calc(50% + 4px); min-width: 16px; height: 16px
 }
 
 :focus-visible { outline: 2px solid #D7212F; outline-offset: 2px; }
+body, button, a, label, h1, h2, h3, p, span, li, div {
+  -webkit-user-select: none;
+  user-select: none;
+}
+input, textarea, select, [contenteditable="true"], .m {
+  -webkit-user-select: text;
+  user-select: text;
+}
 @media (prefers-reduced-motion: no-preference) {
   #main.tabin { animation: bbRise .35s cubic-bezier(.2, .8, .2, 1); }
   .panel.in { animation: bbSheet .34s cubic-bezier(.2, .8, .2, 1); }
