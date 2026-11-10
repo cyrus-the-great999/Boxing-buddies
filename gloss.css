@@ -91,7 +91,7 @@ button, .btn, .ibtn {
   font-weight: 500;
   letter-spacing: -.01em;
   border: 0;
-  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .28), 0 1px 2px rgba(0, 0, 0, .35);
+  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .14), 0 1px 2px rgba(0, 0, 0, .35);
   filter: none;
 }
 .btn:not(.btn-sec):not(.btn-ghost):not(.btn-danger):hover,
@@ -204,7 +204,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
   background: linear-gradient(90deg, #E23A42 0%, #9E1822 46%, #14080A 100%);
   color: #E4E7EC;
   border: 0;
-  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .28);
+  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .14);
 }
 .actions .ibtn.lg span { font-size: 14px; font-weight: 700; }
 .actions .ibtn.lg svg { width: 18px; height: 18px; padding: 0; background: none; }
@@ -248,6 +248,27 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
   -webkit-backdrop-filter: none;
   opacity: 1;
 }
+#sheet .panel.filters .box,
+#sheet .panel.filters .box.pad {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+#sheet .panel.filters .srow {
+  border: 0;
+  box-shadow: none;
+  background: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.row-gap { flex-wrap: wrap; }
+.meetup .pbtns,
+.sessr .row-gap { max-width: 100%; }
+.meetup .pbtns .btn,
+.sessr .row-gap .btn { flex: none; max-width: 100%; }
 .dialog.match { border-radius: 28px; }
 
 /* Profile completion stays a black-to-red fill. The track is lighter so the

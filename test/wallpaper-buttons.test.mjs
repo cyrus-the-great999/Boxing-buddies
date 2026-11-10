@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs'
 const gloss = readFileSync(new URL('../gloss.css', import.meta.url), 'utf8')
 const sw = readFileSync(new URL('../sw.js', import.meta.url), 'utf8')
 const index = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
+const app = readFileSync(new URL('../app.js', import.meta.url), 'utf8')
 
 test('the ribbon wallpaper layer is not suppressed', () => {
   assert.match(index, /body::before\{content:"";position:fixed;inset:0;[^}]*url\("img\/bg\.jpg"\)/)
@@ -19,4 +20,8 @@ test('secondary buttons keep one edge and primary actions keep the red-to-black 
   assert.match(gloss, /-webkit-appearance: none;/)
   assert.match(sw, /const C='bb-shell-22'/)
   assert.match(sw, /\.\/img\/bg\.jpg/)
+  assert.match(gloss, /inset 0 0 0 1px rgba\(213, 216, 222, \.14\)/)
+  assert.match(gloss, /#sheet \.panel\.filters \.box/)
+  assert.match(gloss, /\.row-gap \{ flex-wrap: wrap; \}/)
+  assert.doesNotMatch(app, /emptyArt\('bag'\)/)
 })
