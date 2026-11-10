@@ -1236,7 +1236,7 @@ function meetupsView() {
   }).join('')
   const gymOptions = gyms.map(g => '<option value="' + g.id + '"' + (String(draft.gymId) === String(g.id) ? ' selected' : '') + '>' + esc(g.name) + '</option>').join('')
   const unavailable = state.meetupsLive === false
-    ? '<p class="field-err" role="alert">Meetup hosting is not saved yet. Apply supabase/migrations/20261110230000_gym_meetups.sql before a meetup can be stored. Nothing you submit is kept.</p>'
+    ? '<p class="field-err" role="alert">Meetup hosting is not saved yet. Apply supabase/migrations/20261110231313_gym_meetups.sql before a meetup can be stored. Nothing you submit is kept.</p>'
     : ''
   const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><label class="field">When<input id="muwhen" class="input" type="datetime-local" value="' + esc(draft.when) + '"></label><label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
     (state.meetupMsg ? '<p class="field-err" role="alert">' + esc(state.meetupMsg) + '</p>' : '') +
