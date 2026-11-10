@@ -42,8 +42,7 @@ const ICON = {
   discover: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 15h6"/></svg>',
   matches: '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></svg>',
   gyms: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
-  me: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
-  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>'
+  me: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'
 }
 
 const state = {
@@ -1127,7 +1126,7 @@ function discover() {
   return '<div class="disc"><div class="qf" role="group" aria-label="Quick filters"><button class="chip fchip" data-act="filters">Filters</button><button class="chip" data-act="fclear" aria-pressed="' + (!any) + '">All</button>' +
     chip(state.filters.w === 'All' ? 'Weight' : state.filters.w, state.filters.w !== 'All') + chip(state.filters.e === 'All' ? 'Experience' : state.filters.e, state.filters.e !== 'All') +
     '</div><div class="seg" role="group" aria-label="Sort"><button data-act="sort" data-v="fit" aria-pressed="' + (state.cfg.sort !== 'near') + '">Best fit</button><button data-act="sort" data-v="near" aria-pressed="' + (state.cfg.sort === 'near') + '">Nearest</button></div>' +
-    '<div class="stack">' + (q[1] ? card(q[1], true) : '') + card(q[0]) + '</div><div class="actions"><button class="ibtn lg" data-act="pass" aria-label="Pass"><span>Pass</span><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button><button class="ibtn lg pri" data-act="spar" aria-label="Spar"><span>Spar</span><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>'
+    '<div class="stack">' + (q[1] ? card(q[1], true) : '') + card(q[0]) + '</div><div class="actions"><button class="ibtn lg" data-act="pass" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Pass</span></button><button class="ibtn lg pri" data-act="spar" aria-label="Spar"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Spar</span></button></div></div>'
 }
 function gymsView() {
   const list = nearbyGyms().filter(g => g.mi == null || g.mi <= state.cfg.maxd || g.submitted_by === uid())
@@ -1208,7 +1207,6 @@ function meView() {
     (state.me.avatar_url ? '<button class="btn btn-sm btn-ghost" data-act="rmpic">Remove</button>' : '') + '</div></div></div>' +
     (state.picErr ? '<p class="field-err" role="alert">' + esc(state.picErr) + '</p>' : '') +
     '<div class="meter"><p class="meta"><b>' + (p < 100 ? p + '% complete' : 'Profile complete') + '</b></p><div class="bar" style="--p:' + p + '%"><i></i></div></div>' +
-    '<div class="stats3"><div><b>' + state.matches.length + '</b><span>Matches</span></div><div><b>' + state.sessions.length + '</b><span>Sessions</span></div></div>' +
     '<p class="eyebrow">About you</p><div class="box pad">' + fieldHtml('n', 'Name') + fieldHtml('a', 'Age', 'number') + fieldHtml('h', 'Height', 'text', 'e.g. 5 ft 10') + '</div>' +
     '<p class="eyebrow">Your boxing</p><div class="box pad">' + chipGroup('w', 'Weight class', W.slice(1)) + chipGroup('exp', 'Experience', E.slice(1)) + chipGroup('st', 'Stance', ['Orthodox', 'Southpaw']) + '</div>' +
     '<p class="eyebrow">Home gym</p>' + gymPicker() +
@@ -1249,7 +1247,7 @@ function authView() {
   const formErr = state.authMsg || urlErr
   return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"></div><div class="wm-block"><div class="wm">Boxing<br>Buddies</div><div class="wm-tag">More than just<br>a match.</div><div class="wm-bar"></div></div><div class="wm-side"><span>Train.</span><span>Connect.</span><span>Spar.</span></div><div class="onb-body"><label class="field">Email<input id="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" value="' + esc(state.authEmail) + '"' + (formErr ? ' aria-invalid="true"' : '') + '></label>' +
     (formErr ? '<p class="field-err" role="alert">' + esc(formErr) + '</p>' : '<p class="fine">We email you a 6-digit code and a sign-in link. No password to remember.</p>') +
-    '</div><div class="onb-cta"><button class="btn btn-block go' + busy('magic') + '" data-act="magic"' + lock + '>Continue with Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button class="btn btn-sec btn-block' + busy('google') + '" data-act="google"' + lock + '><span class="gmark">G</span>Continue with Google</button></div></div>'
+    '</div><div class="onb-cta"><button class="btn btn-block' + busy('magic') + '" data-act="magic"' + lock + '>Send email</button><button class="btn btn-sec btn-block' + busy('google') + '" data-act="google"' + lock + '>Continue with Google</button></div></div>'
 }
 function authErrorFromUrl() {
   const q = new URLSearchParams(location.search)
@@ -1456,11 +1454,10 @@ function renderApp() {
   main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
   const n = state.tab === 'discover' ? pool().length : 0
   const unreadN = Object.keys(state.unread).filter(k => state.unread[k]).length
-  const tabBtn = (id, label) => '<button class="nav-tab" data-act="tab" data-v="' + id + '"' + (state.tab === id ? ' aria-current="true"' : '') + '>' + ICON[id] + '<span>' + label + '</span>' + (id === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>'
-  $('#nav').innerHTML = tabBtn('gyms', 'Meetups') + tabBtn('matches', 'Messages') + '<button class="nav-logo" data-act="tab" data-v="discover" aria-label="Discover"' + (state.tab === 'discover' ? ' aria-current="true"' : '') + '>' + markSvg() + '</button><button class="nav-tab" data-act="filters" aria-label="Search filters">' + ICON.search + '<span>Search</span></button>' + tabBtn('me', 'Profile')
+  $('#nav').innerHTML = [['discover', 'Discover'], ['matches', 'Messages'], ['gyms', 'Meetups'], ['me', 'Profile']].map(t => '<button class="nav-tab" data-act="tab" data-v="' + t[0] + '"' + (state.tab === t[0] ? ' aria-current="true"' : '') + '>' + ICON[t[0]] + '<span>' + t[1] + '</span>' + (t[0] === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>').join('')
   $('#ht').textContent = titles[state.tab] || 'Boxing Buddies'
   const sub = $('#hs')
-  if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (locLabel() + ' · ' + dist(state.cfg.maxd) + ' · ' + n + ' near you') : (state.tab === 'matches' ? 'Your boxing connections' : '')
+  if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (n + (n === 1 ? ' boxer' : ' boxers') + ' within ' + dist(state.cfg.maxd) + ' of ' + locLabel()) : (state.tab === 'matches' ? 'Your boxing connections' : '')
   const off = document.getElementById('offline')
   if (off) off.hidden = !state.offline
   document.title = (titles[state.tab] || 'Boxing Buddies') + ' | Boxing Buddies'

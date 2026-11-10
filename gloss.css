@@ -187,6 +187,15 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .ring.on { box-shadow: 0 0 12px rgba(215, 33, 47, .55); background: #D7212F; }
 
 .mt { border-radius: 28px; }
+.gym-row, .box.pad.gym-row {
+  display: block;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .015));
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 24px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+  margin-bottom: 10px;
+}
+.gym-row h3, .gym-row .meta, .gym-row .btn { visibility: visible; }
 .dialog.match { border-radius: 28px; }
 
 /* Profile completion stays a black-to-red fill. The track is lighter so the
@@ -313,7 +322,7 @@ nav {
   -webkit-backdrop-filter: blur(18px);
   z-index: 5;
 }
-#nav { position: static; display: flex; align-items: flex-end; height: 100%; max-width: none; margin: 0; }
+#nav { position: static; display: flex; align-items: center; height: 100%; max-width: none; margin: 0; }
 nav button {
   position: relative;
   flex: 1;
