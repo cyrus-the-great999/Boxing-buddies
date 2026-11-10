@@ -69,7 +69,10 @@ begin
   if not exists (
     select 1 from public.gyms g
      where g.id = new.gym_id
-       and (g.status = 'approved' or g.submitted_by = new.host_id)
+       and (
+         g.status = 'approved'
+         or (g.status = 'pending' and g.submitted_by = new.host_id)
+       )
   ) then
     raise exception 'Choose a gym that is listed.';
   end if;
@@ -85,13 +88,18 @@ as $$
 declare
   starts timestamptz;
   host uuid;
+  gym bigint;
 begin
   if new.user_id is distinct from (select auth.uid()) then
     raise exception 'You can only join as yourself.';
   end if;
   perform private.require_adult(new.user_id);
-  select m.starts_at, m.host_id into starts, host
+  select m.starts_at, m.host_id, m.gym_id into starts, host, gym
     from public.meetups m where m.id = new.meetup_id;
+  -- Same visibility as a read. Guessing a hidden id is not enough.
+  if host is null or not private.meetup_row_visible(host, gym) then
+    raise exception 'That meetup is not open.';
+  end if;
   if starts is null or starts <= now() then
     raise exception 'That meetup is not open.';
   end if;
@@ -133,6 +141,44 @@ create trigger meetup_joins_count
   after insert or delete on public.meetup_joins
   for each row execute function private.sync_meetup_join_count();
 
+-- Reads profiles and gyms as the owner so the caller does not need SELECT on
+-- public.profiles. Uses the meetup row's own columns, so INSERT ... RETURNING
+-- can see the new row. Approved gym, the caller's own pending gym, or a meetup
+-- this caller hosts. A blocked host is hidden.
+create or replace function private.meetup_row_visible(p_host uuid, p_gym bigint)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+set row_security = off
+as $$
+  select (select auth.uid()) is not null
+     and exists (
+       select 1 from public.profiles me
+        where me.id = (select auth.uid())
+          and me.adult_confirmed is true
+          and me.age >= 18
+     )
+     and exists (
+       select 1 from public.gyms g
+        where g.id = p_gym
+          and (
+            g.status = 'approved'
+            or (g.status = 'pending' and g.submitted_by = (select auth.uid()))
+            or p_host = (select auth.uid())
+          )
+     )
+     and (
+       p_host = (select auth.uid())
+       or not private.is_blocked_between(p_host)
+     );
+$$;
+
+revoke all on function private.meetup_row_visible(uuid, bigint) from public;
+revoke all on function private.meetup_row_visible(uuid, bigint) from anon;
+grant execute on function private.meetup_row_visible(uuid, bigint) to authenticated;
+
 alter table public.meetups enable row level security;
 alter table public.meetups force row level security;
 alter table public.meetup_joins enable row level security;
@@ -143,27 +189,7 @@ create policy "meetups readable"
   on public.meetups
   for select
   to authenticated
-  using (
-    exists (
-      select 1 from public.profiles p
-       where p.id = (select auth.uid())
-         and p.adult_confirmed is true
-         and p.age >= 18
-    )
-    and exists (
-      select 1 from public.gyms g
-       where g.id = gym_id
-         and (
-           g.status = 'approved'
-           or g.submitted_by = (select auth.uid())
-           or host_id = (select auth.uid())
-         )
-    )
-    and (
-      host_id = (select auth.uid())
-      or not private.is_blocked_between(host_id)
-    )
-  );
+  using (private.meetup_row_visible(host_id, gym_id));
 
 drop policy if exists "meetups host insert" on public.meetups;
 create policy "meetups host insert"
@@ -206,7 +232,14 @@ create policy "meetup joins insert"
   on public.meetup_joins
   for insert
   to authenticated
-  with check (user_id = (select auth.uid()));
+  with check (
+    user_id = (select auth.uid())
+    and exists (
+      select 1 from public.meetups m
+       where m.id = meetup_id
+         and private.meetup_row_visible(m.host_id, m.gym_id)
+    )
+  );
 
 drop policy if exists "meetup joins delete" on public.meetup_joins;
 create policy "meetup joins delete"

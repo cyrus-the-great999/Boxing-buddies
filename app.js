@@ -1138,7 +1138,7 @@ function meetupUnavailable(error) {
   return meetupTableMissing(error)
 }
 async function loadMeetups() {
-  const listed = await supabase.from('meetups').select('id,host_id,gym_id,starts_at,rules,join_count,created_at,gyms(name,town,state),host:profiles!meetups_host_id_fkey(display_name)').order('starts_at', { ascending: true })
+  const listed = await supabase.from('meetups').select('id,host_id,gym_id,starts_at,rules,join_count,created_at,gyms(name,town,state)').order('starts_at', { ascending: true })
   if (listed.error) {
     if (meetupUnavailable(listed.error)) { state.meetupsLive = false; state.meetups = []; state.meetupJoins = []; return }
     state.meetupsLive = true
@@ -1158,7 +1158,7 @@ async function loadMeetups() {
   state.meetupJoins = joins.data || []
 }
 function hostableGyms() {
-  return state.gyms.filter(g => g.status === 'approved' || g.status == null || g.submitted_by === uid())
+  return state.gyms.filter(g => g.status === 'approved' || g.status == null || (g.status === 'pending' && g.submitted_by === uid()))
 }
 async function hostMeetup() {
   if (state.meetupBusy) return
@@ -1223,7 +1223,7 @@ function meetupsView() {
   const cards = state.meetups.map(row => {
     const gym = row.gyms || {}
     const place = [gym.name, gym.town, gym.state].filter(Boolean).join(', ') || 'Gym'
-    const hostName = row.host && row.host.display_name ? row.host.display_name : 'A boxer'
+    const hostName = 'Another boxer'
     const when = new Date(row.starts_at).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
     const mine = row.host_id === mineId
     const action = mine
