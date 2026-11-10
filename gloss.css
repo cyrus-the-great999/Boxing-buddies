@@ -49,7 +49,9 @@ body { font-weight: 400; }
 }
 
 #app { background: none !important; position: relative; z-index: 1; color: #D5D8DE; }
-#app::before, #app::after, body::before, body::after { content: none !important; display: none !important; }
+/* Hide the old streak overlays on #app only. body::before is img/bg.jpg and
+   body::after is its readability scrim. Both have to paint. */
+#app::before, #app::after { content: none !important; display: none !important; }
 
 header h1, .wm, .onb:not(.waiver) .onb-body h1, h2, h3, .big, .empty h2 {
   font-family: Archivo, sans-serif;
@@ -75,6 +77,10 @@ header { padding-bottom: 8px; }
 .meta, .help, .fine, .note { color: #9AA0A8; letter-spacing: 0; text-transform: none; font-weight: 400; font-size: 15px; line-height: 1.45; }
 main { padding-left: 20px; padding-right: 20px; }
 
+button, .btn, .ibtn {
+  -webkit-appearance: none;
+  appearance: none;
+}
 .btn {
   min-height: 48px;
   border-radius: 10px;
@@ -84,21 +90,29 @@ main { padding-left: 20px; padding-right: 20px; }
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -.01em;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .14), 0 1px 2px rgba(0, 0, 0, .35);
   filter: none;
 }
-.btn:hover { filter: brightness(1.08); }
-.btn:active { transform: translateY(1px); filter: brightness(.94); }
-.btn-sec {
-  min-height: 48px;
-  border-radius: 10px;
+.btn:not(.btn-sec):not(.btn-ghost):not(.btn-danger):hover,
+.btn:not(.btn-sec):not(.btn-ghost):not(.btn-danger):active,
+.btn:not(.btn-sec):not(.btn-ghost):not(.btn-danger):focus {
+  background: linear-gradient(90deg, #E23A42 0%, #9E1822 46%, #14080A 100%);
+  filter: brightness(1.08);
+}
+.btn:not(.btn-sec):not(.btn-ghost):not(.btn-danger):active { transform: translateY(1px); filter: brightness(.94); }
+.btn.btn-sec,
+.btn.btn-sec:hover,
+.btn.btn-sec:active,
+.btn.btn-sec:focus {
   background: #1C1B1A;
   color: #D5D8DE;
   border: 1px solid rgba(197, 200, 206, .16);
   box-shadow: none;
   backdrop-filter: none;
+  filter: none;
 }
-.btn-sec:hover { background: #242322; border-color: rgba(197, 200, 206, .28); filter: none; }
+.btn.btn-sec:hover { background: #242322; border-color: rgba(197, 200, 206, .28); }
 .btn-ghost { background: none; box-shadow: none; color: #C2C6CE; border: 0; }
 .btn-danger { background: none; color: #FF5A5F; box-shadow: inset 0 0 0 1px rgba(255, 90, 95, .45); border-radius: 10px; }
 .btn-sm { min-height: 44px; font-size: 14px; border-radius: 10px; }
@@ -183,11 +197,14 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
   background: #1C1B1A; color: #D5D8DE; border: 1px solid rgba(197, 200, 206, .16);
   box-shadow: none;
 }
-.actions .ibtn.lg.pri {
+.actions .ibtn.lg.pri,
+.actions .ibtn.lg.pri:hover,
+.actions .ibtn.lg.pri:active,
+.actions .ibtn.lg.pri:focus {
   background: linear-gradient(90deg, #E23A42 0%, #9E1822 46%, #14080A 100%);
   color: #E4E7EC;
   border: 0;
-  box-shadow: none;
+  box-shadow: inset 0 0 0 1px rgba(213, 216, 222, .14);
 }
 .actions .ibtn.lg span { font-size: 14px; font-weight: 700; }
 .actions .ibtn.lg svg { width: 18px; height: 18px; padding: 0; background: none; }
@@ -231,6 +248,27 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
   -webkit-backdrop-filter: none;
   opacity: 1;
 }
+#sheet .panel.filters .box,
+#sheet .panel.filters .box.pad {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+#sheet .panel.filters .srow {
+  border: 0;
+  box-shadow: none;
+  background: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.row-gap { flex-wrap: wrap; }
+.meetup .pbtns,
+.sessr .row-gap { max-width: 100%; }
+.meetup .pbtns .btn,
+.sessr .row-gap .btn { flex: none; max-width: 100%; }
 .dialog.match { border-radius: 28px; }
 
 /* Profile completion stays a black-to-red fill. The track is lighter so the

@@ -1379,7 +1379,7 @@ function ago(ts) {
   return Math.round(h / 24) + 'd'
 }
 function convoRows() {
-  if (!state.matches.length) return '<div class="empty">' + emptyArt('bag') + '<h2>No messages yet</h2><p>Swipe spar on boxers you would train with. When they spar you back, you can message them here.</p><button class="btn" data-act="tab" data-v="discover">Start swiping</button></div>'
+  if (!state.matches.length) return '<div class="empty"><h2>No messages yet</h2><p>Swipe spar on boxers you would train with. When they spar you back, you can message them here.</p><button class="btn" data-act="tab" data-v="discover">Start swiping</button></div>'
   const q = state.msgQ.trim().toLowerCase()
   const rows = state.matches.filter(m => !q || m.partner.n.toLowerCase().indexOf(q) >= 0).slice().sort((a, b) => {
     const la = msgs(a.id).slice(-1)[0]
