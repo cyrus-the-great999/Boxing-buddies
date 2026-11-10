@@ -31,14 +31,29 @@ body { font-weight: 400; }
 
 .atmo { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .atmo span { position: absolute; border-radius: 50%; }
-.atmo .g1 { width: 80vw; height: 80vw; left: -20vw; top: -10vh; background: radial-gradient(circle, rgba(160, 20, 34, .10), transparent 70%); }
-.atmo .g2 { width: 90vw; height: 90vw; right: -30vw; bottom: -20vh; background: radial-gradient(circle, rgba(90, 12, 22, .12), transparent 72%); }
-.atmo .g3 { width: 70vw; height: 50vw; left: 20vw; top: 30vh; background: radial-gradient(circle, rgba(200, 198, 204, .03), transparent 70%); }
-.atmo .arc, .atmo .arc2 { display: none; }
+.atmo .g1 { width: 110%; height: 55%; left: -30%; top: -12%; background: radial-gradient(closest-side, rgba(160, 20, 34, .55), transparent); }
+.atmo .g2 { width: 90%; height: 50%; left: 40%; top: 55%; background: radial-gradient(closest-side, rgba(90, 12, 22, .7), transparent); }
+.atmo .g3 { width: 70%; height: 40%; left: 30%; top: 20%; background: radial-gradient(closest-side, rgba(200, 198, 204, .06), transparent); }
+.atmo .arc {
+  display: block;
+  width: 180%; height: 90%; left: -55%; top: 12%;
+  border-radius: 50%; background: none;
+  border: 1.5px solid rgba(255, 70, 80, .5);
+  box-shadow: 0 0 22px rgba(215, 33, 47, .5), inset 0 0 22px rgba(215, 33, 47, .25);
+  transform: rotate(-28deg);
+}
+.atmo .arc2 {
+  display: block;
+  width: 130%; height: 80%; left: 20%; top: -30%;
+  border-radius: 50%; background: none;
+  border: 1px solid rgba(220, 220, 230, .12);
+  box-shadow: none;
+  transform: rotate(18deg);
+}
 @media (prefers-reduced-motion: no-preference) {
-  .atmo .g1 { animation: bbDrift1 26s ease-in-out infinite alternate; }
-  .atmo .g2 { animation: bbDrift2 30s ease-in-out infinite alternate; }
-  .atmo .g3 { animation: bbDrift3 22s ease-in-out infinite alternate; }
+  .atmo .g1 { animation: bbDrift1 22s ease-in-out infinite alternate; }
+  .atmo .g2 { animation: bbDrift2 26s ease-in-out infinite alternate; }
+  .atmo .g3 { animation: bbDrift3 30s ease-in-out infinite alternate; }
 }
 @keyframes bbDrift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(22%, 14%) scale(1.3); } }
 @keyframes bbDrift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(-18%, -12%) scale(.9); } }
@@ -49,9 +64,10 @@ body { font-weight: 400; }
 }
 
 #app { background: none !important; position: relative; z-index: 1; color: #D5D8DE; }
-/* Hide the old streak overlays on #app only. body::before is img/bg.jpg and
-   body::after is its readability scrim. Both have to paint. */
-#app::before, #app::after { content: none !important; display: none !important; }
+/* Streak overlays and the photo wallpaper stay off. The screen background is
+   the atmosphere layer: crimson, burgundy, and the two arcs. */
+#app::before, #app::after,
+body::before, body::after { content: none !important; display: none !important; }
 
 header h1, .wm, .onb:not(.waiver) .onb-body h1, h2, h3, .big, .empty h2 {
   font-family: Archivo, sans-serif;
@@ -240,10 +256,29 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
 .gym-row .meta { margin: 0 0 4px; line-height: 1.45; }
 .meetup { margin: 0 0 14px; }
 .meetup p { margin: 8px 0 0; line-height: 1.5; white-space: pre-wrap; }
-.meetup-form { margin: 12px 0 18px; }
+.meetup-form { margin: 12px 0 18px; min-width: 0; max-width: 100%; overflow: hidden; }
+.meetup-form .field { display: block; min-width: 0; max-width: 100%; overflow: hidden; }
+.meetup-form input[type="datetime-local"],
+.meetup-form input[type="date"],
+.meetup-form input[type="time"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-inline-size: 0;
+  box-sizing: border-box;
+}
+.meetup-form input[type="datetime-local"]::-webkit-datetime-edit,
+.meetup-form input[type="datetime-local"]::-webkit-date-and-time-value {
+  min-width: 0;
+  overflow: hidden;
+}
 #sheet .panel.filters {
   background: #121110;
   background-image: none;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   opacity: 1;
@@ -263,6 +298,26 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
   background: none;
   padding-left: 0;
   padding-right: 0;
+}
+#sheet .panel.filters .chips > button.chip,
+#sheet .panel.filters button.chip,
+#sheet .panel.filters button.chip:hover,
+#sheet .panel.filters button.chip:focus,
+#sheet .panel.filters button.chip[aria-pressed="false"] {
+  flex: none;
+  border: 0;
+  box-shadow: none;
+  background: rgba(255, 255, 255, .06);
+  color: #D5D8DE;
+}
+#sheet .panel.filters button.chip[aria-pressed="true"],
+#sheet .panel.filters button.chip[aria-checked="true"],
+#sheet .panel.filters button.chip[aria-pressed="true"]:hover,
+#sheet .panel.filters button.chip[aria-checked="true"]:hover {
+  border: 0;
+  box-shadow: none;
+  background: #D7212F;
+  color: #F4F5F7;
 }
 .row-gap { flex-wrap: wrap; }
 .meetup .pbtns,
