@@ -18,13 +18,13 @@
 <meta name="twitter:title" content="Boxing Buddies — find a sparring partner">
 <meta name="twitter:description" content="Match with boxers near you and plan a session at a real gym. Anywhere in the US.">
 <meta name="twitter:image" content="https://boxingbuddies.vercel.app/og.png">
-<meta name="theme-color" content="#050506">
+<meta name="theme-color" content="#0B0A0A">
 <link rel="manifest" href="manifest.json?v=5">
 <link rel="icon" type="image/png" href="icon-192.png?v=5" sizes="192x192">
 <link rel="icon" type="image/png" href="icon-512.png?v=5" sizes="512x512">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Boxing Buddies"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
 <style>
 /* ============ BOXING BUDDIES DESIGN SYSTEM ============
    1 Tokens  2 Base  3 Type  4 Icons  5 Components  6 Screens  7 Motion/a11y */
@@ -1419,8 +1419,10 @@ nav{z-index:5}
 .empty{background:none;border:0;box-shadow:none}
 .empty h2,.empty p,header h1,.hs,.dm,.gym-row,#app[data-view="me"] .srow{text-shadow:0 1px 2px rgba(5,5,6,.95),0 0 12px rgba(5,5,6,.8)}
 </style>
+<link rel="stylesheet" href="gloss.css">
 </head>
 <body>
+<div class="atmo" aria-hidden="true"><span class="g1"></span><span class="g2"></span><span class="g3"></span><span class="arc"></span><span class="arc2"></span></div>
 <div id="app">
   <p id="offline" class="banner" role="status" hidden>You’re offline. You can look around. Swipes and messages need a connection.</p>
   <header><div class="ht"><h1 id="ht">Discover</h1><p id="hs" class="hs"></p></div><button class="ibtn" data-act="open" aria-label="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></button></header>

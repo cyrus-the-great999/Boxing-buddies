@@ -42,7 +42,8 @@ const ICON = {
   discover: '<svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 15h6"/></svg>',
   matches: '<svg viewBox="0 0 24 24"><path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13L21 3"/></svg>',
   gyms: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
-  me: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'
+  me: '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  search: '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>'
 }
 
 const state = {
@@ -174,7 +175,7 @@ function ini(p) {
 }
 function col(p) { return 'linear-gradient(160deg,hsl(' + (p.hue || 20) + ' 28% 32%),#12141c 85%)' }
 function markSvg() {
-  return '<svg class="mark" viewBox="0 0 527 536" aria-hidden="true"><path fill="#D62828" fill-rule="evenodd" d="M228 0 L44 106 L26 241 L53 262 L17 285 L0 410 L231 536 L237 513 L236 8Z M143 287 L170 299 L175 309 L170 433 L83 388 L68 373 L81 316Z M171 104 L174 225 L166 233 L143 235 L97 208 L99 148 L107 137Z M293 1 L288 529 L298 536 L515 421 L527 402 L507 284 L469 259 L499 240 L481 106Z M354 104 L421 143 L429 196 L424 211 L368 245 L358 279 L441 315 L451 328 L458 368 L454 382 L356 435 L350 431 L348 223Z"/></svg>'
+  return '<svg class="mark" viewBox="0 0 527 536" aria-hidden="true"><path fill="#D7212F" fill-rule="evenodd" d="M228 0 L44 106 L26 241 L53 262 L17 285 L0 410 L231 536 L237 513 L236 8Z M143 287 L170 299 L175 309 L170 433 L83 388 L68 373 L81 316Z M171 104 L174 225 L166 233 L143 235 L97 208 L99 148 L107 137Z M293 1 L288 529 L298 536 L515 421 L527 402 L507 284 L469 259 L499 240 L481 106Z M354 104 L421 143 L429 196 L424 211 L368 245 L358 279 L441 315 L451 328 L458 368 L454 382 L356 435 L350 431 L348 223Z"/></svg>'
 }
 function gloveArt() {
   return '<svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M72 150h58v34a4 4 0 0 1-4 4H76a4 4 0 0 1-4-4z" fill="#1b1b1e"/><path d="M72 162h58M72 174h58" stroke="#3a3a40" stroke-width="2"/><path d="M72 150C58 140 52 122 53 100 54 66 78 40 112 38c32-2 54 20 52 52-1 20-8 34-20 44-6 5-10 10-14 16z" fill="#1b1b1e"/><path d="M56 104c-16-4-26 10-20 24 5 12 22 16 34 8" fill="#1b1b1e"/><path d="M84 70c12-6 34-6 52 4M76 92c18-6 46-4 72 6" stroke="#3a3a40" stroke-width="2"/><path d="M118 50c14 0 26 8 32 20" stroke-width="2.5"/></svg>'
@@ -1126,7 +1127,7 @@ function discover() {
   return '<div class="disc"><div class="qf" role="group" aria-label="Quick filters"><button class="chip fchip" data-act="filters">Filters</button><button class="chip" data-act="fclear" aria-pressed="' + (!any) + '">All</button>' +
     chip(state.filters.w === 'All' ? 'Weight' : state.filters.w, state.filters.w !== 'All') + chip(state.filters.e === 'All' ? 'Experience' : state.filters.e, state.filters.e !== 'All') +
     '</div><div class="seg" role="group" aria-label="Sort"><button data-act="sort" data-v="fit" aria-pressed="' + (state.cfg.sort !== 'near') + '">Best fit</button><button data-act="sort" data-v="near" aria-pressed="' + (state.cfg.sort === 'near') + '">Nearest</button></div>' +
-    '<div class="stack">' + (q[1] ? card(q[1], true) : '') + card(q[0]) + '</div><div class="actions"><button class="ibtn lg" data-act="pass" aria-label="Pass"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg><span>Pass</span></button><button class="ibtn lg pri" data-act="spar" aria-label="Spar"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Spar</span></button></div></div>'
+    '<div class="stack">' + (q[1] ? card(q[1], true) : '') + card(q[0]) + '</div><div class="actions"><button class="ibtn lg" data-act="pass" aria-label="Pass"><span>Pass</span><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button><button class="ibtn lg pri" data-act="spar" aria-label="Spar"><span>Spar</span><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>'
 }
 function gymsView() {
   const list = nearbyGyms().filter(g => g.mi == null || g.mi <= state.cfg.maxd || g.submitted_by === uid())
@@ -1207,6 +1208,7 @@ function meView() {
     (state.me.avatar_url ? '<button class="btn btn-sm btn-ghost" data-act="rmpic">Remove</button>' : '') + '</div></div></div>' +
     (state.picErr ? '<p class="field-err" role="alert">' + esc(state.picErr) + '</p>' : '') +
     '<div class="meter"><p class="meta"><b>' + (p < 100 ? p + '% complete' : 'Profile complete') + '</b></p><div class="bar" style="--p:' + p + '%"><i></i></div></div>' +
+    '<div class="stats3"><div><b>' + state.matches.length + '</b><span>Matches</span></div><div><b>' + state.sessions.length + '</b><span>Sessions</span></div></div>' +
     '<p class="eyebrow">About you</p><div class="box pad">' + fieldHtml('n', 'Name') + fieldHtml('a', 'Age', 'number') + fieldHtml('h', 'Height', 'text', 'e.g. 5 ft 10') + '</div>' +
     '<p class="eyebrow">Your boxing</p><div class="box pad">' + chipGroup('w', 'Weight class', W.slice(1)) + chipGroup('exp', 'Experience', E.slice(1)) + chipGroup('st', 'Stance', ['Orthodox', 'Southpaw']) + '</div>' +
     '<p class="eyebrow">Home gym</p>' + gymPicker() +
@@ -1217,15 +1219,15 @@ function onbView() {
   const email = state.session.user.email || ''
   const top = '<div class="onb-top"><button class="ibtn" data-act="oback" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>' + markSvg() + '<button class="btn btn-ghost btn-sm" data-act="signout">Sign out</button></div><div class="steps" role="img" aria-label="Step ' + Math.min(state.onb, 2) + ' of 2"><i class="' + (state.onb >= 1 ? 'on' : '') + '"></i><i class="' + (state.onb >= 2 ? 'on' : '') + '"></i></div>'
   if (state.onb === 1) {
-    return '<div class="onb">' + top + '<div class="onb-body"><h1>How do you box?</h1><p>Signed in as ' + esc(email) + '. This is how partners see you. You can change it any time.</p>' +
+    return '<div class="onb">' + top + '<div class="onb-body"><h1>How do you box?</h1><p class="coach">Signed in as ' + esc(email) + '. This is how partners see you. You can change it any time.</p>' +
       fieldHtml('n', 'Your name') + fieldHtml('a', 'Age', 'number', '18 or older') + chipGroup('w', 'Weight class', W.slice(1)) + chipGroup('exp', 'Experience', E.slice(1)) + chipGroup('st', 'Stance', ['Orthodox', 'Southpaw']) + chipGroup('int', 'Sparring intensity', INT) + '<p class="help">' + INTHELP[state.me.int] + '</p>' + chipGroup('gl', 'Main goal', GOALS) +
       '</div><div class="onb-cta"><button class="btn btn-block" data-act="onext">Continue</button></div></div>'
   }
   if (state.onb === 3) {
-    return '<div class="onb">' + top + '<div class="onb-body"><h1>Before you continue</h1><p>Boxing Buddies is for US residents who are 18 or older. Confirm your age and agree to the Terms and Privacy Policy.</p>' + fieldHtml('a', 'Age', 'number', '18 or older') + consentFields() +
+    return '<div class="onb">' + top + '<div class="onb-body"><h1>Before you continue</h1><p class="coach">Boxing Buddies is for US residents who are 18 or older. Confirm your age and agree to the Terms and Privacy Policy.</p>' + fieldHtml('a', 'Age', 'number', '18 or older') + consentFields() +
       '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Continue</button></div></div>'
   }
-  return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p>Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p>' + consentFields() + '<p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
+  return '<div class="onb">' + top + '<div class="onb-body"><h1>Where do you train?</h1><p class="coach">Pick a city or ZIP anywhere in the US, or use your location. Closer boxers rank higher.</p>' + consentFields() + '<p class="field-l mt-3">Your location</p><div class="box"><button class="srow link" data-act="loc"><div><b>' + esc(state.cfg.loc ? state.cfg.loc.name : 'Choose a city or ZIP') + '</b><span>Within ' + dist(state.cfg.maxd) + '</span></div></button></div><p class="field-l mt-3">Home gym</p>' + gymPicker() + multi('pd', 'Days you can spar', DAYS, state.me.dy) + multi('pt', 'Time of day', TIMES, state.me.tm) +
     '</div><div class="onb-cta"><button class="btn btn-block' + (state.saving ? ' is-loading' : '') + '" data-act="odone"' + (state.saving ? ' disabled' : '') + '>Start sparring</button></div></div>'
 }
 function waiverView() {
@@ -1240,14 +1242,14 @@ function authView() {
     const note = state.authMsg
       ? '<p class="' + (state.authErr ? 'field-err' : 'help') + '" role="' + (state.authErr ? 'alert' : 'status') + '">' + esc(state.authMsg) + '</p>'
       : '<p class="help">The link in the email still works in a normal browser tab. On an iPhone home-screen app it opens in Safari, so enter the code here.</p>'
-    return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Enter your code.</h1><p>We sent a 6-digit code to <b>' + esc(state.authEmail) + '</b>. Type it below to sign in.</p><label class="field">6-digit code<input id="code" class="input code" inputmode="numeric" autocomplete="one-time-code" enterkeyhint="done" maxlength="12" placeholder="••••••" aria-label="6-digit sign-in code" value="' + esc(state.authCode) + '"' + (state.authErr ? ' aria-invalid="true"' : '') + '></label>' +
+    return '<div class="onb welcome code"><div class="onb-art hero" aria-hidden="true"></div><div class="wm-block"><div class="wm">Boxing<br>Buddies</div><div class="wm-tag">Enter the code<br>we emailed.</div><div class="wm-bar"></div></div><div class="onb-body"><h1>Enter your code.</h1><p>We sent a 6-digit code to <b>' + esc(state.authEmail) + '</b>. Type it below to sign in.</p><label class="field">6-digit code<input id="code" class="input code" inputmode="numeric" autocomplete="one-time-code" enterkeyhint="done" maxlength="12" placeholder="••••••" aria-label="6-digit sign-in code" value="' + esc(state.authCode) + '"' + (state.authErr ? ' aria-invalid="true"' : '') + '></label>' +
       note +
-      '</div><div class="onb-cta"><button class="btn btn-block' + busy('verify') + '" data-act="verify"' + lock + '>Sign in</button><button class="btn btn-sec btn-block' + busy('resend') + '" data-act="resend"' + (state.authBusy || left > 0 ? ' disabled' : '') + '>' + (left > 0 ? 'Resend code (' + left + 's)' : 'Resend code') + '</button><button class="btn btn-sec btn-block" data-act="auth-reset"' + lock + '>Use a different email</button></div></div>'
+      '</div><div class="onb-cta"><button class="btn btn-block go' + busy('verify') + '" data-act="verify"' + lock + '>Sign in</button><button class="btn btn-sec btn-block' + busy('resend') + '" data-act="resend"' + (state.authBusy || left > 0 ? ' disabled' : '') + '>' + (left > 0 ? 'Resend code (' + left + 's)' : 'Resend code') + '</button><button class="btn btn-sec btn-block" data-act="auth-reset"' + lock + '>Use a different email</button></div></div>'
   }
   const formErr = state.authMsg || urlErr
-  return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"><div class="brand">' + markSvg() + '<span class="bn">Boxing<br>Buddies</span></div></div><div class="onb-body"><h1>Find your next sparring partner.</h1><p>Match with boxers near you, then plan a session at a real gym. Anywhere in the US.</p><label class="field">Email<input id="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" value="' + esc(state.authEmail) + '"' + (formErr ? ' aria-invalid="true"' : '') + '></label>' +
+  return '<div class="onb welcome"><div class="onb-art hero" aria-hidden="true"></div><div class="wm-block"><div class="wm">Boxing<br>Buddies</div><div class="wm-tag">More than just<br>a match.</div><div class="wm-bar"></div></div><div class="wm-side"><span>Train.</span><span>Connect.</span><span>Spar.</span></div><div class="onb-body"><label class="field">Email<input id="email" class="input" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com" value="' + esc(state.authEmail) + '"' + (formErr ? ' aria-invalid="true"' : '') + '></label>' +
     (formErr ? '<p class="field-err" role="alert">' + esc(formErr) + '</p>' : '<p class="fine">We email you a 6-digit code and a sign-in link. No password to remember.</p>') +
-    '</div><div class="onb-cta"><button class="btn btn-block' + busy('magic') + '" data-act="magic"' + lock + '>Send email</button><button class="btn btn-sec btn-block' + busy('google') + '" data-act="google"' + lock + '>Continue with Google</button></div></div>'
+    '</div><div class="onb-cta"><button class="btn btn-block go' + busy('magic') + '" data-act="magic"' + lock + '>Continue with Email<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button class="btn btn-sec btn-block' + busy('google') + '" data-act="google"' + lock + '><span class="gmark">G</span>Continue with Google</button></div></div>'
 }
 function authErrorFromUrl() {
   const q = new URLSearchParams(location.search)
@@ -1454,10 +1456,11 @@ function renderApp() {
   main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
   const n = state.tab === 'discover' ? pool().length : 0
   const unreadN = Object.keys(state.unread).filter(k => state.unread[k]).length
-  $('#nav').innerHTML = [['discover', 'Discover'], ['matches', 'Messages'], ['gyms', 'Meetups'], ['me', 'Profile']].map(t => '<button data-act="tab" data-v="' + t[0] + '"' + (state.tab === t[0] ? ' aria-current="true"' : '') + '>' + ICON[t[0]] + '<span>' + t[1] + '</span>' + (t[0] === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>').join('')
+  const tabBtn = (id, label) => '<button class="nav-tab" data-act="tab" data-v="' + id + '"' + (state.tab === id ? ' aria-current="true"' : '') + '>' + ICON[id] + '<span>' + label + '</span>' + (id === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>'
+  $('#nav').innerHTML = tabBtn('gyms', 'Meetups') + tabBtn('matches', 'Messages') + '<button class="nav-logo" data-act="tab" data-v="discover" aria-label="Discover"' + (state.tab === 'discover' ? ' aria-current="true"' : '') + '>' + markSvg() + '</button><button class="nav-tab" data-act="filters" aria-label="Search filters">' + ICON.search + '<span>Search</span></button>' + tabBtn('me', 'Profile')
   $('#ht').textContent = titles[state.tab] || 'Boxing Buddies'
   const sub = $('#hs')
-  if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (n + (n === 1 ? ' boxer' : ' boxers') + ' within ' + dist(state.cfg.maxd) + ' of ' + locLabel()) : (state.tab === 'matches' ? 'Your boxing connections' : '')
+  if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (locLabel() + ' · ' + dist(state.cfg.maxd) + ' · ' + n + ' near you') : (state.tab === 'matches' ? 'Your boxing connections' : '')
   const off = document.getElementById('offline')
   if (off) off.hidden = !state.offline
   document.title = (titles[state.tab] || 'Boxing Buddies') + ' | Boxing Buddies'
