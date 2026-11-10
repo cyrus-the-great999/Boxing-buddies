@@ -18,7 +18,7 @@
 <meta name="twitter:title" content="Boxing Buddies — find a sparring partner">
 <meta name="twitter:description" content="Match with boxers near you and plan a session at a real gym. Anywhere in the US.">
 <meta name="twitter:image" content="https://boxingbuddies.vercel.app/og.png">
-<meta name="theme-color" content="#0D0E10">
+<meta name="theme-color" content="#050506">
 <link rel="manifest" href="manifest.json?v=5">
 <link rel="icon" type="image/png" href="icon-192.png?v=5" sizes="192x192">
 <link rel="icon" type="image/png" href="icon-512.png?v=5" sizes="512x512">
@@ -1403,6 +1403,22 @@ button.chip[aria-pressed="true"]:focus,button.chip[aria-checked="true"]:focus,
   .seg button:hover:not([aria-pressed="true"]){background:var(--surf);color:var(--ink);box-shadow:none;filter:none}
   .btn:hover,.btn-sec:hover,.ibtn:hover,button.srow:hover,.dm:hover,.mt-new:hover{filter:none}
 }
+/* Wallpaper. Fixed layers on the body, not background-attachment, so iOS
+   home-screen Safari still paints the photo. #050506 shows until img/bg.jpg
+   arrives. The tab bar is the nav element and stays position:fixed (absolute
+   inside the desktop phone frame). Do not set position on #nav. */
+html,body{background:#050506 !important}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:url("img/bg.jpg") center / cover no-repeat}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(5,5,6,.35) 0%,rgba(5,5,6,.1) 30%,rgba(5,5,6,.1) 80%,rgba(5,5,6,.45) 100%);background-color:rgba(5,5,6,.28)}
+#app{background:none !important;position:relative;z-index:1}
+header,main{position:relative;z-index:1}
+nav{z-index:5}
+#app::before,#app::after{content:none}
+/* The ribbon is near-white. Cards stay opaque. Loose copy gets a dark plate
+   so it does not sit on that highlight. */
+.empty{background:rgba(5,5,6,.82);border-radius:var(--r-lg);box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+header h1,.hs{text-shadow:0 1px 2px rgba(5,5,6,.95),0 0 14px rgba(5,5,6,.8)}
+.dm,.gym-row,#app[data-view="me"] .srow{background-color:rgba(5,5,6,.82)}
 </style>
 </head>
 <body>
