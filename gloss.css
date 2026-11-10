@@ -322,7 +322,7 @@ nav {
   -webkit-backdrop-filter: blur(18px);
   z-index: 5;
 }
-#nav { position: static; display: flex; align-items: center; height: 100%; max-width: none; margin: 0; }
+#nav { position: static; display: flex; align-items: flex-end; height: 100%; max-width: none; margin: 0; }
 nav button {
   position: relative;
   flex: 1;
@@ -364,7 +364,7 @@ nav button.nav-logo {
   box-shadow: 0 0 0 1px rgba(215, 33, 47, .35);
   color: #F3F2F2;
 }
-nav button.nav-logo[aria-current="true"] {
+nav button.nav-logo.is-on, nav button.nav-logo[aria-current="true"] {
   box-shadow: 0 0 0 1px #D7212F, 0 0 28px rgba(215, 33, 47, .65);
 }
 nav button.nav-logo::after { display: none; }

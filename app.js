@@ -1454,7 +1454,9 @@ function renderApp() {
   main.innerHTML = state.tab === 'discover' ? discover() : state.tab === 'gyms' ? gymsView() : state.tab === 'me' ? meView() : (state.openMatch ? chatView() : matchList())
   const n = state.tab === 'discover' ? pool().length : 0
   const unreadN = Object.keys(state.unread).filter(k => state.unread[k]).length
-  $('#nav').innerHTML = [['discover', 'Discover'], ['matches', 'Messages'], ['gyms', 'Meetups'], ['me', 'Profile']].map(t => '<button class="nav-tab" data-act="tab" data-v="' + t[0] + '"' + (state.tab === t[0] ? ' aria-current="true"' : '') + '>' + ICON[t[0]] + '<span>' + t[1] + '</span>' + (t[0] === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>').join('')
+  const tabBtn = (id, label) => '<button class="nav-tab" data-act="tab" data-v="' + id + '"' + (state.tab === id ? ' aria-current="true"' : '') + '>' + ICON[id] + '<span>' + label + '</span>' + (id === 'matches' && unreadN ? '<i class="dot">' + unreadN + '</i>' : '') + '</button>'
+  const logo = '<button class="nav-logo' + (state.tab === 'discover' ? ' is-on' : '') + '" data-act="tab" data-v="discover" aria-label="Discover">' + markSvg() + '</button>'
+  $('#nav').innerHTML = tabBtn('discover', 'Discover') + tabBtn('matches', 'Messages') + logo + tabBtn('gyms', 'Meetups') + tabBtn('me', 'Profile')
   $('#ht').textContent = titles[state.tab] || 'Boxing Buddies'
   const sub = $('#hs')
   if (sub) sub.textContent = state.tab === 'discover' && state.cfg.loc ? (n + (n === 1 ? ' boxer' : ' boxers') + ' within ' + dist(state.cfg.maxd) + ' of ' + locLabel()) : (state.tab === 'matches' ? 'Your boxing connections' : '')
