@@ -359,6 +359,25 @@ export function avatarProblem(file) {
   return ''
 }
 
+/** Empty string when a gym meetup can be saved. `now` is milliseconds. */
+export function meetupProblem(input) {
+  const row = input || {}
+  if (!row.gymId) return 'Choose a gym.'
+  const rules = String(row.rules || '').trim()
+  if (rules.length < 1) return 'Write the rules for this meetup.'
+  if (rules.length > 1000) return 'Rules must be 1000 characters or less.'
+  const when = new Date(row.startsAt)
+  if (!row.startsAt || Number.isNaN(when.getTime())) return 'Pick a date and time.'
+  if (when.getTime() <= (row.now || Date.now())) return 'Pick a time in the future.'
+  return ''
+}
+
+/** True when the meetups table from the gym-meetups migration is not installed yet. */
+export function meetupTableMissing(error) {
+  const msg = String((error && (error.message || error.details || error.hint)) || '') + ' ' + String((error && error.code) || '')
+  return /PGRST205|Could not find the table|relation ["']?public\.meetups["']? does not exist|relation ["']?public\.meetup_joins["']? does not exist/i.test(msg)
+}
+
 /** True when PostgREST says a function from the security migration is not installed yet. */
 export function missingRpc(error) {
   const msg = String((error && (error.message || error.details)) || '') + ' ' + String((error && error.code) || '')

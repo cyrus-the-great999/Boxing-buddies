@@ -7,7 +7,7 @@ import {
   messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
   authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE,
   choiceSnapshot, restoreChoices, sortByDistance,
-  approxCoord, waiverDue, profileIsAdult, avatarProblem, missingRpc, WAIVER_VERSION, AVATAR_MAX_BYTES
+  approxCoord, waiverDue, profileIsAdult, avatarProblem, missingRpc, meetupProblem, meetupTableMissing, WAIVER_VERSION, AVATAR_MAX_BYTES
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -167,6 +167,16 @@ test('coordinates round to about a kilometer and only adults are listable', () =
   assert.match(avatarProblem({ type: 'image/png', size: AVATAR_MAX_BYTES + 1 }), /5 MB/)
   assert.equal(missingRpc({ code: 'PGRST202', message: 'Could not find the function public.discover_profiles' }), true)
   assert.equal(missingRpc({ message: 'permission denied' }), false)
+})
+
+test('a gym meetup needs a gym, future time, and rules', () => {
+  const now = Date.parse('2026-11-10T12:00:00Z')
+  assert.match(meetupProblem({ now }), /gym/i)
+  assert.match(meetupProblem({ gymId: 1, rules: '  ', startsAt: '2026-11-11T15:00', now }), /rules/i)
+  assert.match(meetupProblem({ gymId: 1, rules: 'Headgear required.', startsAt: '2026-11-09T15:00', now }), /future/i)
+  assert.equal(meetupProblem({ gymId: 1, rules: 'Headgear required. Light contact only.', startsAt: '2026-11-11T15:00', now }), '')
+  assert.equal(meetupTableMissing({ code: 'PGRST205', message: 'Could not find the table public.meetups' }), true)
+  assert.equal(meetupTableMissing({ message: 'Write the rules, up to 1000 characters.' }), false)
 })
 
 test('match pair ordering and gym visibility', () => {
