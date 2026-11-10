@@ -1138,7 +1138,7 @@ function meetupUnavailable(error) {
   return meetupTableMissing(error)
 }
 async function loadMeetups() {
-  const listed = await supabase.from('meetups').select('id,host_id,gym_id,starts_at,rules,created_at,gyms(name,town,state),host:profiles!meetups_host_id_fkey(display_name)').order('starts_at', { ascending: true })
+  const listed = await supabase.from('meetups').select('id,host_id,gym_id,starts_at,rules,join_count,created_at,gyms(name,town,state),host:profiles!meetups_host_id_fkey(display_name)').order('starts_at', { ascending: true })
   if (listed.error) {
     if (meetupUnavailable(listed.error)) { state.meetupsLive = false; state.meetups = []; state.meetupJoins = []; return }
     state.meetupsLive = true
@@ -1219,7 +1219,6 @@ function meetupsView() {
   const gyms = hostableGyms()
   const draft = state.meetupDraft
   const mineId = uid()
-  const joinCount = (id) => state.meetupJoins.filter(row => String(row.meetup_id) === String(id)).length
   const joined = (id) => state.meetupJoins.some(row => String(row.meetup_id) === String(id) && row.user_id === mineId)
   const cards = state.meetups.map(row => {
     const gym = row.gyms || {}
@@ -1232,7 +1231,8 @@ function meetupsView() {
       : (joined(row.id)
         ? '<button class="btn btn-sm btn-sec" data-act="leave-meetup" data-v="' + row.id + '">Leave</button>'
         : '<button class="btn btn-sm" data-act="join-meetup" data-v="' + row.id + '">Join</button>')
-    return '<article class="box pad meetup"><h3>' + esc(place) + '</h3><p class="meta">' + esc(when) + ' · ' + esc(mine ? 'You are hosting' : hostName) + '</p><p class="meta">' + joinCount(row.id) + (joinCount(row.id) === 1 ? ' boxer joined' : ' boxers joined') + '</p><p>' + esc(row.rules) + '</p><div class="pbtns">' + action + '</div></article>'
+    const n = Number(row.join_count) || 0
+    return '<article class="box pad meetup"><h3>' + esc(place) + '</h3><p class="meta">' + esc(when) + ' · ' + esc(mine ? 'You are hosting' : hostName) + '</p><p class="meta">' + n + (n === 1 ? ' boxer joined' : ' boxers joined') + '</p><p>' + esc(row.rules) + '</p><div class="pbtns">' + action + '</div></article>'
   }).join('')
   const gymOptions = gyms.map(g => '<option value="' + g.id + '"' + (String(draft.gymId) === String(g.id) ? ' selected' : '') + '>' + esc(g.name) + '</option>').join('')
   const unavailable = state.meetupsLive === false
@@ -1927,8 +1927,9 @@ async function onClick(b) {
   if (act === 'leave-meetup') { await joinMeetup(v, true); return }
   if (act === 'cancel-meetup') {
     confirmDlg({ title: 'Cancel this meetup?', body: 'People who joined will no longer see it. This cannot be undone.', yes: 'Cancel meetup', danger: true, fn: () => {
-      supabase.from('meetups').delete().eq('id', Number(v)).eq('host_id', uid()).then(async ({ error }) => {
+      supabase.from('meetups').delete().eq('id', Number(v)).eq('host_id', uid()).select('id').then(async ({ data, error }) => {
         if (error) { toast(errText(error), 'err'); return }
+        if (!data || !data.length) { toast('Only the host can cancel this meetup.', 'err'); return }
         await loadMeetups()
         toast('Meetup cancelled')
         render()
