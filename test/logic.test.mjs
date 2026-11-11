@@ -7,7 +7,7 @@ import {
   messageProblem, MESSAGE_MAX, emailLooksValid, normalizeEmailCode, emailCodeProblem,
   authProblem, signInEmailResult, resendWaitSec, EMAIL_RATE_LIMIT_MESSAGE,
   choiceSnapshot, restoreChoices, sortByDistance,
-  approxCoord, waiverDue, profileIsAdult, avatarProblem, missingRpc, meetupProblem, meetupTableMissing, WAIVER_VERSION, AVATAR_MAX_BYTES
+  approxCoord, waiverDue, profileIsAdult, avatarProblem, missingRpc, meetupProblem, meetupWhenParts, combineMeetupWhen, meetupTableMissing, WAIVER_VERSION, AVATAR_MAX_BYTES
 } from '../logic.mjs'
 
 const cities = JSON.parse(readFileSync(new URL('../data/us-cities.json', import.meta.url)))
@@ -175,6 +175,17 @@ test('a gym meetup needs a gym, future time, and rules', () => {
   assert.match(meetupProblem({ gymId: 1, rules: '  ', startsAt: '2026-11-11T15:00', now }), /rules/i)
   assert.match(meetupProblem({ gymId: 1, rules: 'Headgear required.', startsAt: '2026-11-09T15:00', now }), /future/i)
   assert.equal(meetupProblem({ gymId: 1, rules: 'Headgear required. Light contact only.', startsAt: '2026-11-11T15:00', now }), '')
+  assert.equal(combineMeetupWhen('2026-11-12', '19:30'), '2026-11-12T19:30')
+  assert.equal(combineMeetupWhen('2026-11-12', '19:30:00'), '2026-11-12T19:30')
+  assert.equal(combineMeetupWhen('2026-11-12', ''), '')
+  assert.equal(combineMeetupWhen('', '19:30'), '')
+  assert.deepEqual(meetupWhenParts('2026-11-12T19:30'), { date: '2026-11-12', time: '19:30' })
+  assert.deepEqual(meetupWhenParts(''), { date: '', time: '' })
+  const joined = combineMeetupWhen('2026-11-12', '19:30')
+  assert.equal(Number.isNaN(new Date(joined).getTime()), false)
+  assert.equal(new Date(joined).getHours(), 19)
+  assert.equal(new Date(joined).getMinutes(), 30)
+  assert.match(meetupProblem({ gymId: 1, rules: 'Headgear required.', startsAt: combineMeetupWhen('2026-11-12', ''), now }), /date and time/i)
   assert.equal(meetupTableMissing({ code: 'PGRST205', message: 'Could not find the table public.meetups' }), true)
   assert.equal(meetupTableMissing({ message: 'Write the rules, up to 1000 characters.' }), false)
 })
