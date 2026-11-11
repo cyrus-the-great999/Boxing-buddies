@@ -1160,6 +1160,30 @@ async function loadMeetups() {
 function hostableGyms() {
   return state.gyms.filter(g => g.status === 'approved' || g.status == null || (g.status === 'pending' && g.submitted_by === uid()))
 }
+function whenFace(kind, value) {
+  if (!value) return kind === 'date' ? 'Choose a date' : 'Choose a time'
+  if (kind === 'date') {
+    const parts = String(value).split('-')
+    const dt = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+    if (Number.isNaN(dt.getTime())) return 'Choose a date'
+    return dt.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+  const parts = String(value).split(':')
+  const dt = new Date()
+  dt.setHours(Number(parts[0]), Number(parts[1]) || 0, 0, 0)
+  if (Number.isNaN(dt.getTime())) return 'Choose a time'
+  return dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+}
+function whenSlot(id, kind, label, value) {
+  const empty = value ? '' : ' is-empty'
+  return '<label class="field">' + label + '<span class="when-slot"><span class="when-face' + empty + '" id="' + id + '-face">' + esc(whenFace(kind, value)) + '</span><input id="' + id + '" class="when-hit" type="' + kind + '" value="' + esc(value) + '" aria-label="' + label + '"></span></label>'
+}
+function paintWhenFace(input) {
+  const face = document.getElementById(input.id + '-face')
+  if (!face) return
+  face.textContent = whenFace(input.type === 'date' ? 'date' : 'time', input.value)
+  face.classList.toggle('is-empty', !input.value)
+}
 function readMeetupDraft() {
   const dateEl = $('#mudate')
   const timeEl = $('#mutime')
@@ -1250,7 +1274,7 @@ function meetupsView() {
   const savedWhen = meetupWhenParts(draft.when)
   const dateVal = draft.date || savedWhen.date
   const timeVal = draft.time || savedWhen.time
-  const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><p class="field-l">When</p><label class="field">Date<input id="mudate" class="input" type="date" value="' + esc(dateVal) + '"></label><label class="field">Time<input id="mutime" class="input" type="time" value="' + esc(timeVal) + '"></label><label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
+  const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><p class="field-l">When</p>' + whenSlot('mudate', 'date', 'Date', dateVal) + whenSlot('mutime', 'time', 'Time', timeVal) + '<label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
     (state.meetupMsg ? '<p class="field-err" role="alert">' + esc(state.meetupMsg) + '</p>' : '') +
     '<button class="btn btn-block mt-3' + (state.meetupBusy ? ' is-loading' : '') + '" data-act="host-meetup"' + (state.meetupBusy || !gyms.length ? ' disabled' : '') + '>Host meetup</button></div>'
   return sessionCards() + unavailable + form +
@@ -1959,6 +1983,7 @@ document.addEventListener('click', (e) => {
   onClick(b).catch(err => { console.error(err); toast(errText(err), 'err') })
 })
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'mudate' || e.target.id === 'mutime') paintWhenFace(e.target)
   if (e.target.id === 'email') state.authEmail = e.target.value
   if (e.target.id === 'code') {
     const next = normalizeEmailCode(e.target.value)
@@ -1992,6 +2017,7 @@ document.addEventListener('input', (e) => {
   if (k) { state.me[k] = e.target.value; scheduleSave() }
 })
 document.addEventListener('change', (e) => {
+  if (e.target.id === 'mudate' || e.target.id === 'mutime') paintWhenFace(e.target)
   if (e.target.id === 'age18') state.agreeAdult = e.target.checked
   if (e.target.id === 'termsok') state.agreeTerms = e.target.checked
   if (e.target.id === 'pic') onPhoto(e.target.files && e.target.files[0])
@@ -2030,6 +2056,7 @@ window.addEventListener('online', () => {
   else render()
 })
 
+document.documentElement.dataset.bb = '1'
 applyTheme()
 const bootErr = authErrorFromUrl()
 if (bootErr) { state.authErr = true; state.authMsg = bootErr.replace(/\+/g, ' ') }
