@@ -5,7 +5,7 @@ import {
   sortByDistance,
   compat, dayStr, filterDeck, parseSlot, nextOccurrence, orderedPair, messageProblem,
   emailLooksValid, normalizeEmailCode, emailCodeProblem, authProblem, signInEmailResult, resendWaitSec,
-  choiceSnapshot, restoreChoices, approxCoord, waiverDue, avatarProblem, missingRpc, meetupProblem, meetupTableMissing, WAIVER_VERSION
+  choiceSnapshot, restoreChoices, approxCoord, waiverDue, avatarProblem, missingRpc, meetupProblem, meetupWhenParts, combineMeetupWhen, meetupTableMissing, WAIVER_VERSION
 } from './logic.mjs'
 
 // The publishable key is meant for the browser. Do not put a secret key here.
@@ -66,7 +66,7 @@ const state = {
   meetups: [],
   meetupJoins: [],
   meetupsLive: null,
-  meetupDraft: { gymId: '', when: '', rules: '' },
+  meetupDraft: { gymId: '', when: '', date: '', time: '', rules: '' },
   meetupMsg: '',
   meetupBusy: false,
   openMatch: null,
@@ -1160,14 +1160,23 @@ async function loadMeetups() {
 function hostableGyms() {
   return state.gyms.filter(g => g.status === 'approved' || g.status == null || (g.status === 'pending' && g.submitted_by === uid()))
 }
-async function hostMeetup() {
-  if (state.meetupBusy) return
-  const draft = {
+function readMeetupDraft() {
+  const dateEl = $('#mudate')
+  const timeEl = $('#mutime')
+  const date = dateEl ? dateEl.value : (state.meetupDraft.date || '')
+  const time = timeEl ? timeEl.value : (state.meetupDraft.time || '')
+  return {
     gymId: ($('#mugym') && $('#mugym').value) || state.meetupDraft.gymId,
-    startsAt: ($('#muwhen') && $('#muwhen').value) || state.meetupDraft.when,
+    date,
+    time,
+    startsAt: dateEl || timeEl ? combineMeetupWhen(date, time) : (state.meetupDraft.when || ''),
     rules: ($('#murules') && $('#murules').value) || state.meetupDraft.rules
   }
-  state.meetupDraft = { gymId: draft.gymId, when: draft.startsAt, rules: draft.rules }
+}
+async function hostMeetup() {
+  if (state.meetupBusy) return
+  const draft = readMeetupDraft()
+  state.meetupDraft = { gymId: draft.gymId, date: draft.date, time: draft.time, when: draft.startsAt, rules: draft.rules }
   const problem = meetupProblem({ gymId: draft.gymId, startsAt: draft.startsAt, rules: draft.rules })
   if (problem) { state.meetupMsg = problem; render(); return }
   if (state.meetupsLive === false) {
@@ -1193,7 +1202,7 @@ async function hostMeetup() {
     render()
     return
   }
-  state.meetupDraft = { gymId: '', when: '', rules: '' }
+  state.meetupDraft = { gymId: '', when: '', date: '', time: '', rules: '' }
   await loadMeetups()
   toast('Meetup saved')
   render()
@@ -1238,7 +1247,10 @@ function meetupsView() {
   const unavailable = state.meetupsLive === false
     ? '<p class="field-err" role="alert">Meetup hosting is not saved yet. Apply supabase/migrations/20261110231313_gym_meetups.sql before a meetup can be stored. Nothing you submit is kept.</p>'
     : ''
-  const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><label class="field">When<input id="muwhen" class="input" type="datetime-local" value="' + esc(draft.when) + '"></label><label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
+  const savedWhen = meetupWhenParts(draft.when)
+  const dateVal = draft.date || savedWhen.date
+  const timeVal = draft.time || savedWhen.time
+  const form = '<div class="box pad meetup-form"><h3>Host a meetup</h3><p class="meta">Pick a listed gym and write the rules. Sparring plans with a match stay in Sessions.</p><label class="field">Gym<select id="mugym" class="input"' + (gyms.length ? '' : ' disabled') + '><option value="">Choose a gym</option>' + gymOptions + '</select></label><p class="field-l">When</p><label class="field">Date<input id="mudate" class="input" type="date" value="' + esc(dateVal) + '"></label><label class="field">Time<input id="mutime" class="input" type="time" value="' + esc(timeVal) + '"></label><label class="field">Rules and guidelines<textarea id="murules" class="input" rows="4" maxlength="1000">' + esc(draft.rules) + '</textarea></label>' +
     (state.meetupMsg ? '<p class="field-err" role="alert">' + esc(state.meetupMsg) + '</p>' : '') +
     '<button class="btn btn-block mt-3' + (state.meetupBusy ? ' is-loading' : '') + '" data-act="host-meetup"' + (state.meetupBusy || !gyms.length ? ' disabled' : '') + '>Host meetup</button></div>'
   return sessionCards() + unavailable + form +

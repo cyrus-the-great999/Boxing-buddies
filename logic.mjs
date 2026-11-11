@@ -359,6 +359,21 @@ export function avatarProblem(file) {
   return ''
 }
 
+/** Split a stored local timestamp back into the date and time controls. */
+export function meetupWhenParts(value) {
+  const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/.exec(String(value || ''))
+  if (!match) return { date: '', time: '' }
+  return { date: match[1], time: match[2] }
+}
+
+/** Join native date and time values into one local timestamp, or '' when either is missing. */
+export function combineMeetupWhen(date, time) {
+  const day = String(date || '')
+  const clock = String(time || '')
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !/^\d{2}:\d{2}/.test(clock)) return ''
+  return day + 'T' + clock.slice(0, 5)
+}
+
 /** Empty string when a gym meetup can be saved. `now` is milliseconds. */
 export function meetupProblem(input) {
   const row = input || {}

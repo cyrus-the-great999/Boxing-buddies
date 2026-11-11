@@ -256,22 +256,16 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus {
 .gym-row .meta { margin: 0 0 4px; line-height: 1.45; }
 .meetup { margin: 0 0 14px; }
 .meetup p { margin: 8px 0 0; line-height: 1.5; white-space: pre-wrap; }
-.meetup-form { margin: 12px 0 18px; min-width: 0; max-width: 100%; overflow: hidden; }
-.meetup-form .field { display: block; min-width: 0; max-width: 100%; overflow: hidden; }
-.meetup-form input[type="datetime-local"],
+.meetup-form,
+.box.pad.meetup-form { margin: 12px 0 18px; min-width: 0; max-width: 100%; overflow: visible; }
+.meetup-form .field { display: block; min-width: 0; max-width: 100%; overflow: visible; }
 .meetup-form input[type="date"],
 .meetup-form input[type="time"] {
   display: block;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-inline-size: 0;
   box-sizing: border-box;
-}
-.meetup-form input[type="datetime-local"]::-webkit-datetime-edit,
-.meetup-form input[type="datetime-local"]::-webkit-date-and-time-value {
-  min-width: 0;
-  overflow: hidden;
 }
 #sheet .panel.filters {
   background: #121110;
