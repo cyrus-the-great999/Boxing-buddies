@@ -20,7 +20,7 @@ test('secondary buttons keep one edge and primary actions keep the red-to-black 
   assert.match(gloss, /\.btn\.btn-sec,\s*\.btn\.btn-sec:hover,[\s\S]*?box-shadow: none;/)
   assert.match(gloss, /background: linear-gradient\(90deg, #E23A42 0%, #9E1822 46%, #14080A 100%\);/)
   assert.match(gloss, /-webkit-appearance: none;/)
-  assert.match(sw, /const C='bb-shell-25'/)
+  assert.match(sw, /const C='bb-shell-26'/)
   assert.match(sw, /\.\/img\/bg\.jpg/)
   assert.match(gloss, /inset 0 0 0 1px rgba\(213, 216, 222, \.55\)/)
   assert.match(gloss, /#sheet \.panel\.filters \.box/)

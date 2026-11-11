@@ -20,6 +20,10 @@
   --stage: #070606;
   --scrim: rgba(7, 6, 6, .72);
   --glass: rgba(255, 255, 255, .06);
+  --graphite: #1C1416;
+  --graphite-field: #2A1C20;
+  --graphite-field-hover: #342228;
+  --graphite-sheet: #181216;
   --font: "Archivo", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-d: "Archivo", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --ease: cubic-bezier(.2, .8, .2, 1);
@@ -121,14 +125,14 @@ button, .btn, .ibtn {
 .btn.btn-sec:hover,
 .btn.btn-sec:active,
 .btn.btn-sec:focus {
-  background: #1C1B1A;
+  background: var(--graphite-field);
   color: #D5D8DE;
   border: 1px solid rgba(197, 200, 206, .16);
   box-shadow: none;
   backdrop-filter: none;
   filter: none;
 }
-.btn.btn-sec:hover { background: #242322; border-color: rgba(197, 200, 206, .28); }
+.btn.btn-sec:hover { background: var(--graphite-field-hover); border-color: rgba(197, 200, 206, .28); }
 .btn:disabled:not(.btn-sec):not(.btn-ghost):not(.btn-danger),
 .btn.is-disabled:not(.btn-sec):not(.btn-ghost):not(.btn-danger) {
   background: linear-gradient(90deg, #E23A42 0%, #9E1822 46%, #14080A 100%);
@@ -176,7 +180,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .seg button { border-radius: 999px; color: #C2C6CE; }
 
 .input, select.input, .sq {
-  background: rgba(255, 255, 255, .04);
+  background: var(--graphite-field);
   border: 1px solid rgba(255, 255, 255, .1);
   border-radius: 16px;
   color: #D5D8DE;
@@ -186,7 +190,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .input:focus, .input:focus-visible, .sq:focus-within { box-shadow: inset 0 0 0 1px #C2C6CE; outline: none; }
 
 .box, .box.pad, .dialog, .panel {
-  background: #161514;
+  background: var(--graphite);
   border: 1px solid rgba(197, 200, 206, .12);
   box-shadow: none;
   border-radius: 16px;
@@ -196,7 +200,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .srow { border-bottom-color: rgba(255, 255, 255, .12); }
 .card {
   border-radius: 28px;
-  background: #161514;
+  background: var(--graphite);
   box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
 }
 .photo img, .ph, .pav img, .av img { filter: none; }
@@ -213,7 +217,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .actions { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; padding: 0 0 8px; }
 .actions .ibtn.lg {
   width: auto; height: 56px; border-radius: 14px; flex-direction: row; gap: 8px;
-  background: #1C1B1A; color: #D5D8DE; border: 1px solid rgba(197, 200, 206, .16);
+  background: var(--graphite-field); color: #D5D8DE; border: 1px solid rgba(197, 200, 206, .16);
   box-shadow: none;
 }
 .actions .ibtn.lg.pri,
@@ -268,7 +272,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
   width: 100%;
   margin-top: 8px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, .04);
+  background: var(--graphite-field);
   border: 1px solid rgba(255, 255, 255, .1);
   overflow: hidden;
 }
@@ -300,7 +304,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
   color: transparent;
 }
 #sheet .panel.filters {
-  background: #121110;
+  background: var(--graphite-sheet);
   background-image: none;
   border: 0;
   border-top: 1px solid rgba(255, 255, 255, .12);
@@ -333,7 +337,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
   flex: none;
   border: 0;
   box-shadow: none;
-  background: rgba(255, 255, 255, .06);
+  background: var(--graphite-field);
   color: #D5D8DE;
 }
 #sheet .panel.filters button.chip[aria-pressed="true"],
@@ -372,7 +376,7 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 .steps i.on { background: #D7212F; box-shadow: 0 0 8px rgba(215, 33, 47, .55); }
 
 #app[data-view="me"] .box, #app[data-view="me"] .box.pad {
-  background: #161514;
+  background: var(--graphite);
   border: 1px solid rgba(197, 200, 206, .12);
   border-radius: 16px;
   box-shadow: none;
@@ -380,11 +384,11 @@ button.chip[aria-pressed="true"]:focus, button.chip[aria-checked="true"]:focus,
 }
 .stats3 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 16px; }
 .stats3 > div {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .015));
+  background: var(--graphite-field);
   border: 1px solid rgba(255, 255, 255, .08);
   border-radius: 20px;
   padding: 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+  box-shadow: none;
 }
 .stats3 > div:nth-child(1) b,
 .stats3 > div:nth-child(2) b,

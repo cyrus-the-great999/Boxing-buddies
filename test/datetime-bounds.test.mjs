@@ -79,6 +79,9 @@ test('date and time controls match the gym field and are not clipped', { skip: !
         hitInside: inside(hit, date),
         faceScroll: document.getElementById('mudate-face').scrollWidth,
         faceClient: document.getElementById('mudate-face').clientWidth,
+        card: style('form').backgroundColor,
+        field: style('date-slot').backgroundColor,
+        gymFill: style('gym').backgroundColor,
         chipImage: chip.backgroundImage,
         chipShadow: chip.boxShadow,
         sparImage: spar.backgroundImage,
@@ -96,6 +99,9 @@ test('date and time controls match the gym field and are not clipped', { skip: !
     assert.ok(box.faceInside, 'visible date text leaves the rounded slot')
     assert.ok(box.hitInside, 'native date input leaves the rounded slot')
     assert.ok(box.faceScroll <= box.faceClient + 1)
+    assert.equal(box.card, 'rgb(28, 20, 22)')
+    assert.equal(box.field, 'rgb(42, 28, 32)')
+    assert.equal(box.gymFill, 'rgb(42, 28, 32)')
     assert.match(box.chipImage, /linear-gradient/)
     assert.match(box.chipShadow, /inset/)
     assert.match(box.sparImage, /linear-gradient/)
